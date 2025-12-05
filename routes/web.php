@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\JournalController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -20,4 +21,17 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+    
+    Route::get('/journal', [JournalController::class, 'today'])->name('journal.today');
+    Route::post('/journal', [JournalController::class, 'store'])->name('journal.store');
+
+    Route::get('/journal/{journal}/edit', [JournalController::class, 'edit'])->name('journal.edit');
+    Route::put('/journal/{journal}', [JournalController::class, 'update'])->name('journal.update');
+    Route::delete('/journal/{journal}', [JournalController::class, 'destroy'])->name('journal.destroy');
+
+    Route::get('/journal/history/all', [JournalController::class, 'history'])->name('journal.history');
+
+
+
 });
+

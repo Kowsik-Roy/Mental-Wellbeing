@@ -15,6 +15,19 @@
     @else
         <script src="https://cdn.tailwindcss.com"></script>
     @endif
+
+    <style>
+.journal-highlight {
+    font-weight: bold;
+    font-size: 18px;
+    padding: 5px 24px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.6);
+    border-radius: 5px;
+    transition: 0.3s;
+}
+
+
+</style>
 </head>
 <body class="bg-gray-50">
     <div class="py-12">
@@ -83,6 +96,11 @@
                 <p class="text-lg font-medium text-gray-900 mb-2">
                     Your dashboard is ready!
                 </p>
+                <a href="{{ route('journal.today') }}" 
+                 class="btn btn-primary journal-highlight">
+                    📘 My Journal
+                </a>
+
                 <p class="text-sm text-gray-600">
                     You are successfully logged in. This is where your mental wellbeing features will be displayed.
                 </p>
