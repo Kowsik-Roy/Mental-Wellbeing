@@ -88,7 +88,64 @@
                 </p>
             </div>
 
+            <!-- Profile Management Section - Added by NODI -->
+            <div class="mt-8 bg-white rounded-lg shadow-sm border border-gray-200">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-medium text-gray-900">Profile Management</h3>
+                    <p class="text-sm text-gray-600 mt-1">Manage your account settings and security</p>
+                </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <a href="{{ route('profile.show') }}" 
+                           class="group p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition duration-150 ease-in-out">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200">
+                                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                    </svg>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-900">View Profile</p>
+                                    <p class="text-xs text-gray-500">See your account details</p>
+                                </div>
+                            </div>
+                        </a>
+
+                        <a href="{{ route('profile.edit') }}" 
+                           class="group p-4 border border-gray-200 rounded-lg hover:border-green-300 hover:bg-green-50 transition duration-150 ease-in-out">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-200">
+                                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-900">Edit Profile</p>
+                                    <p class="text-xs text-gray-500">Update your name and email</p>
+                                </div>
+                            </div>
+                        </a>
+
+                        <a href="{{ route('profile.password.edit') }}" 
+                           class="group p-4 border border-gray-200 rounded-lg hover:border-yellow-300 hover:bg-yellow-50 transition duration-150 ease-in-out">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center group-hover:bg-yellow-200">
+                                    <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+                                    </svg>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-900">Change Password</p>
+                                    <p class="text-xs text-gray-500">Update your login credentials</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
             <!-- Quick Actions -->
+            <div class="mt-8 bg-white rounded-lg shadow-sm border border-gray-200">
             <div class="mt-8 bg-white rounded-lg shadow-sm border border-gray-200">
                 <div class="px-6 py-4 border-b border-gray-200">
                     <h3 class="text-lg font-medium text-gray-900">Quick Actions</h3>
