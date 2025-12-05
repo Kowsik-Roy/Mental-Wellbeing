@@ -211,6 +211,19 @@
                                                     </div>
                                                 </div>
                                                 
+                                                <!-- Mood Display -->
+                                                @if($entry->mood)
+                                                    @php
+                                                        $moodLabel = App\Models\Journal::MOODS[$entry->mood] ?? $entry->mood;
+                                                        $moodEmoji = explode(' ', $moodLabel)[0] ?? '';
+                                                        $moodText = explode(' ', $moodLabel)[1] ?? $moodLabel;
+                                                    @endphp
+                                                    <div class="mr-3 flex flex-col items-center">
+                                                        <div class="text-2xl">{{ $moodEmoji }}</div>
+                                                        <div class="text-xs text-gray-600">{{ $moodText }}</div>
+                                                    </div>
+                                                @endif
+                                                
                                                 <!-- Edit Icon -->
                                                 <div class="text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -234,7 +247,6 @@
                         </div>
                     @endforeach
                 </div>
-            </div>
 
             <!-- View Today Button -->
             <div class="text-center mt-8">
