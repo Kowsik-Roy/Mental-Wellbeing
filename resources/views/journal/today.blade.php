@@ -45,27 +45,6 @@
             background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
         }
 
-        .btn-history {
-            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-        }
-
-        /* Hover effects */
-        .btn-primary:hover {
-            background: linear-gradient(135deg, #059669 0%, #047857 100%);
-        }
-
-        .btn-secondary:hover {
-            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
-        }
-
-        .btn-danger:hover {
-            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-        }
-
-        .btn-history:hover {
-            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
-        }
-
         /* Date badge */
         .date-badge {
             background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
@@ -76,6 +55,27 @@
         .prompt-badge {
             background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
             color: white;
+        }
+
+        /* Mood selection styling */
+        .mood-option {
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+
+        .mood-option:hover {
+            transform: scale(1.05);
+            border-color: #3b82f6;
+        }
+
+        .mood-option.selected {
+            border-color: #10b981;
+            background-color: #f0fdf4;
+            transform: scale(1.05);
+        }
+
+        .mood-emoji {
+            font-size: 1.5rem;
         }
     </style>
 </head>
@@ -172,9 +172,28 @@
             <div class="p-6">
                 @if($entry)
                     <!-- EDIT TODAY'S ENTRY -->
-                    <form action="{{ route('journal.update', $entry->id) }}" method="POST">
+                    <form action="{{ route('journal.update', $entry->id) }}" method="POST" id="journalForm">
                         @csrf
                         @method('PUT')
+
+                        <!-- Mood Selection -->
+                        <div class="mb-6">
+                            <label class="block text-gray-700 text-sm font-medium mb-3">
+                                <span class="text-lg">😊</span> How are you feeling today?
+                            </label>
+                            <div class="grid grid-cols-4 sm:grid-cols-7 gap-2">
+                                @foreach(App\Models\Journal::MOODS as $key => $label)
+                                    <label class="mood-option cursor-pointer p-2 rounded-lg text-center 
+                                        {{ $entry->mood == $key ? 'selected' : 'bg-gray-50 hover:bg-gray-100' }}">
+                                        <input type="radio" name="mood" value="{{ $key }}" 
+                                            class="hidden" 
+                                            {{ $entry->mood == $key ? 'checked' : '' }}>
+                                        <div class="mood-emoji mb-1">{{ explode(' ', $label)[0] }}</div>
+                                        <div class="text-xs text-gray-600 truncate">{{ explode(' ', $label)[1] ?? $label }}</div>
+                                    </label>
+                                @endforeach
+                            </div>
+                        </div>
 
                         <!-- Text Area -->
                         <textarea 
@@ -213,9 +232,8 @@
 
                             <!-- Delete Button -->
                             <button 
-                                type="submit"
-                                form="deleteForm"
-                                onclick="return confirm('Are you sure you want to delete today\'s journal entry? This action cannot be undone.')"
+                                type="button"
+                                onclick="confirmDelete('{{ route('journal.destroy', $entry->id) }}')"
                                 class="btn-danger flex-1 text-white py-3 px-6 rounded-xl font-semibold text-lg transition duration-200 shadow-md hover:shadow-lg"
                             >
                                 <span>🗑️</span>
@@ -224,7 +242,7 @@
                         </div>
                     </form>
 
-                    <!-- Delete Form (separate for proper form handling) -->
+                    <!-- Delete Form -->
                     <form action="{{ route('journal.destroy', $entry->id) }}" method="POST" id="deleteForm" class="hidden">
                         @csrf
                         @method('DELETE')
@@ -232,8 +250,25 @@
 
                 @else
                     <!-- CREATE NEW ENTRY -->
-                    <form action="{{ route('journal.store') }}" method="POST">
+                    <form action="{{ route('journal.store') }}" method="POST" id="journalForm">
                         @csrf
+
+                        <!-- Mood Selection -->
+                        <div class="mb-6">
+                            <label class="block text-gray-700 text-sm font-medium mb-3">
+                                <span class="text-lg">😊</span> How are you feeling today?
+                            </label>
+                            <div class="grid grid-cols-4 sm:grid-cols-7 gap-2">
+                                @foreach(App\Models\Journal::MOODS as $key => $label)
+                                    <label class="mood-option cursor-pointer p-2 rounded-lg text-center bg-gray-50 hover:bg-gray-100">
+                                        <input type="radio" name="mood" value="{{ $key }}" 
+                                            class="hidden">
+                                        <div class="mood-emoji mb-1">{{ explode(' ', $label)[0] }}</div>
+                                        <div class="text-xs text-gray-600 truncate">{{ explode(' ', $label)[1] ?? $label }}</div>
+                                    </label>
+                                @endforeach
+                            </div>
+                        </div>
 
                         <!-- Text Area -->
                         <textarea 
@@ -294,7 +329,6 @@
                             "What are you currently worried about, and what can you do about it?"
                         ];
                         
-                        // Use the day of the month to get a consistent prompt for the day
                         $dayOfMonth = date('j');
                         $promptIndex = ($dayOfMonth - 1) % count($prompts);
                         $todaysPrompt = $prompts[$promptIndex];
@@ -312,9 +346,8 @@
             </div>
         </div>
 
-        <!-- Stats & Actions -->
+        <!-- Today's Status -->
         <div class="mt-8">
-            <!-- Stats Card -->
             <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
                 <h3 class="text-lg font-semibold text-gray-800 mb-4">
                     <span class="text-blue-600">📊</span>
@@ -331,6 +364,14 @@
                             @endif
                         </span>
                     </div>
+                    @if($entry && $entry->mood)
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Today's Mood</span>
+                        <span class="font-semibold text-gray-800">
+                            {{ $entry->mood_with_emoji }}
+                        </span>
+                    </div>
+                    @endif
                     <div class="flex justify-between items-center">
                         <span class="text-gray-600">Day of Week</span>
                         <span class="font-semibold text-gray-800">
@@ -355,53 +396,56 @@
             </div>
         </div>
 
-        <!-- Weekly Progress -->
-        <div class="mt-8 bg-white p-5 rounded-xl shadow-sm border border-gray-100">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">
-                <span class="text-green-600">📈</span>
-                This Week's Progress
-            </h3>
-            <div class="grid grid-cols-7 gap-2">
-                @php
-                    $daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-                    $todayDayOfWeek = date('N'); // 1 (Monday) through 7 (Sunday)
-                @endphp
-                
-                @for($i = 1; $i <= 7; $i++)
-                    @php
-                        $isToday = $i == $todayDayOfWeek;
-                    @endphp
-                    <div class="text-center">
-                        <div class="mb-1 text-sm text-gray-600">{{ $daysOfWeek[$i-1] }}</div>
-                        <div class="h-8 w-8 rounded-full mx-auto flex items-center justify-center
-                            @if($isToday) 
-                                border-2 border-blue-500 
-                                @if($entry) bg-blue-100 text-blue-800 @else bg-gray-100 text-gray-800 @endif
-                            @else
-                                bg-gray-100 text-gray-800
-                            @endif">
-                            {{ $i }}
-                        </div>
-                        <div class="mt-1 text-xs">
-                            @if($isToday)
-                                @if($entry) ✓ @else — @endif
-                            @else
-                                —
-                            @endif
-                        </div>
-                    </div>
-                @endfor
-            </div>
-            <div class="mt-4 text-center text-gray-600 text-sm">
-                @if($entry)
-                    Great job! You've written today's journal entry. 
-                @else
-                    Start your week strong by writing today's entry!
-                @endif
-            </div>
-        </div>
-
     </div>
+
+    <!-- JavaScript for mood selection and delete confirmation -->
+    <script>
+        // Mood selection
+        document.querySelectorAll('.mood-option').forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove selected class from all options
+                document.querySelectorAll('.mood-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                    opt.classList.add('bg-gray-50', 'hover:bg-gray-100');
+                });
+                
+                // Add selected class to clicked option
+                this.classList.add('selected');
+                this.classList.remove('bg-gray-50', 'hover:bg-gray-100');
+                
+                // Check the radio button
+                const radio = this.querySelector('input[type="radio"]');
+                if (radio) {
+                    radio.checked = true;
+                }
+            });
+        });
+
+        // Delete confirmation
+        function confirmDelete(url) {
+            if (confirm('Are you sure you want to delete today\'s journal entry? This action cannot be undone.')) {
+                // Create a form and submit it
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = url;
+                
+                const csrfToken = document.createElement('input');
+                csrfToken.type = 'hidden';
+                csrfToken.name = '_token';
+                csrfToken.value = '{{ csrf_token() }}';
+                form.appendChild(csrfToken);
+                
+                const methodField = document.createElement('input');
+                methodField.type = 'hidden';
+                methodField.name = '_method';
+                methodField.value = 'DELETE';
+                form.appendChild(methodField);
+                
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+    </script>
 
 </body>
 </html>
