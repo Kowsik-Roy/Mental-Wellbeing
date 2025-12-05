@@ -3,7 +3,12 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+<<<<<<< HEAD
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ProfileController; #NODI
+=======
 use App\Http\Controllers\JournalController;
+>>>>>>> 8e5d5e6c7c69c28385bef585dacb38364c3b3f79
 
 Route::get('/', function () {
     return view('welcome');
@@ -25,6 +30,15 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+    // NODI: PROFILE MANAGEMENT ===
+    Route::prefix('profile')->group(function () {
+        Route::get('/', [ProfileController::class, 'show'])->name('profile.show');
+        Route::get('/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::put('/update', [ProfileController::class, 'update'])->name('profile.update');
+        Route::get('/change-password', [ProfileController::class, 'showChangePasswordForm'])->name('profile.password.edit');
+        Route::put('/change-password', [ProfileController::class, 'changePassword'])->name('profile.password.update');
+    });
     
     Route::get('/journal', [JournalController::class, 'today'])->name('journal.today');
     Route::post('/journal', [JournalController::class, 'store'])->name('journal.store');
