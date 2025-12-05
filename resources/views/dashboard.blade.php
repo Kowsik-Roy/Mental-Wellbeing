@@ -94,7 +94,7 @@
                     </div>
                 </div>
                 <p class="text-lg font-medium text-gray-900 mb-2">
-                    Your dashboard is ready!
+                    dashboard is ready!
                 </p>
                 <a href="{{ route('journal.today') }}" 
                  class="btn btn-primary journal-highlight">
@@ -102,7 +102,7 @@
                 </a>
 
                 <p class="text-sm text-gray-600">
-                    You are successfully logged in. This is where your mental wellbeing features will be displayed.
+                    You are successfully logged in. This is where all of my mental wellbeing features will be displayed.
                 </p>
             </div>
 
