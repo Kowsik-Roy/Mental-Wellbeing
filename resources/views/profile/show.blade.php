@@ -140,7 +140,7 @@
                         </div>
                         <div class="ml-4">
                             <p class="text-sm text-gray-500">Days Active</p>
-                            <p class="text-2xl font-bold text-gray-900">{{ \Carbon\Carbon::parse(Auth::user()->created_at)->diffInDays() }}</p>
+                            <p class="text-2xl font-bold text-gray-900">{{ Auth::user()->created_at->startOfDay()->diffInDays(now()->startOfDay()) + 1}}</p>
                         </div>
                     </div>
                 </div>
