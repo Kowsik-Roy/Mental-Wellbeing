@@ -23,9 +23,9 @@
             <div class="bg-white rounded-lg shadow-sm border border-gray-200">
                 <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-yellow-500 to-yellow-600">
                     <h1 class="text-xl font-bold text-white">
-                        <i class="fas fa-key mr-2"></i>Change Password
+                        <i class="fas fa-key mr-2"></i>{{ $hasPassword ? 'Change Password' : 'Set Password' }}
                     </h1>
-                    <p class="text-yellow-100 text-sm mt-1">Update your login credentials</p>
+                    <p class="text-yellow-100 text-sm mt-1">{{ $hasPassword ? 'Update your login credentials' : 'Set a password for your account' }}</p>
                 </div>
 
                 <div class="p-6">
@@ -75,24 +75,42 @@
                         </div>
                     @endif
 
+                    @if(!$hasPassword)
+                        <div class="mb-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-info-circle text-yellow-400"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <h3 class="text-sm font-medium text-yellow-800">Set Your Password</h3>
+                                    <p class="mt-1 text-sm text-yellow-700">
+                                        You logged in with Google OAuth and don't have a password yet. Set a password below to enable email/password login.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
                     <form method="POST" action="{{ route('profile.password.update') }}">
                         @csrf
                         @method('PUT')
 
                         <div class="space-y-6">
-                            <div>
-                                <label for="current_password" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Current Password
-                                </label>
-                                <input type="password" 
-                                       id="current_password" 
-                                       name="current_password" 
-                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition"
-                                       required>
-                                @error('current_password')
-                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
+                            @if($hasPassword)
+                                <div>
+                                    <label for="current_password" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Current Password
+                                    </label>
+                                    <input type="password" 
+                                           id="current_password" 
+                                           name="current_password" 
+                                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition"
+                                           required>
+                                    @error('current_password')
+                                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            @endif
 
                             <div>
                                 <label for="new_password" class="block text-sm font-medium text-gray-700 mb-2">
@@ -127,28 +145,30 @@
                             </a>
                             <button type="submit" 
                                     class="px-6 py-3 bg-yellow-600 border border-transparent rounded-lg font-medium text-white hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition">
-                                <i class="fas fa-key mr-2"></i>Change Password
+                                <i class="fas fa-key mr-2"></i>{{ $hasPassword ? 'Change Password' : 'Set Password' }}
                             </button>
                         </div>
                     </form>
                 </div>
             </div>
 
-            <!-- Security Warning -->
-            <div class="mt-6 bg-red-50 border border-red-200 rounded-lg p-4">
-                <div class="flex">
-                    <div class="flex-shrink-0">
-                        <i class="fas fa-exclamation-triangle text-red-400"></i>
-                    </div>
-                    <div class="ml-3">
-                        <h3 class="text-sm font-medium text-red-800">Important Security Information</h3>
-                        <p class="mt-1 text-sm text-red-700">
-                            After changing your password, you'll be logged out of all other devices and sessions.
-                            Make sure to use a strong, unique password that you don't use elsewhere.
-                        </p>
+            @if($hasPassword)
+                <!-- Security Warning -->
+                <div class="mt-6 bg-red-50 border border-red-200 rounded-lg p-4">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-exclamation-triangle text-red-400"></i>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-red-800">Important Security Information</h3>
+                            <p class="mt-1 text-sm text-red-700">
+                                After changing your password, you'll be logged out of all other devices and sessions.
+                                Make sure to use a strong, unique password that you don't use elsewhere.
+                            </p>
+                        </div>
                     </div>
                 </div>
-            </div>
+            @endif
         </div>
     </div>
 </body>

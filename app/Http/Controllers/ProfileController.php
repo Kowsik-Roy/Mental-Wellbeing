@@ -43,30 +43,46 @@ class ProfileController extends Controller
     // Show the change password form.
     public function showChangePasswordForm()
     {
-        return view('profile.change-password');
+        $user = Auth::user();
+        $hasPassword = !is_null($user->password);
+        return view('profile.change-password', compact('hasPassword'));
     }
 
     // Change the user's password.
     public function changePassword(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'current_password' => 'required',
-            'new_password' => 'required|string|min:8|confirmed',
-        ]);
-
         $user = Auth::user();
+        $hasPassword = !is_null($user->password);
 
-        // Check current password
-        if (!Hash::check($request->current_password, $user->password)) {
-            $validator->errors()->add('current_password', 'Current password is incorrect');
-            return redirect()->back()->withErrors($validator);
+        // Validation rules
+        $rules = [
+            'new_password' => 'required|string|min:8|confirmed',
+        ];
+
+        // Only require current password if user has an existing password
+        if ($hasPassword) {
+            $rules['current_password'] = 'required';
+        }
+
+        $validator = Validator::make($request->all(), $rules);
+
+        // Check current password only if user has an existing password
+        if ($hasPassword) {
+            if (!Hash::check($request->current_password, $user->password)) {
+                $validator->errors()->add('current_password', 'Current password is incorrect');
+                return redirect()->back()->withErrors($validator);
+            }
         }
 
         // Update password
         $user->password = Hash::make($request->new_password);
         $user->save();
 
+        $message = $hasPassword 
+            ? 'Password changed successfully!' 
+            : 'Password set successfully! You can now login with your email and password.';
+
         return redirect()->route('profile.show')
-            ->with('success', 'Password changed successfully!');
+            ->with('success', $message);
     }
 }
