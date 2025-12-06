@@ -63,6 +63,27 @@
             background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
             color: white;
         }
+
+        /* Mood selection styling */
+        .mood-option {
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+
+        .mood-option:hover {
+            transform: scale(1.05);
+            border-color: #3b82f6;
+        }
+
+        .mood-option.selected {
+            border-color: #10b981;
+            background-color: #f0fdf4;
+            transform: scale(1.05);
+        }
+
+        .mood-emoji {
+            font-size: 1.5rem;
+        }
     </style>
 </head>
 
@@ -136,6 +157,25 @@
                 <form action="{{ route('journal.update', $journal->id) }}" method="POST" id="journalForm">
                     @csrf
                     @method('PUT')
+
+                    <!-- Mood Selection -->
+                    <div class="mb-6">
+                        <label class="block text-gray-700 text-sm font-medium mb-3">
+                            <span class="text-lg">😊</span> How were you feeling this day?
+                        </label>
+                        <div class="grid grid-cols-4 sm:grid-cols-7 gap-2">
+                            @foreach(App\Models\Journal::MOODS as $key => $label)
+                                <label class="mood-option cursor-pointer p-2 rounded-lg text-center 
+                                    {{ $journal->mood == $key ? 'selected' : 'bg-gray-50 hover:bg-gray-100' }}">
+                                    <input type="radio" name="mood" value="{{ $key }}" 
+                                        class="hidden" 
+                                        {{ $journal->mood == $key ? 'checked' : '' }}>
+                                    <div class="mood-emoji mb-1">{{ explode(' ', $label)[0] }}</div>
+                                    <div class="text-xs text-gray-600 truncate">{{ explode(' ', $label)[1] ?? $label }}</div>
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
 
                     <!-- Text Area -->
                     <textarea 
@@ -213,6 +253,12 @@
                         <p class="text-gray-600 text-sm">Entry Details</p>
                         <p class="text-lg font-semibold text-gray-800">
                             Created {{ $journal->created_at->format('M d, Y') }}
+                            @if($journal->mood)
+                                <br>
+                                <span class="text-sm font-normal text-gray-600">
+                                    Mood: {{ $journal->mood_with_emoji }}
+                                </span>
+                            @endif
                         </p>
                     </div>
                 </div>
@@ -239,6 +285,30 @@
         </div>
 
     </div>
+
+    <!-- JavaScript for mood selection -->
+    <script>
+        // Mood selection
+        document.querySelectorAll('.mood-option').forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove selected class from all options
+                document.querySelectorAll('.mood-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                    opt.classList.add('bg-gray-50', 'hover:bg-gray-100');
+                });
+                
+                // Add selected class to clicked option
+                this.classList.add('selected');
+                this.classList.remove('bg-gray-50', 'hover:bg-gray-100');
+                
+                // Check the radio button
+                const radio = this.querySelector('input[type="radio"]');
+                if (radio) {
+                    radio.checked = true;
+                }
+            });
+        });
+    </script>
 
 </body>
 </html>

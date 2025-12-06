@@ -24,11 +24,13 @@ class JournalController extends Controller
     {
         $request->validate([
             'content' => 'required|min:3',
+            'mood' => 'nullable|in:' . implode(',', array_keys(Journal::MOODS)),
         ]);
 
         Journal::create([
             'user_id' => auth()->id(),
             'content' => $request->content,
+            'mood' => $request->mood,
         ]);
 
         return redirect()->route('journal.today')->with('success', 'Journal saved successfully!');
@@ -49,10 +51,12 @@ class JournalController extends Controller
 
         $request->validate([
             'content' => 'required|min:3',
+            'mood' => 'nullable|in:' . implode(',', array_keys(Journal::MOODS)),
         ]);
 
         $journal->update([
-            'content' => $request->content
+            'content' => $request->content,
+            'mood' => $request->mood,
         ]);
 
         return redirect()->route('journal.today')->with('success', 'Journal updated successfully!');
@@ -84,9 +88,18 @@ class JournalController extends Controller
             return $entry->created_at->format('F Y'); // e.g. January 2025
         });
 
+        // Get mood statistics
+        $moodStats = Journal::where('user_id', auth()->id())
+                          ->whereNotNull('mood')
+                          ->selectRaw('mood, count(*) as count')
+                          ->groupBy('mood')
+                          ->orderBy('count', 'desc')
+                          ->get();
+
         return view('journal.history', [
             'entries' => $groupedEntries,
-            'totalEntries' => $totalEntries
+            'totalEntries' => $totalEntries,
+            'moodStats' => $moodStats,
         ]);
     }
 
