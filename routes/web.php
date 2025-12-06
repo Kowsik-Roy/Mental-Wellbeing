@@ -6,7 +6,10 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\JournalController;
+<<<<<<< HEAD
 use App\Http\Controllers\HabitController;
+=======
+>>>>>>> 05573de22b071fd3e9f7dc37d7372fe126b4fa4b
 
 Route::get('/', function () {
     return view('welcome');
@@ -47,6 +50,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/journal/{journal}', [JournalController::class, 'destroy'])->name('journal.destroy');
 
     Route::get('/journal/history/all', [JournalController::class, 'history'])->name('journal.history');
+<<<<<<< HEAD
 
     // === MEMBER 2: HABIT MANAGEMENT ===
     Route::prefix('habits')->group(function () {
@@ -58,4 +62,6 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{habit}', [HabitController::class, 'destroy'])->name('habits.destroy');
         Route::post('/{habit}/log', [HabitController::class, 'log'])->name('habits.log');
     });
+=======
+>>>>>>> 05573de22b071fd3e9f7dc37d7372fe126b4fa4b
 });
