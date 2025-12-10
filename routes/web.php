@@ -54,6 +54,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/create', [HabitController::class, 'create'])->name('habits.create');
         Route::post('/', [HabitController::class, 'store'])->name('habits.store');
         Route::get('/{habit}/edit', [HabitController::class, 'edit'])->name('habits.edit');
+        Route::get('/{habit}/progress', [HabitController::class, 'progress'])->name('habits.progress');
         Route::put('/{habit}', [HabitController::class, 'update'])->name('habits.update');
         Route::delete('/{habit}', [HabitController::class, 'destroy'])->name('habits.destroy');
         Route::post('/{habit}/log', [HabitController::class, 'log'])->name('habits.log');

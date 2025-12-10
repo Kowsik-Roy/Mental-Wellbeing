@@ -127,33 +127,50 @@ class HabitController extends Controller
             array_merge($validated, ['user_id' => Auth::id()])
         );
 
-        // Update streak if completed
-        if ($validated['completed']) {
-            $this->updateStreak($habit);
-        }
+        // Recalculate streaks based on all logs
+        $habit->recalculateStreaks();
 
         return redirect()->route('habits.index')
             ->with('success', 'Habit logged successfully!');
     }
 
     /**
-     * Update streak for a habit.
+     * Show progress and analytics for a specific habit.
      */
-    private function updateStreak(Habit $habit): void
+    public function progress(Habit $habit)
     {
-        $yesterday = now()->subDay();
-        $yesterdayLog = $habit->logs()
-            ->whereDate('logged_date', $yesterday)
-            ->where('completed', true)
-            ->exists();
-
-        if ($yesterdayLog) {
-            $habit->increment('current_streak');
-            if ($habit->current_streak > $habit->best_streak) {
-                $habit->update(['best_streak' => $habit->current_streak]);
-            }
-        } else {
-            $habit->update(['current_streak' => 1]);
+        // Ensure user owns this habit
+        if ($habit->user_id !== Auth::id()) {
+            abort(403);
         }
+
+        // Get progress data
+        $weeklyPercentage = $habit->getWeeklyCompletionPercentage();
+        $monthlyPercentage = $habit->getMonthlyCompletionPercentage();
+        $allTimePercentage = $habit->getAllTimeCompletionPercentage();
+        $consistencyScore = $habit->getConsistencyScore();
+
+        // Get recent logs
+        $recentLogs = $habit->logs()
+            ->orderBy('logged_date', 'desc')
+            ->limit(30)
+            ->get();
+
+        // Calculate statistics
+        $totalCompletions = $habit->logs()->where('completed', true)->count();
+        $totalDays = $habit->created_at->diffInDays(now()) + 1;
+        $completionRate = $totalDays > 0 ? ($totalCompletions / $totalDays) * 100 : 0;
+
+        return view('habits.progress', compact(
+            'habit',
+            'weeklyPercentage',
+            'monthlyPercentage',
+            'allTimePercentage',
+            'consistencyScore',
+            'recentLogs',
+            'totalCompletions',
+            'totalDays',
+            'completionRate'
+        ));
     }
 }

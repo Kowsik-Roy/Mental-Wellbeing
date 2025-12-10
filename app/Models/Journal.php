@@ -4,10 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-<<<<<<< HEAD
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-=======
->>>>>>> 05573de22b071fd3e9f7dc37d7372fe126b4fa4b
 
 class Journal extends Model
 {

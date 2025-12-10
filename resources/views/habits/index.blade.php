@@ -46,6 +46,39 @@
                 </div>
             @endif
 
+            <!-- Consistency Overview -->
+            @if($habits->isNotEmpty())
+                <div class="mb-8 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                        <i class="fas fa-fire text-orange-500 mr-2"></i>
+                        Consistency Overview
+                    </h2>
+                    <p class="text-sm text-gray-600 mb-4">See which habits you're maintaining most consistently over time.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        @foreach($habits->sortByDesc(function($habit) { return $habit->getConsistencyScore(); })->take(6) as $habit)
+                            <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h3 class="font-medium text-gray-900 text-sm">{{ $habit->title }}</h3>
+                                    <span class="text-xs font-semibold {{ $habit->getConsistencyScore() >= 70 ? 'text-green-600' : ($habit->getConsistencyScore() >= 40 ? 'text-yellow-600' : 'text-red-600') }}">
+                                        {{ number_format($habit->getConsistencyScore(), 0) }}%
+                                    </span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="h-2 rounded-full transition-all {{ $habit->getConsistencyScore() >= 70 ? 'bg-green-600' : ($habit->getConsistencyScore() >= 40 ? 'bg-yellow-600' : 'bg-red-600') }}" 
+                                         style="width: {{ min($habit->getConsistencyScore(), 100) }}%"></div>
+                                </div>
+                                <div class="flex items-center justify-between mt-2 text-xs text-gray-500">
+                                    <span><i class="fas fa-fire mr-1"></i>{{ $habit->current_streak }} day streak</span>
+                                    <a href="{{ route('habits.progress', $habit) }}" class="text-blue-600 hover:text-blue-800">
+                                        View Details <i class="fas fa-arrow-right ml-1"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
             <!-- Habits List -->
             @if($habits->isEmpty())
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
@@ -82,22 +115,53 @@
                                 <div class="grid grid-cols-2 gap-4 mb-4">
                                     <div>
                                         <p class="text-sm text-gray-500">Current Streak</p>
-                                        <p class="text-2xl font-bold text-gray-900">{{ $habit->current_streak }} days</p>
+                                        <p class="text-2xl font-bold text-gray-900">
+                                            <i class="fas fa-fire text-orange-500 text-lg"></i>
+                                            {{ $habit->current_streak }} days
+                                        </p>
                                     </div>
                                     <div>
                                         <p class="text-sm text-gray-500">Best Streak</p>
-                                        <p class="text-2xl font-bold text-gray-900">{{ $habit->best_streak }} days</p>
+                                        <p class="text-2xl font-bold text-gray-900">
+                                            <i class="fas fa-trophy text-yellow-500 text-lg"></i>
+                                            {{ $habit->best_streak }} days
+                                        </p>
                                     </div>
                                 </div>
 
-                                <!-- Progress -->
-                                <div class="mb-4">
-                                    <div class="flex justify-between text-sm text-gray-600 mb-1">
-                                        <span>Progress</span>
-                                        <span>{{ number_format($habit->completion_percentage, 0) }}%</span>
+                                <!-- Progress Indicators -->
+                                <div class="mb-4 space-y-3">
+                                    <!-- Weekly Progress -->
+                                    <div>
+                                        <div class="flex justify-between text-xs text-gray-600 mb-1">
+                                            <span>This Week</span>
+                                            <span>{{ number_format($habit->getWeeklyCompletionPercentage(), 0) }}%</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                            <div class="bg-blue-600 h-1.5 rounded-full transition-all" style="width: {{ min($habit->getWeeklyCompletionPercentage(), 100) }}%"></div>
+                                        </div>
                                     </div>
-                                    <div class="w-full bg-gray-200 rounded-full h-2">
-                                        <div class="bg-green-600 h-2 rounded-full" style="width: {{ min($habit->completion_percentage, 100) }}%"></div>
+                                    
+                                    <!-- Monthly Progress -->
+                                    <div>
+                                        <div class="flex justify-between text-xs text-gray-600 mb-1">
+                                            <span>This Month</span>
+                                            <span>{{ number_format($habit->getMonthlyCompletionPercentage(), 0) }}%</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                            <div class="bg-green-600 h-1.5 rounded-full transition-all" style="width: {{ min($habit->getMonthlyCompletionPercentage(), 100) }}%"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Consistency Score -->
+                                    <div>
+                                        <div class="flex justify-between text-xs text-gray-600 mb-1">
+                                            <span>Consistency</span>
+                                            <span>{{ number_format($habit->getConsistencyScore(), 0) }}%</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                            <div class="bg-orange-600 h-1.5 rounded-full transition-all" style="width: {{ min($habit->getConsistencyScore(), 100) }}%"></div>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -121,17 +185,24 @@
                             </div>
 
                             <!-- Actions -->
-                            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-between">
-                                <a href="{{ route('habits.edit', $habit) }}" class="text-blue-600 hover:text-blue-800">
-                                    <i class="fas fa-edit mr-1"></i> Edit
-                                </a>
-                                <form method="POST" action="{{ route('habits.destroy', $habit) }}" onsubmit="return confirm('Delete this habit?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-800">
-                                        <i class="fas fa-trash mr-1"></i> Delete
-                                    </button>
-                                </form>
+                            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+                                <div class="flex justify-between items-center mb-2">
+                                    <a href="{{ route('habits.progress', $habit) }}" class="text-purple-600 hover:text-purple-800 text-sm font-medium">
+                                        <i class="fas fa-chart-line mr-1"></i> View Progress
+                                    </a>
+                                    <div class="flex space-x-3">
+                                        <a href="{{ route('habits.edit', $habit) }}" class="text-blue-600 hover:text-blue-800 text-sm">
+                                            <i class="fas fa-edit mr-1"></i> Edit
+                                        </a>
+                                        <form method="POST" action="{{ route('habits.destroy', $habit) }}" onsubmit="return confirm('Delete this habit?')" class="inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-red-600 hover:text-red-800 text-sm">
+                                                <i class="fas fa-trash mr-1"></i> Delete
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     @endforeach
