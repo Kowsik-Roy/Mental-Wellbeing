@@ -163,80 +163,113 @@
                 </div>
             </div>        
 
-            <!-- Habits Overview Section - Added by Member 2 -->
-            <div class="mt-8 bg-white rounded-lg shadow-sm border border-gray-200">
-                <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-                    <div>
-                        <h3 class="text-lg font-medium text-gray-900">Daily Habits</h3>
-                        <p class="text-sm text-gray-600 mt-1">Track your wellness routines</p>
-                    </div>
-                    <a href="{{ route('habits.index') }}" class="text-blue-600 hover:text-blue-800">
-                        View All <i class="fas fa-arrow-right ml-1"></i>
-                    </a>
+            <!-- Habits Overview Section - Updated with Calendar Sync Toggle -->
+<div class="mt-8 bg-white rounded-lg shadow-sm border border-gray-200">
+    <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+        <div>
+            <h3 class="text-lg font-medium text-gray-900">Daily Habits</h3>
+            <p class="text-sm text-gray-600 mt-1">Track your wellness routines</p>
+        </div>
+        <a href="{{ route('habits.index') }}" class="text-blue-600 hover:text-blue-800">
+            View All <i class="fas fa-arrow-right ml-1"></i>
+        </a>
+    </div>
+    <div class="p-6">
+        @php
+            try {
+                $habits = Auth::user()->habits()->where('is_active', true)->take(3)->get();
+            } catch (\Exception $e) {
+                $habits = collect([]);
+            }
+        @endphp
+        
+        @if($habits->isEmpty())
+            <div class="text-center py-8">
+                <div class="mx-auto w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                    <i class="fas fa-tasks text-gray-400"></i>
                 </div>
-                <div class="p-6">
-                    @php
-                        try {
-                            $habits = Auth::user()->habits()->where('is_active', true)->take(3)->get();
-                        } catch (\Exception $e) {
-                            // Fallback if relationship not working
-                            $habits = collect([]);
-                        }
-                    @endphp
-                    
-                    @if($habits->isEmpty())
-                        <div class="text-center py-8">
-                            <div class="mx-auto w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                                <i class="fas fa-tasks text-gray-400"></i>
-                            </div>
-                            <p class="text-gray-600 mb-4">No habits yet. Start building your wellness routine.</p>
-                            <a href="{{ route('habits.create') }}" class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
-                                <i class="fas fa-plus mr-2"></i> Create First Habit
-                            </a>
+                <p class="text-gray-600 mb-4">No habits yet. Start building your wellness routine.</p>
+                <a href="{{ route('habits.create') }}" class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                    <i class="fas fa-plus mr-2"></i> Create First Habit
+                </a>
+            </div>
+        @else
+            <!-- Calendar Sync Toggle - Added at top of habits section -->
+            <div class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                            <i class="fas fa-calendar-alt text-blue-600"></i>
                         </div>
-                    @else
-                        <div class="space-y-4">
-                            @foreach($habits as $habit)
-                                <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
-                                    <div class="flex items-center">
-                                        <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                                            <i class="fas fa-tasks text-blue-600"></i>
-                                        </div>
-                                        <div class="ml-4">
-                                            <p class="font-medium text-gray-900">{{ $habit->title }}</p>
-                                            <p class="text-sm text-gray-500">
-                                                {{ $habit->current_streak }} day{{ $habit->current_streak != 1 ? 's' : '' }} streak
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center space-x-2">
-                                        @if($habit->todaysLog && $habit->todaysLog->completed)
-                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                                <i class="fas fa-check mr-1"></i> Done
-                                            </span>
-                                        @else
-                                            <form method="POST" action="{{ route('habits.log', $habit) }}" class="inline">
-                                                @csrf
-                                                <button type="submit" name="completed" value="1" 
-                                                        class="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm">
-                                                    Mark Complete
-                                                </button>
-                                            </form>
-                                        @endif
-                                    </div>
-                                </div>
-                            @endforeach
+                        <div>
+                            <p class="font-medium text-gray-900">Google Calendar Sync</p>
+                            <p class="text-sm text-gray-500">Sync habits to your Google Calendar</p>
                         </div>
-                        
-                        <div class="mt-6 text-center">
-                            <a href="{{ route('habits.index') }}" class="inline-flex items-center text-blue-600 hover:text-blue-800">
-                                View all {{ Auth::user()->habits()->where('is_active', true)->count() }} habits
-                                <i class="fas fa-arrow-right ml-2"></i>
-                            </a>
-                        </div>
-                    @endif
+                    </div>
+                    <form action="{{ route('calendar.toggle') }}" method="POST" class="inline">
+                        @csrf
+                        @if(auth()->user()->calendar_sync_enabled)
+                            <button type="submit" 
+                                    class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-lg font-medium text-sm text-white uppercase tracking-widest hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                <i class="fas fa-calendar-times mr-2"></i>
+                                Disable Sync
+                            </button>
+                        @else
+                            <button type="submit" 
+                                    class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-lg font-medium text-sm text-white uppercase tracking-widest hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                <i class="fas fa-calendar-plus mr-2"></i>
+                                Enable Sync
+                            </button>
+                        @endif
+                    </form>
                 </div>
             </div>
+
+            <div class="space-y-4">
+                @foreach($habits as $habit)
+                    <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-tasks text-blue-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="font-medium text-gray-900">{{ $habit->title }}</p>
+                                <p class="text-sm text-gray-500">
+                                    {{ $habit->current_streak }} day{{ $habit->current_streak != 1 ? 's' : '' }} streak
+                                    @if($habit->google_event_id)
+                                        <i class="fas fa-calendar-check ml-2 text-green-500" title="Synced to Google Calendar"></i>
+                                    @endif
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            @if($habit->todaysLog && $habit->todaysLog->completed)
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    <i class="fas fa-check mr-1"></i> Done
+                                </span>
+                            @else
+                                <form method="POST" action="{{ route('habits.log', $habit) }}" class="inline">
+                                    @csrf
+                                    <button type="submit" name="completed" value="1" 
+                                            class="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm">
+                                        Mark Complete
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+            
+            <div class="mt-6 text-center">
+                <a href="{{ route('habits.index') }}" class="inline-flex items-center text-blue-600 hover:text-blue-800">
+                    View all {{ Auth::user()->habits()->where('is_active', true)->count() }} habits
+                    <i class="fas fa-arrow-right ml-2"></i>
+                </a>
+            </div>
+        @endif
+    </div>
+</div>
 
             <!-- Quick Actions -->
             <div class="mt-8 bg-white rounded-lg shadow-sm border border-gray-200">

@@ -6,6 +6,9 @@ use App\Models\Habit;
 use App\Models\HabitLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\GoogleCalendarController;
+use Google\Service\Calendar\Event;
+use Google\Service\Calendar\EventDateTime;
 
 class HabitController extends Controller
 {
@@ -47,6 +50,9 @@ class HabitController extends Controller
 
         $habit = Auth::user()->habits()->create($validated);
 
+        // Sync to Google Calendar if enabled and reminder time exists
+        $this->syncToGoogleCalendar($habit, $request);
+
         return redirect()->route('habits.index')
             ->with('success', 'Habit created successfully!');
     }
@@ -56,7 +62,6 @@ class HabitController extends Controller
      */
     public function edit(Habit $habit)
     {
-        // Ensure user owns this habit
         if ($habit->user_id !== Auth::id()) {
             abort(403);
         }
@@ -69,7 +74,6 @@ class HabitController extends Controller
      */
     public function update(Request $request, Habit $habit)
     {
-        // Ensure user owns this habit
         if ($habit->user_id !== Auth::id()) {
             abort(403);
         }
@@ -86,6 +90,9 @@ class HabitController extends Controller
 
         $habit->update($validated);
 
+        // Sync to Google Calendar if enabled
+        $this->syncToGoogleCalendar($habit, $request);
+
         return redirect()->route('habits.index')
             ->with('success', 'Habit updated successfully!');
     }
@@ -95,10 +102,12 @@ class HabitController extends Controller
      */
     public function destroy(Habit $habit)
     {
-        // Ensure user owns this habit
         if ($habit->user_id !== Auth::id()) {
             abort(403);
         }
+        
+        // Delete from Google Calendar first
+        $this->deleteFromGoogleCalendar($habit);
         
         $habit->delete();
 
@@ -111,7 +120,6 @@ class HabitController extends Controller
      */
     public function log(Request $request, Habit $habit)
     {
-        // Ensure user owns this habit
         if ($habit->user_id !== Auth::id()) {
             abort(403);
         }
@@ -127,13 +135,71 @@ class HabitController extends Controller
             array_merge($validated, ['user_id' => Auth::id()])
         );
 
-        // Update streak if completed
         if ($validated['completed']) {
             $this->updateStreak($habit);
         }
 
         return redirect()->route('habits.index')
             ->with('success', 'Habit logged successfully!');
+    }
+
+    /**
+     * Sync habit to Google Calendar (create or update).
+     */
+    private function syncToGoogleCalendar(Habit $habit, Request $request): void
+    {
+        $user = Auth::user();
+        
+        if (!$user->calendar_sync_enabled || !$user->google_refresh_token || !$request->reminder_time) {
+            return;
+        }
+
+        try {
+            $googleController = new GoogleCalendarController();
+            $service = $googleController->googleClient($user);
+
+            $reminderTime = $request->reminder_time . ':00'; // Add seconds
+            $startDateTime = new EventDateTime(['dateTime' => $reminderTime]);
+            $endDateTime = new EventDateTime(['dateTime' => $reminderTime]); // Same time for now
+
+            $event = new Event([
+                'summary' => $habit->title . ' (Habit)',
+                'description' => $habit->description,
+                'start' => $startDateTime,
+                'end' => $endDateTime,
+            ]);
+
+            if ($habit->google_event_id) {
+                // Update existing event
+                $event = $service->events->update('primary', $habit->google_event_id, $event);
+            } else {
+                // Create new event
+                $event = $service->events->insert('primary', $event);
+                $habit->update(['google_event_id' => $event->getId()]);
+            }
+        } catch (\Exception $e) {
+            \Log::error('Google Calendar sync failed: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Delete habit event from Google Calendar.
+     */
+    private function deleteFromGoogleCalendar(Habit $habit): void
+    {
+        $user = Auth::user();
+        
+        if (!$habit->google_event_id || !$user->calendar_sync_enabled || !$user->google_refresh_token) {
+            return;
+        }
+
+        try {
+            $googleController = new GoogleCalendarController();
+            $service = $googleController->googleClient($user);
+            $service->events->delete('primary', $habit->google_event_id);
+        } catch (\Exception $e) {
+            \Log::error('Google Calendar delete failed: ' . $e->getMessage());
+        }
     }
 
     /**

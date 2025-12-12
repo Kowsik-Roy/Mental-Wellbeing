@@ -7,6 +7,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\JournalController;
 use App\Http\Controllers\HabitController;
+use App\Http\Controllers\GoogleCalendarController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -47,6 +48,14 @@ Route::middleware('auth')->group(function () {
     Route::delete('/journal/{journal}', [JournalController::class, 'destroy'])->name('journal.destroy');
 
     Route::get('/journal/history/all', [JournalController::class, 'history'])->name('journal.history');
+
+    // === MEMBER 3: Google Calender ===
+    Route::middleware('auth')->group(function () {
+    Route::post('/calendar/toggle', [GoogleCalendarController::class, 'toggle'])->name('calendar.toggle');
+    Route::get('/calendar/redirect', [GoogleCalendarController::class, 'redirect'])->name('google.calendar.redirect');
+    Route::get('/calendar/callback', [GoogleCalendarController::class, 'callback'])->name('google.calendar.callback');
+});
+
 
     // === MEMBER 2: HABIT MANAGEMENT ===
     Route::prefix('habits')->group(function () {
