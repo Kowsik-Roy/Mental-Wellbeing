@@ -135,12 +135,54 @@ class HabitController extends Controller
             array_merge($validated, ['user_id' => Auth::id()])
         );
 
+        // Update streak if completed
         if ($validated['completed']) {
             $this->updateStreak($habit);
         }
 
         return redirect()->route('habits.index')
             ->with('success', 'Habit logged successfully!');
+    }
+
+  
+    /**
+     * Show progress and analytics for a specific habit.
+     */
+    public function progress(Habit $habit)
+    {
+        // Ensure user owns this habit
+        if ($habit->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        // Get progress data
+        $weeklyPercentage = $habit->getWeeklyCompletionPercentage();
+        $monthlyPercentage = $habit->getMonthlyCompletionPercentage();
+        $allTimePercentage = $habit->getAllTimeCompletionPercentage();
+        $consistencyScore = $habit->getConsistencyScore();
+
+        // Get recent logs
+        $recentLogs = $habit->logs()
+            ->orderBy('logged_date', 'desc')
+            ->limit(30)
+            ->get();
+
+        // Calculate statistics
+        $totalCompletions = $habit->logs()->where('completed', true)->count();
+        $totalDays = $habit->created_at->diffInDays(now()) + 1;
+        $completionRate = $totalDays > 0 ? ($totalCompletions / $totalDays) * 100 : 0;
+
+        return view('habits.progress', compact(
+            'habit',
+            'weeklyPercentage',
+            'monthlyPercentage',
+            'allTimePercentage',
+            'consistencyScore',
+            'recentLogs',
+            'totalCompletions',
+            'totalDays',
+            'completionRate'
+        ));
     }
 
     /**
@@ -155,27 +197,28 @@ class HabitController extends Controller
         }
 
         try {
-            $googleController = new GoogleCalendarController();
-            $service = $googleController->googleClient($user);
+            $service = GoogleCalendarController::googleClient($user);
+            $today = now()->format('Y-m-d');
+            $reminderTime = $today . ' ' . $request->reminder_time . ':00';
+            
+            $startDateTime = new \Google\Service\Calendar\EventDateTime();
+            $startDateTime->setDateTime($reminderTime);
+            
+            $endDateTime = new \Google\Service\Calendar\EventDateTime();
+            $endDateTime->setDateTime(now()->parse($reminderTime)->addMinutes(30)->format('Y-m-d H:i:s'));
 
-            $reminderTime = $request->reminder_time . ':00'; // Add seconds
-            $startDateTime = new EventDateTime(['dateTime' => $reminderTime]);
-            $endDateTime = new EventDateTime(['dateTime' => $reminderTime]); // Same time for now
-
-            $event = new Event([
+            $event = new \Google\Service\Calendar\Event([
                 'summary' => $habit->title . ' (Habit)',
-                'description' => $habit->description,
+                'description' => $habit->description ?? 'Daily habit reminder',
                 'start' => $startDateTime,
                 'end' => $endDateTime,
             ]);
 
             if ($habit->google_event_id) {
-                // Update existing event
-                $event = $service->events->update('primary', $habit->google_event_id, $event);
+                $service->events->update('primary', $habit->google_event_id, $event);
             } else {
-                // Create new event
-                $event = $service->events->insert('primary', $event);
-                $habit->update(['google_event_id' => $event->getId()]);
+                $createdEvent = $service->events->insert('primary', $event);
+                $habit->update(['google_event_id' => $createdEvent->getId()]);
             }
         } catch (\Exception $e) {
             \Log::error('Google Calendar sync failed: ' . $e->getMessage());
@@ -194,32 +237,15 @@ class HabitController extends Controller
         }
 
         try {
-            $googleController = new GoogleCalendarController();
-            $service = $googleController->googleClient($user);
+            $service = GoogleCalendarController::googleClient($user);
             $service->events->delete('primary', $habit->google_event_id);
+            $habit->update(['google_event_id' => null]);
         } catch (\Exception $e) {
             \Log::error('Google Calendar delete failed: ' . $e->getMessage());
         }
     }
-
-    /**
-     * Update streak for a habit.
-     */
-    private function updateStreak(Habit $habit): void
-    {
-        $yesterday = now()->subDay();
-        $yesterdayLog = $habit->logs()
-            ->whereDate('logged_date', $yesterday)
-            ->where('completed', true)
-            ->exists();
-
-        if ($yesterdayLog) {
-            $habit->increment('current_streak');
-            if ($habit->current_streak > $habit->best_streak) {
-                $habit->update(['best_streak' => $habit->current_streak]);
-            }
-        } else {
-            $habit->update(['current_streak' => 1]);
-        }
-    }
 }
+
+
+
+
