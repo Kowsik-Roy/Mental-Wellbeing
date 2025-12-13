@@ -68,12 +68,6 @@
                                     <label class="block text-sm font-medium text-gray-500">Email Address</label>
                                     <p class="mt-1 text-gray-900">{{ Auth::user()->email }}</p>
                                 </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-500">Account Status</label>
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800 mt-1">
-                                        <i class="fas fa-check-circle mr-1"></i> Active
-                                    </span>
-                                </div>
                             </div>
                         </div>
 
@@ -144,19 +138,6 @@
                         </div>
                     </div>
                 </div>
-                
-                <div class="bg-white p-4 rounded-lg border border-gray-200">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0 w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-shield-alt text-green-600"></i>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm text-gray-500">Account Security</p>
-                            <p class="text-2xl font-bold text-gray-900">Strong</p>
-                        </div>
-                    </div>
-                </div>
-                
                 <div class="bg-white p-4 rounded-lg border border-gray-200">
                     <div class="flex items-center">
                         <div class="flex-shrink-0 w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">

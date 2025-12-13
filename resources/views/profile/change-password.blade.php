@@ -29,7 +29,7 @@
                 </div>
 
                 <div class="p-6">
-                    <!-- Password Requirements -->
+                    <!-- Password Requirements
                     <div class="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
                         <div class="flex">
                             <div class="flex-shrink-0">
@@ -53,7 +53,7 @@
                                 </ul>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
 
                     @if ($errors->any())
                         <div class="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">

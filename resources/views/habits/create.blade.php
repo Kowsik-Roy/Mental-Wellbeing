@@ -45,7 +45,7 @@
                                    name="title" 
                                    value="{{ old('title') }}"
                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
-                                   placeholder="e.g., Morning Meditation, Daily Exercise"
+                                   placeholder="e.g., Morning Meditation, Jogging"
                                    required>
                             @error('title')
                                 <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
