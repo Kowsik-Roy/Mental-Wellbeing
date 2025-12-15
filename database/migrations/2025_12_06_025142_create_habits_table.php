@@ -15,7 +15,6 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->enum('frequency', ['daily', 'weekly', 'weekdays', 'custom'])->default('daily');
             $table->enum('goal_type', ['times', 'minutes', 'boolean'])->default('boolean');
-            $table->integer('target_value')->default(1);
             $table->integer('current_streak')->default(0);
             $table->integer('best_streak')->default(0);
             $table->boolean('is_active')->default(true);

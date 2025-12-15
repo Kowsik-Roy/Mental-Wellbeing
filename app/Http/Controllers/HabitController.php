@@ -6,9 +6,6 @@ use App\Models\Habit;
 use App\Models\HabitLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\GoogleCalendarController;
-use Google\Service\Calendar\Event;
-use Google\Service\Calendar\EventDateTime;
 
 class HabitController extends Controller
 {
@@ -22,7 +19,7 @@ class HabitController extends Controller
             ->with(['todaysLog'])
             ->latest()
             ->get();
-            
+           
         return view('habits.index', compact('habits'));
     }
 
@@ -42,16 +39,18 @@ class HabitController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'frequency' => 'required|in:daily,weekly,weekdays,custom',
-            'goal_type' => 'required|in:times,minutes,boolean',
-            'target_value' => 'required|integer|min:1',
+            'frequency' => 'required|in:daily,weekdays,weekend',
+            'goal_type' => 'required|in:once,multiple_times,minutes',
             'reminder_time' => 'nullable|date_format:H:i',
         ]);
 
-        $habit = Auth::user()->habits()->create($validated);
+        // Add default values
+        $validated['user_id'] = Auth::id();
+        $validated['current_streak'] = 0;
+        $validated['best_streak'] = 0;
+        $validated['is_active'] = true;
 
-        // Sync to Google Calendar if enabled and reminder time exists
-        $this->syncToGoogleCalendar($habit, $request);
+        $habit = Habit::create($validated);
 
         return redirect()->route('habits.index')
             ->with('success', 'Habit created successfully!');
@@ -65,7 +64,7 @@ class HabitController extends Controller
         if ($habit->user_id !== Auth::id()) {
             abort(403);
         }
-        
+       
         return view('habits.edit', compact('habit'));
     }
 
@@ -77,21 +76,17 @@ class HabitController extends Controller
         if ($habit->user_id !== Auth::id()) {
             abort(403);
         }
-        
+       
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'frequency' => 'required|in:daily,weekly,weekdays,custom',
-            'goal_type' => 'required|in:times,minutes,boolean',
-            'target_value' => 'required|integer|min:1',
+            'frequency' => 'required|in:daily,weekdays,weekend',
+            'goal_type' => 'required|in:once,multiple_times,minutes',
             'reminder_time' => 'nullable|date_format:H:i',
             'is_active' => 'boolean',
         ]);
 
         $habit->update($validated);
-
-        // Sync to Google Calendar if enabled
-        $this->syncToGoogleCalendar($habit, $request);
 
         return redirect()->route('habits.index')
             ->with('success', 'Habit updated successfully!');
@@ -105,10 +100,7 @@ class HabitController extends Controller
         if ($habit->user_id !== Auth::id()) {
             abort(403);
         }
-        
-        // Delete from Google Calendar first
-        $this->deleteFromGoogleCalendar($habit);
-        
+       
         $habit->delete();
 
         return redirect()->route('habits.index')
@@ -123,15 +115,20 @@ class HabitController extends Controller
         if ($habit->user_id !== Auth::id()) {
             abort(403);
         }
-        
+       
         $validated = $request->validate([
             'completed' => 'required|boolean',
             'value_achieved' => 'nullable|integer|min:0',
             'notes' => 'nullable|string',
         ]);
 
-        $log = $habit->logs()->updateOrCreate(
-            ['logged_date' => today()],
+        // Create or update log
+        $log = HabitLog::updateOrCreate(
+            [
+                'habit_id' => $habit->id,
+                'user_id' => Auth::id(),
+                'logged_date' => today(),
+            ],
             array_merge($validated, ['user_id' => Auth::id()])
         );
 
@@ -144,7 +141,55 @@ class HabitController extends Controller
             ->with('success', 'Habit logged successfully!');
     }
 
-  
+    /**
+     * Update streak for a habit.
+     */
+    private function updateStreak(Habit $habit): void
+    {
+        // Ensure user owns this habit
+        if ($habit->user_id !== Auth::id()) {
+            return;
+        }
+
+        // Get today's log
+        $todayLog = $habit->logs()
+            ->whereDate('logged_date', today())
+            ->where('completed', true)
+            ->first();
+
+        if (!$todayLog) {
+            return;
+        }
+
+        // Get yesterday's date
+        $yesterday = now()->subDay()->toDateString();
+
+        // Get yesterday's log
+        $yesterdayLog = $habit->logs()
+            ->whereDate('logged_date', $yesterday)
+            ->where('completed', true)
+            ->first();
+
+        if ($yesterdayLog) {
+            // Continue streak
+            $newStreak = ($habit->current_streak ?? 0) + 1;
+            $habit->current_streak = $newStreak;
+           
+            // Update best streak if needed
+            if ($newStreak > $habit->best_streak) {
+                $habit->best_streak = $newStreak;
+            }
+        } else {
+            // Start new streak
+            $habit->current_streak = 1;
+            if ($habit->best_streak < 1) {
+                $habit->best_streak = 1;
+            }
+        }
+       
+        $habit->save();
+    }
+ 
     /**
      * Show progress and analytics for a specific habit.
      */
@@ -154,12 +199,6 @@ class HabitController extends Controller
         if ($habit->user_id !== Auth::id()) {
             abort(403);
         }
-
-        // Get progress data
-        $weeklyPercentage = $habit->getWeeklyCompletionPercentage();
-        $monthlyPercentage = $habit->getMonthlyCompletionPercentage();
-        $allTimePercentage = $habit->getAllTimeCompletionPercentage();
-        $consistencyScore = $habit->getConsistencyScore();
 
         // Get recent logs
         $recentLogs = $habit->logs()
@@ -172,80 +211,18 @@ class HabitController extends Controller
         $totalDays = $habit->created_at->diffInDays(now()) + 1;
         $completionRate = $totalDays > 0 ? ($totalCompletions / $totalDays) * 100 : 0;
 
+        // Get streak info
+        $currentStreak = $habit->current_streak;
+        $bestStreak = $habit->best_streak;
+
         return view('habits.progress', compact(
             'habit',
-            'weeklyPercentage',
-            'monthlyPercentage',
-            'allTimePercentage',
-            'consistencyScore',
             'recentLogs',
             'totalCompletions',
             'totalDays',
-            'completionRate'
+            'completionRate',
+            'currentStreak',
+            'bestStreak'
         ));
     }
-
-    /**
-     * Sync habit to Google Calendar (create or update).
-     */
-    private function syncToGoogleCalendar(Habit $habit, Request $request): void
-    {
-        $user = Auth::user();
-        
-        if (!$user->calendar_sync_enabled || !$user->google_refresh_token || !$request->reminder_time) {
-            return;
-        }
-
-        try {
-            $service = GoogleCalendarController::googleClient($user);
-            $today = now()->format('Y-m-d');
-            $reminderTime = $today . ' ' . $request->reminder_time . ':00';
-            
-            $startDateTime = new \Google\Service\Calendar\EventDateTime();
-            $startDateTime->setDateTime($reminderTime);
-            
-            $endDateTime = new \Google\Service\Calendar\EventDateTime();
-            $endDateTime->setDateTime(now()->parse($reminderTime)->addMinutes(30)->format('Y-m-d H:i:s'));
-
-            $event = new \Google\Service\Calendar\Event([
-                'summary' => $habit->title . ' (Habit)',
-                'description' => $habit->description ?? 'Daily habit reminder',
-                'start' => $startDateTime,
-                'end' => $endDateTime,
-            ]);
-
-            if ($habit->google_event_id) {
-                $service->events->update('primary', $habit->google_event_id, $event);
-            } else {
-                $createdEvent = $service->events->insert('primary', $event);
-                $habit->update(['google_event_id' => $createdEvent->getId()]);
-            }
-        } catch (\Exception $e) {
-            \Log::error('Google Calendar sync failed: ' . $e->getMessage());
-        }
-    }
-
-    /**
-     * Delete habit event from Google Calendar.
-     */
-    private function deleteFromGoogleCalendar(Habit $habit): void
-    {
-        $user = Auth::user();
-        
-        if (!$habit->google_event_id || !$user->calendar_sync_enabled || !$user->google_refresh_token) {
-            return;
-        }
-
-        try {
-            $service = GoogleCalendarController::googleClient($user);
-            $service->events->delete('primary', $habit->google_event_id);
-            $habit->update(['google_event_id' => null]);
-        } catch (\Exception $e) {
-            \Log::error('Google Calendar delete failed: ' . $e->getMessage());
-        }
-    }
 }
-
-
-
-

@@ -53,7 +53,8 @@ class Habit extends Model
     public function todaysLog()
     {
         return $this->hasOne(HabitLog::class)
-            ->whereDate('logged_date', today());
+            ->whereDate('logged_date', today())
+            ->where('user_id', $this->user_id);
     }
 
     /**
