@@ -185,6 +185,19 @@
                                 <h3 class="font-bold text-gray-900 mb-1">Weekend</h3>
                                 <p class="text-sm text-gray-600">Sat & Sun only</p>
                             </label>
+<<<<<<< HEAD
+=======
+                            <input type="text" 
+                                   id="title" 
+                                   name="title" 
+                                   value="{{ old('title') }}"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
+                                   placeholder="e.g., Morning Meditation, Jogging"
+                                   required>
+                            @error('title')
+                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+>>>>>>> 50cd903b002787b863ea730045ed839b2f11cfac
                         </div>
                         @error('frequency')
                             <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
