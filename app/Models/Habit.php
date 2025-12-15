@@ -17,18 +17,15 @@ class Habit extends Model
         'description',
         'frequency',
         'goal_type',
-        'target_value',
+        'reminder_time',
         'current_streak',
         'best_streak',
         'is_active',
-        'reminder_time',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
-        'target_value' => 'integer',
-        'current_streak' => 'integer',
-        'best_streak' => 'integer',
+        'reminder_time' => 'datetime:H:i',
     ];
 
     /**
@@ -42,7 +39,7 @@ class Habit extends Model
     /**
      * Get the logs for the habit.
      */
-    public function logs(): HasMany
+    public function logs()
     {
         return $this->hasMany(HabitLog::class);
     }
@@ -53,8 +50,7 @@ class Habit extends Model
     public function todaysLog()
     {
         return $this->hasOne(HabitLog::class)
-            ->whereDate('logged_date', today())
-            ->where('user_id', $this->user_id);
+            ->whereDate('logged_date', today());
     }
 
     /**

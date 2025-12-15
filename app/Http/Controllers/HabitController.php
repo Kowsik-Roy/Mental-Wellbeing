@@ -44,17 +44,24 @@ class HabitController extends Controller
             'reminder_time' => 'nullable|date_format:H:i',
         ]);
 
-        // Add default values
-        $validated['user_id'] = Auth::id();
-        $validated['current_streak'] = 0;
-        $validated['best_streak'] = 0;
-        $validated['is_active'] = true;
+        Habit::create([
+            'user_id' => Auth::id(),
+            'title' => $validated['title'],
+            'description' => $validated['description'] ?? null,
+            'frequency' => $validated['frequency'],
+            'goal_type' => $validated['goal_type'],
+            'reminder_time' => $validated['reminder_time'] ?? null,
+            'current_streak' => 0,
+            'best_streak' => 0,
+            'is_active' => true,
+        ]);
 
-        $habit = Habit::create($validated);
-
-        return redirect()->route('habits.index')
+        return redirect()
+            ->route('habits.index')
             ->with('success', 'Habit created successfully!');
     }
+
+
 
     /**
      * Show the form for editing the specified habit.
@@ -134,7 +141,8 @@ class HabitController extends Controller
 
         // Update streak if completed
         if ($validated['completed']) {
-            $this->updateStreak($habit);
+            // $this->updateStreak($habit);
+            $habit->recalculateStreaks();
         }
 
         return redirect()->route('habits.index')
@@ -144,51 +152,51 @@ class HabitController extends Controller
     /**
      * Update streak for a habit.
      */
-    private function updateStreak(Habit $habit): void
-    {
-        // Ensure user owns this habit
-        if ($habit->user_id !== Auth::id()) {
-            return;
-        }
+    // private function updateStreak(Habit $habit): void
+    // {
+    //     // Ensure user owns this habit
+    //     if ($habit->user_id !== Auth::id()) {
+    //         return;
+    //     }
 
-        // Get today's log
-        $todayLog = $habit->logs()
-            ->whereDate('logged_date', today())
-            ->where('completed', true)
-            ->first();
+    //     // Get today's log
+    //     $todayLog = $habit->logs()
+    //         ->whereDate('logged_date', today())
+    //         ->where('completed', true)
+    //         ->first();
 
-        if (!$todayLog) {
-            return;
-        }
+    //     if (!$todayLog) {
+    //         return;
+    //     }
 
-        // Get yesterday's date
-        $yesterday = now()->subDay()->toDateString();
+    //     // Get yesterday's date
+    //     $yesterday = now()->subDay()->toDateString();
 
-        // Get yesterday's log
-        $yesterdayLog = $habit->logs()
-            ->whereDate('logged_date', $yesterday)
-            ->where('completed', true)
-            ->first();
+    //     // Get yesterday's log
+    //     $yesterdayLog = $habit->logs()
+    //         ->whereDate('logged_date', $yesterday)
+    //         ->where('completed', true)
+    //         ->first();
 
-        if ($yesterdayLog) {
-            // Continue streak
-            $newStreak = ($habit->current_streak ?? 0) + 1;
-            $habit->current_streak = $newStreak;
+    //     if ($yesterdayLog) {
+    //         // Continue streak
+    //         $newStreak = ($habit->current_streak ?? 0) + 1;
+    //         $habit->current_streak = $newStreak;
            
-            // Update best streak if needed
-            if ($newStreak > $habit->best_streak) {
-                $habit->best_streak = $newStreak;
-            }
-        } else {
-            // Start new streak
-            $habit->current_streak = 1;
-            if ($habit->best_streak < 1) {
-                $habit->best_streak = 1;
-            }
-        }
+    //         // Update best streak if needed
+    //         if ($newStreak > $habit->best_streak) {
+    //             $habit->best_streak = $newStreak;
+    //         }
+    //     } else {
+    //         // Start new streak
+    //         $habit->current_streak = 1;
+    //         if ($habit->best_streak < 1) {
+    //             $habit->best_streak = 1;
+    //         }
+    //     }
        
-        $habit->save();
-    }
+    //     $habit->save();
+    // }
  
     /**
      * Show progress and analytics for a specific habit.
