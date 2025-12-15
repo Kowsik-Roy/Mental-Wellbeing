@@ -14,7 +14,7 @@ class ProfileController extends Controller
     public function show()
     {
         $user = Auth::user();
-        return view('profile.show', compact('user'));
+        return view('dashboard', compact('user'));
     }
 
     //  Show the form for editing the profile.
@@ -35,7 +35,7 @@ class ProfileController extends Controller
 
         $user->update($validated);
 
-        return redirect()->route('profile.show')
+        return redirect()->route('dashboard')
             ->with('success', 'Profile updated successfully!');
     }
 
@@ -81,7 +81,7 @@ class ProfileController extends Controller
             ? 'Password changed successfully!' 
             : 'Password set successfully! You can now login with your email and password.';
 
-        return redirect()->route('profile.show')
+        return redirect()->route('dashboard')
             ->with('success', $message);
     }
 }

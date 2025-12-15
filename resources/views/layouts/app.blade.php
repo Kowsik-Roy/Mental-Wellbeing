@@ -167,8 +167,10 @@ main { position: relative; z-index: 10; }
 
                 <!-- Header -->
                 <div class="p-4 border-b border-indigo-200 relative rounded-t-3xl">
-                    <div class="font-semibold text-indigo-900">{{ Auth::user()->name }}</div>
-                    <div class="text-xs text-gray-500 truncate">{{ Auth::user()->email }}</div>
+                    <div class="font-bold text-indigo-900">{{ Auth::user()->name }}</div>
+                    <div class="font-semibold text-gray-500 truncate">{{ Auth::user()->email }}</div>
+                    <div class="text-xs text-gray-500 truncate">
+                                Member since {{ Auth::user()->created_at->format('F j, Y') }}</div>
 
                     <!-- Tiny floating sparkles -->
                     <span class="absolute top-1 left-2 w-2 h-2 bg-yellow-300 rounded-full animate-pulse-slow"></span>

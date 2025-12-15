@@ -34,7 +34,7 @@
             @endif
 
             <!-- Profile Card -->
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div class="bg- rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                 <!-- Header -->
                 <div class="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-8">
                     <div class="flex items-center">
