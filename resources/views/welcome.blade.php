@@ -4,6 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>WellBeing | Welcome</title>
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+    <link rel="alternate icon" type="image/png" href="{{ asset('favicon.png') }}">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
@@ -54,7 +56,7 @@
                     @endauth
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
-                    <div class="p-4 rounded-lg bg-white/5 border border-white/10">
+                    <div class="p-4 rounded-lg bg_WHITE/5 border border-white/10">
                         <p class="text-sm font-semibold">Habit Tracking</p>
                         <p class="text-indigo-100/70 mt-1">Daily/weekly goals with streaks and completion rates.</p>
                     </div>

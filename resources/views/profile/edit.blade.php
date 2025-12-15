@@ -2,7 +2,7 @@
 
 @section('content')
 
-<div class="max-w-2xl mx-auto">
+<div class="max-w-2xl mx-auto space-y-8">
 
     <!-- Edit Profile Card -->
     <div class="bg-green/90 backdrop-blur rounded-2xl shadow-xl border border-indigo-200">
@@ -78,6 +78,32 @@
                         💾 Update Profile
                     </button>
                 </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Danger Zone: Delete Account -->
+    <div class="bg-white/90 backdrop-blur rounded-2xl shadow-lg border border-red-200">
+        <div class="px-6 py-4 border-b border-red-100 bg-gradient-to-r from-red-400 to-rose-500 rounded-t-2xl">
+            <h2 class="text-lg font-bold text-white flex items-center">
+                ⚠️ Danger Zone
+            </h2>
+            <p class="text-red-50 text-sm mt-1">
+                Permanently delete your account and all associated data.
+            </p>
+        </div>
+        <div class="p-6 space-y-4">
+            <p class="text-sm text-gray-700">
+                This action <span class="font-semibold text-red-600">cannot be undone</span>. All your habits, journal entries, and data will be permanently deleted.
+            </p>
+            <form method="POST" action="{{ route('profile.destroy') }}" onsubmit="return confirm('Are you sure you want to delete your account? This cannot be undone.');">
+                @csrf
+                @method('DELETE')
+                <input type="hidden" name="confirm_delete" value="DELETE">
+                <button type="submit"
+                        class="w-full md:w-auto px-6 py-2 rounded-xl bg-red-600 text-white font-medium hover:bg-red-700 transition flex items-center justify-center gap-2">
+                    🗑️ Delete Account
+                </button>
             </form>
         </div>
     </div>

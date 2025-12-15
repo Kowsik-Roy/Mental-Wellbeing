@@ -39,6 +39,28 @@ class ProfileController extends Controller
             ->with('success', 'Profile updated successfully!');
     }
 
+    // Delete the user's account.
+    public function destroy(Request $request)
+    {
+        $user = Auth::user();
+
+        // Optional: simple confirmation via form field
+        $request->validate([
+            'confirm_delete' => 'required|in:DELETE',
+        ]);
+
+        // Log out the user and delete account
+        Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        $user->delete();
+
+        return redirect('/')
+            ->with('success', 'Your account has been deleted. We hope to see you again.');
+    }
+
     // Show the change password form.
     public function showChangePasswordForm()
     {

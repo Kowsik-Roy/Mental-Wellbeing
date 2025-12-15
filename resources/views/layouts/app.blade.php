@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>@yield('title', 'Mental Wellness Companion')</title>
+<link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+<link rel="alternate icon" type="image/png" href="{{ asset('favicon.png') }}">
 
 <script src="https://cdn.tailwindcss.com"></script>
 
@@ -33,6 +35,8 @@ main { position: relative; z-index: 10; }
 /* Stars */
 .star { position: absolute; width: 2px; height: 2px; background:white; border-radius:50%; opacity:0.8; animation: twinkle 2s infinite; }
 </style>
+
+@stack('styles')
 </head>
 <body>
 
@@ -260,6 +264,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('click', () => menu.classList.remove('show'));
 });
 </script>
+
+@stack('scripts')
 
 </body>
 </html>

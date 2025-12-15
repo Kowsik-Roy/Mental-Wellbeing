@@ -35,6 +35,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [ProfileController::class, 'show'])->name('profile.show');
         Route::get('/edit', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::put('/update', [ProfileController::class, 'update'])->name('profile.update');
+        Route::delete('/delete', [ProfileController::class, 'destroy'])->name('profile.destroy');
         Route::get('/change-password', [ProfileController::class, 'showChangePasswordForm'])->name('profile.password.edit');
         Route::put('/change-password', [ProfileController::class, 'changePassword'])->name('profile.password.update');
     });
@@ -50,12 +51,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/journal/history/all', [JournalController::class, 'history'])->name('journal.history');
 
     // === MEMBER 3: Google Calender ===
-    Route::middleware('auth')->group(function () {
     Route::post('/calendar/toggle', [GoogleCalendarController::class, 'toggle'])->name('calendar.toggle');
     Route::get('/calendar/redirect', [GoogleCalendarController::class, 'redirect'])->name('google.calendar.redirect');
     Route::get('/calendar/callback', [GoogleCalendarController::class, 'callback'])->name('google.calendar.callback');
-});
-
 
     // === MEMBER 2: HABIT MANAGEMENT ===
     Route::prefix('habits')->group(function () {
