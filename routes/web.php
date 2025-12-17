@@ -9,6 +9,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\JournalController;
 use App\Http\Controllers\HabitController;
 use App\Http\Controllers\GoogleCalendarController;
+use App\Http\Controllers\WellnessController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -77,4 +78,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/{habit}/log', [HabitController::class, 'log'])->name('habits.log');
         Route::post('/{habit}/sync-calendar', [HabitController::class, 'syncCalendar'])->name('habits.sync-calendar');
     });
+
+    // === WELLNESS RECOMMENDATIONS ===
+    Route::get('/wellness', [WellnessController::class, 'index'])->name('wellness.index');
+    Route::post('/wellness/generate', [WellnessController::class, 'generate'])->name('wellness.generate');
 });

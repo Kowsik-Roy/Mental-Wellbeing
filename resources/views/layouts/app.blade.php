@@ -148,6 +148,10 @@ main { position: relative; z-index: 10; }
                class="px-5 py-2 rounded-full font-medium bg-gradient-to-r from-green-400 to-emerald-500 shadow-lg text-white hover:scale-105 hover:from-green-300 hover:to-emerald-400 transition transform">
                Habits
             </a>
+            <a href="{{ route('wellness.index') }}"
+               class="px-5 py-2 rounded-full font-medium bg-gradient-to-r from-amber-400 to-orange-500 shadow-lg text-white hover:scale-105 hover:from-amber-300 hover:to-orange-400 transition transform">
+               Wellness
+            </a>
         </div>
 
         <!-- Cute User Profile -->
@@ -186,16 +190,16 @@ main { position: relative; z-index: 10; }
                 <div class="p-2 text-sm space-y-2">
                     <a href="{{ route('profile.edit') }}" 
                     class="flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-100 hover:bg-purple-200 hover:shadow-md transition-all">
-                    ✏️ Edit Profile
+                     Edit Profile
                     </a>
                     <a href="{{ route('profile.password.edit') }}" 
                     class="flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-100 hover:bg-purple-200 hover:shadow-md transition-all">
-                    🔑 Change Password
+                     Change Password
                     </a>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button class="flex items-center gap-2 w-full text-left px-4 py-2 rounded-lg bg-purple-100 hover:bg-purple-200 hover:shadow-md transition-all">
-                            🚪 Logout
+                             Logout
                         </button>
                     </form>
                 </div>

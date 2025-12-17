@@ -141,6 +141,122 @@ class HuggingFaceService
     }
 
     /**
+     * Generate wellness recommendations based on mood trends and habit data.
+     * 
+     * @param string $moodTrend Mood trend for the period (last 7 days or fewer)
+     * @param string $habitSummary Habit completion summary
+     * @return string|null The generated recommendation or null on failure
+     */
+    public function generateWellnessRecommendation(
+        string $moodTrend,
+        string $habitSummary
+    ): ?string {
+        if (empty($this->apiKey)) {
+            Log::error('HuggingFace API key is missing');
+            return $this->generateFallbackWellnessRecommendation($moodTrend, $habitSummary);
+        }
+
+        // Construct the system and user messages
+        $systemMessage = "You are a supportive wellness assistant. Your role is to provide gentle, encouraging, and non-judgmental weekly reflections. You must never give medical advice, diagnoses, or negative feedback. Focus on progress, small improvements, and encouragement. Use warm and human language.";
+
+        $userMessage = "Based on the user's wellness data below, write a weekly reflection (5–6 sentences).\n\n";
+        $userMessage .= "Data provided:\n";
+        $userMessage .= "- Mood trend: {$moodTrend}\n";
+        $userMessage .= "- Habit completion summary: {$habitSummary}\n\n";
+        $userMessage .= "- Start with a phrase like 'This week...' or 'Over the past week...'\n";
+        $userMessage .= "- Reflect on the user's mood patterns and habit completion for the last 7 days (or fewer days if that's all the data available).\n";
+        $userMessage .= "- Highlight at least one positive aspect or strength you notice.\n";
+        $userMessage .= "- Suggest one small, realistic improvement for next week.\n";
+        $userMessage .= "- End with a motivating and hopeful closing sentence.\n";
+        $userMessage .= "- Keep the tone kind, supportive, and encouraging.";
+
+        try {
+            Log::debug('Calling HuggingFace API for wellness recommendation', [
+                'url' => $this->apiUrl,
+                'model' => $this->model,
+            ]);
+            
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $this->apiKey,
+                'Content-Type' => 'application/json',
+            ])->timeout(10)->post($this->apiUrl, [
+                'model' => $this->model,
+                'messages' => [
+                    [
+                        'role' => 'system',
+                        'content' => $systemMessage,
+                    ],
+                    [
+                        'role' => 'user',
+                        'content' => $userMessage,
+                    ],
+                ],
+                'max_tokens' => 300,
+                'temperature' => 0.7,
+            ]);
+            
+            Log::debug('HuggingFace API response for wellness', [
+                'status' => $response->status(),
+                'successful' => $response->successful(),
+            ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                
+                // OpenAI-compatible response format
+                if (isset($data['choices'][0]['message']['content'])) {
+                    $recommendation = $data['choices'][0]['message']['content'];
+                } elseif (isset($data['choices'][0]['text'])) {
+                    $recommendation = $data['choices'][0]['text'];
+                } else {
+                    $recommendation = null;
+                }
+                
+                if ($recommendation) {
+                    $recommendation = trim($recommendation);
+                    if (strlen($recommendation) > 20) {
+                        return $recommendation;
+                    }
+                }
+            } else {
+                $errorData = $response->json();
+                $errorMessage = $errorData['error'] ?? ($errorData['message'] ?? 'Unknown error');
+                
+                Log::error('HuggingFace API error for wellness', [
+                    'status' => $response->status(),
+                    'message' => $errorMessage,
+                    'body' => $response->body(),
+                ]);
+            }
+        } catch (\Exception $e) {
+            Log::error('HuggingFace API exception for wellness: ' . $e->getMessage());
+        }
+
+        // Return fallback if API fails
+        return $this->generateFallbackWellnessRecommendation($moodTrend, $habitSummary);
+    }
+
+    /**
+     * Generate fallback wellness recommendation when API is unavailable.
+     */
+    private function generateFallbackWellnessRecommendation(
+        string $moodTrend,
+        string $habitSummary
+    ): string {
+        $recommendation = "This week, you've been tracking your wellness journey, and that's a meaningful step in itself. ";
+        
+        if (strpos($habitSummary, '0/') === false && strpos($habitSummary, 'No active habits') === false) {
+            $recommendation .= "I notice you've been working on your habits, which shows real dedication. ";
+        }
+        
+        $recommendation .= "Remember that building new habits takes time, and it's okay to have days when things don't go as planned. ";
+        $recommendation .= "For next week, consider focusing on just one small habit you'd like to strengthen, and celebrate each day you complete it. ";
+        $recommendation .= "You're making progress, and every step forward, no matter how small, is valuable. Keep going!";
+        
+        return $recommendation;
+    }
+
+    /**
      * Generate a simple fallback reflection when API is unavailable.
      * Provides supportive acknowledgment based on mood and content length.
      */
