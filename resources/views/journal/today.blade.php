@@ -127,6 +127,29 @@
         </div>
     </div>
 
+    <!-- Mood Selection Container (separate card when creating) -->
+    @if(!$entry)
+    <div class="bg-white rounded-2xl card-shadow mb-6 p-6">
+        <h2 class="text-lg font-semibold text-gray-800 mb-3">
+            <span class="text-lg">😊</span>
+            How are you feeling today?
+        </h2>
+        <p class="text-gray-500 text-sm mb-4">
+            Choose a mood that best matches how you feel right now.
+        </p>
+        <div class="grid grid-cols-4 sm:grid-cols-7 gap-2">
+            @foreach(App\Models\Journal::MOODS as $key => $label)
+                <label class="mood-option cursor-pointer p-2 rounded-lg text-center bg-gray-50 hover:bg-gray-100">
+                    <input type="radio" name="mood" value="{{ $key }}" 
+                        class="hidden" form="journalForm">
+                    <div class="mood-emoji mb-1">{{ explode(' ', $label)[0] }}</div>
+                    <div class="text-xs text-gray-600 truncate">{{ explode(' ', $label)[1] ?? $label }}</div>
+                </label>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
     <!-- Success Message -->
     @if(session('success'))
     <div class="bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 p-4 rounded-r-lg mb-6 shadow-sm">
@@ -146,7 +169,7 @@
             <h2 class="text-xl font-semibold text-gray-800">
                 @if($entry)
                     <span class="text-blue-600">📝</span>
-                    Edit Today's Entry
+                    Today's Entry
                 @else
                     <span class="text-green-600">✨</span>
                     Create Today's Entry
@@ -154,7 +177,7 @@
             </h2>
             <p class="text-gray-600 text-sm mt-1">
                 @if($entry)
-                    You already wrote today. Feel free to update it.
+                    Your journal for today has been saved. You can review it here or edit it from the edit page.
                 @else
                     Start writing your thoughts for today...
                 @endif
@@ -163,105 +186,75 @@
 
         <div class="p-6">
             @if($entry)
-                <!-- EDIT TODAY'S ENTRY -->
-                <form action="{{ route('journal.update', $entry->id) }}" method="POST" id="journalForm">
-                    @csrf
-                    @method('PUT')
-
-                    <!-- Mood Selection -->
+                <!-- VIEW TODAY'S ENTRY (READ-ONLY) -->
+                <!-- Mood Display -->
+                @if($entry->mood)
                     <div class="mb-6">
                         <label class="block text-gray-700 text-sm font-medium mb-3">
-                            <span class="text-lg">😊</span> How are you feeling today?
+                            <span class="text-lg">😊</span> Today's Mood
                         </label>
-                        <div class="grid grid-cols-4 sm:grid-cols-7 gap-2">
-                            @foreach(App\Models\Journal::MOODS as $key => $label)
-                                <label class="mood-option cursor-pointer p-2 rounded-lg text-center 
-                                    {{ $entry->mood == $key ? 'selected' : 'bg-gray-50 hover:bg-gray-100' }}">
-                                    <input type="radio" name="mood" value="{{ $key }}" 
-                                        class="hidden" 
-                                        {{ $entry->mood == $key ? 'checked' : '' }}>
-                                    <div class="mood-emoji mb-1">{{ explode(' ', $label)[0] }}</div>
-                                    <div class="text-xs text-gray-600 truncate">{{ explode(' ', $label)[1] ?? $label }}</div>
-                                </label>
-                            @endforeach
+                        @php
+                            $moodLabel = App\Models\Journal::MOODS[$entry->mood] ?? $entry->mood;
+                            $moodEmoji = explode(' ', $moodLabel)[0] ?? '';
+                            $moodText = explode(' ', $moodLabel)[1] ?? $moodLabel;
+                        @endphp
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-50 border border-green-200">
+                            <span class="text-xl">{{ $moodEmoji }}</span>
+                            <span class="text-sm font-semibold text-gray-800">{{ $moodText }}</span>
                         </div>
                     </div>
+                @endif
 
-                    <!-- Text Area -->
-                    <textarea 
-                        name="content" 
-                        rows="15"
-                        class="w-full journal-textarea bg-transparent outline-none p-4 text-gray-800 text-lg resize-none"
-                        placeholder="What's on your mind today?"
-                        autofocus
-                    >{{ $entry->content }}</textarea>
-
-                    <!-- Character and Word Count (PHP calculated) -->
-                    <div class="flex justify-between mt-2 text-sm text-gray-500">
-                        <div>
-                            @php
-                                $contentLength = strlen($entry->content);
-                                $wordCount = str_word_count($entry->content);
-                            @endphp
-                            <span>{{ $contentLength }}</span> characters • 
-                            <span>{{ $wordCount }}</span> words
-                        </div>
-                        <div>
-                            Created: {{ $entry->created_at->format('h:i A') }}
-                        </div>
+                <!-- Read-only Text Content -->
+                <div class="border border-gray-200 rounded-2xl bg-white/60">
+                    <div class="p-4">
+                        <p class="journal-textarea text-gray-800 text-lg whitespace-pre-line">
+                            {{ $entry->content }}
+                        </p>
                     </div>
+                </div>
 
-                    <!-- Action Buttons -->
-                    <div class="flex flex-col sm:flex-row gap-4 mt-8">
-                        <!-- Update Button -->
-                        <button 
-                            type="submit" 
-                            class="btn-secondary flex-1 text-white py-3 px-6 rounded-xl font-semibold text-lg transition duration-200 shadow-md hover:shadow-lg"
-                        >
-                            <span>💾</span>
-                            Update Entry
-                        </button>
-
-                        <!-- Delete Button -->
-                        <button 
-                            type="button"
-                            onclick="confirmDelete('{{ route('journal.destroy', $entry->id) }}')"
-                            class="btn-danger flex-1 text-white py-3 px-6 rounded-xl font-semibold text-lg transition duration-200 shadow-md hover:shadow-lg"
-                        >
-                            <span>🗑️</span>
-                            Delete Entry
-                        </button>
+                <!-- Character and Word Count (PHP calculated) -->
+                <div class="flex justify-between mt-2 text-sm text-gray-500">
+                    <div>
+                        @php
+                            $contentLength = strlen($entry->content);
+                            $wordCount = str_word_count($entry->content);
+                        @endphp
+                        <span>{{ $contentLength }}</span> characters • 
+                        <span>{{ $wordCount }}</span> words
                     </div>
-                </form>
+                    <div>
+                        Created: {{ $entry->created_at->format('h:i A') }}
+                    </div>
+                </div>
 
-                <!-- Delete Form -->
-                <form action="{{ route('journal.destroy', $entry->id) }}" method="POST" id="deleteForm" class="hidden">
-                    @csrf
-                    @method('DELETE')
-                </form>
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4 mt-8">
+                    <!-- Edit Button (go to edit page) -->
+                    <a 
+                        href="{{ route('journal.edit', $entry->id) }}"
+                        class="btn-secondary flex-1 text-white py-3 px-6 rounded-xl font-semibold text-lg text-center transition duration-200 shadow-md hover:shadow-lg"
+                    >
+                        <span>✏️</span>
+                        Edit Entry
+                    </a>
+
+                    <!-- Delete Button -->
+                    <button 
+                        type="button"
+                        onclick="confirmDelete('{{ route('journal.destroy', $entry->id) }}')"
+                        class="btn-danger flex-1 text-white py-3 px-6 rounded-xl font-semibold text-lg transition duration-200 shadow-md hover:shadow-lg"
+                    >
+                        <span>🗑️</span>
+                        Delete Entry
+                    </button>
+                </div>
 
             @else
                 <!-- CREATE NEW ENTRY -->
                 <form action="{{ route('journal.store') }}" method="POST" id="journalForm">
                     @csrf
-
-                    <!-- Mood Selection -->
-                    <div class="mb-6">
-                        <label class="block text-gray-700 text-sm font-medium mb-3">
-                            <span class="text-lg">😊</span> How are you feeling today?
-                        </label>
-                        <div class="grid grid-cols-4 sm:grid-cols-7 gap-2">
-                            @foreach(App\Models\Journal::MOODS as $key => $label)
-                                <label class="mood-option cursor-pointer p-2 rounded-lg text-center bg-gray-50 hover:bg-gray-100">
-                                    <input type="radio" name="mood" value="{{ $key }}" 
-                                        class="hidden">
-                                    <div class="mood-emoji mb-1">{{ explode(' ', $label)[0] }}</div>
-                                    <div class="text-xs text-gray-600 truncate">{{ explode(' ', $label)[1] ?? $label }}</div>
-                                </label>
-                            @endforeach
-                        </div>
-                    </div>
-
                     <!-- Text Area -->
                     <textarea 
                         name="content" 
@@ -319,8 +312,8 @@
                         "What are you currently worried about, and what can you do about it?"
                     ];
 
-                    $dayOfMonth = date('j');
-                    $promptIndex = ($dayOfMonth - 1) % count($prompts);
+                    // Pick a random prompt on each refresh
+                    $promptIndex = array_rand($prompts);
                     $todaysPrompt = $prompts[$promptIndex];
                 @endphp
                 {{ $todaysPrompt }}
@@ -365,13 +358,11 @@
                 <div class="flex justify-between items-center">
                     <span class="text-gray-600">Day of Week</span>
                     <span class="font-semibold text-gray-800">
-                        {{ date('l') }}
-                    </span>
-                </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-gray-600">Week Number</span>
-                    <span class="font-semibold text-gray-800">
-                        Week {{ date('W') }}
+                        @if($entry)
+                            {{ $entry->created_at->format('l') }}
+                        @else
+                            {{ date('l') }}
+                        @endif
                     </span>
                 </div>
                 @if($entry)

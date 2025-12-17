@@ -2,17 +2,35 @@
 
 @section('content')
 
-<section class="mb-14 flex flex-col items-center text-center">
-    <h1 class="text-4xl md:text-5xl font-semibold mb-4 text-indigo-900 whitespace-nowrap">
-        Welcome {{ Auth::user()->name }}!
-    </h1>
-    <p class="text-gray-700 text-lg md:text-xl">
-        A gentle space designed for 
-    </p>
-    <p class="text-gray-700 text-lg md:text-xl">
-        reflection, healing, and growth.
-    </p>
+<section class="mb-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div class="text-center md:text-left">
+        <h1 class="text-4xl md:text-5xl font-semibold mb-2 text-indigo-900 whitespace-nowrap">
+            Welcome {{ Auth::user()->name }}!
+        </h1>
+        <p class="text-gray-700 text-lg md:text-xl">
+            A gentle space designed for reflection, healing, and growth.
+        </p>
+    </div>
+
+    <form method="POST" action="{{ route('dashboard.send-summary') }}" class="flex justify-center md:justify-end">
+        @csrf
+        <button
+            type="submit"
+            class="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-indigo-700 text-white text-sm font-medium button-hover hover:bg-indigo-800 shadow-md">
+            <span>Send weekly email summary</span>
+        </button>
+    </form>
 </section>
+
+@if (session('status'))
+    <div class="mb-6 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 text-sm">
+        {{ session('status') }}
+    </div>
+@elseif (session('error'))
+    <div class="mb-6 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 px-4 py-3 text-sm">
+        {{ session('error') }}
+    </div>
+@endif
 
 
 
@@ -33,6 +51,16 @@
         <h3 class="font-semibold mb-2">Journal History</h3>
         <p class="text-sm text-gray-600 mb-6">Reflect on your journey.</p>
         <a href="{{ route('journal.history') }}" class="text-indigo-600 text-sm font-medium hover:underline">View history →</a>
+    </div>
+
+    <div class="bg-white rounded-3xl p-6 shadow-sm card-hover">
+        <h3 class="font-semibold mb-2">Emotion Dashboard</h3>
+        <p class="text-sm text-gray-600 mb-6">
+            See your weekly mood trends and habit completion with interactive charts.
+        </p>
+        <a href="{{ route('journal.history') }}" class="text-indigo-600 text-sm font-medium hover:underline">
+            Open dashboard →
+        </a>
     </div>
 </div>
 

@@ -26,13 +26,7 @@ class Journal extends Model
         'calm' => '😌 Calm',
         'tired' => '😴 Tired',
         'neutral' => '😐 Neutral',
-        'grateful' => '🙏 Grateful',
-        'inspired' => '✨ Inspired',
-        'confused' => '😕 Confused',
-        'proud' => '🦸 Proud',
-        'loved' => '❤️ Loved',
-        'nostalgic' => '📷 Nostalgic',
-        'hopeful' => '🌈 Hopeful',
+       
     ];
 
     // Get mood with emoji

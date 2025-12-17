@@ -28,6 +28,7 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::post('/dashboard/send-summary', [DashboardController::class, 'sendSummary'])->name('dashboard.send-summary');
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
     // === MEMBER 2: PROFILE MANAGEMENT ===
