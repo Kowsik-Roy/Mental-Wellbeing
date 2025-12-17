@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
@@ -24,6 +25,11 @@ Route::middleware('guest')->group(function () {
     // Google OAuth Routes (sign in / sign up)
     Route::get('/auth/google', [\App\Http\Controllers\Auth\GoogleAuthController::class, 'redirectToGoogle'])->name('google.login');
     Route::get('/auth/google/callback', [\App\Http\Controllers\Auth\GoogleAuthController::class, 'handleGoogleCallback'])->name('google.callback');
+
+    // Email verification during registration
+    Route::get('/verify-email', [VerificationController::class, 'showVerificationForm'])->name('verification.show');
+    Route::post('/verify-email', [VerificationController::class, 'verify'])->name('verification.verify');
+    Route::post('/verify-email/resend', [VerificationController::class, 'resendRegistrationCode'])->name('verification.resend');
 });
 
 // Google Calendar OAuth callbacks (must be accessible from Google, no auth middleware)
@@ -44,6 +50,8 @@ Route::middleware('auth')->group(function () {
         Route::delete('/delete', [ProfileController::class, 'destroy'])->name('profile.destroy');
         Route::get('/change-password', [ProfileController::class, 'showChangePasswordForm'])->name('profile.password.edit');
         Route::put('/change-password', [ProfileController::class, 'changePassword'])->name('profile.password.update');
+        Route::get('/verify-password', [VerificationController::class, 'showPasswordVerificationForm'])->name('password.verify.show');
+        Route::post('/verify-password', [VerificationController::class, 'verifyPasswordChange'])->name('password.verify.perform');
     });
 
     // === MEMBER 3: JOURNAL MANAGEMENT ===

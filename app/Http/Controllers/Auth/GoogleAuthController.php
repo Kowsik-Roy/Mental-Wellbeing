@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\VerificationCode;
+use App\Mail\VerificationCodeMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Laravel\Socialite\Facades\Socialite;
 
 class GoogleAuthController extends Controller
@@ -32,30 +35,48 @@ class GoogleAuthController extends Controller
             if ($user) {
                 // User exists, log them in
                 Auth::login($user, true);
-            } else {
-                // Check if user exists with this email
-                $existingUser = User::where('email', $googleUser->getEmail())->first();
-
-                if ($existingUser) {
-                    // Link Google account to existing user
-                    $existingUser->google_id = $googleUser->getId();
-                    $existingUser->save();
-                    Auth::login($existingUser, true);
-                } else {
-                    // Create new user
-                    $user = User::create([
-                        'name' => $googleUser->getName(),
-                        'email' => $googleUser->getEmail(),
-                        'google_id' => $googleUser->getId(),
-                        'email_verified_at' => now(),
-                        'password' => null, // Google users don't need a password
-                    ]);
-
-                    Auth::login($user, true);
-                }
+                return redirect()->intended('/dashboard');
             }
 
-            return redirect()->intended('/dashboard');
+            // Check if user exists with this email
+            $existingUser = User::where('email', $googleUser->getEmail())->first();
+
+            if ($existingUser) {
+                // Link Google account to existing user and log them in (already registered locally)
+                $existingUser->google_id = $googleUser->getId();
+                $existingUser->save();
+
+                Auth::login($existingUser, true);
+
+                return redirect()->intended('/dashboard');
+            }
+
+            // New registration via Google: create local user but require email verification code
+            $user = User::create([
+                'name'     => $googleUser->getName(),
+                'email'    => $googleUser->getEmail(),
+                'google_id'=> $googleUser->getId(),
+                'password' => null, // will use Google or later password set
+            ]);
+
+            // Generate a 5‑digit verification code (3‑minute validity)
+            $code = (string) random_int(10000, 99999);
+
+            VerificationCode::create([
+                'user_id'    => $user->id,
+                'type'       => 'registration',
+                'code'       => $code,
+                'expires_at' => now()->addMinutes(3),
+            ]);
+
+            Mail::to($user->email)->send(new VerificationCodeMail($user, $code, 'registration'));
+
+            // Store pending user id in session and send to the same verification screen as email/password signup
+            session()->put('pending_verification_user_id', $user->id);
+
+            return redirect()
+                ->route('verification.show')
+                ->with('status', 'We sent a verification code to your email. Enter it to complete registration.');
         } catch (\Exception $e) {
             // Log the error for debugging
             \Log::error('Google OAuth Error: ' . $e->getMessage(), [

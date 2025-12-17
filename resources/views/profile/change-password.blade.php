@@ -12,7 +12,7 @@
         <!-- Header -->
         <div class="px-6 py-4 border-b border-indigo-200 bg-gradient-to-r from-red-300 to-amber-500 rounded-t-2xl">
             <h1 class="text-xl font-bold text-white">
-                🔑 {{ $hasPassword ? 'Change Password' : 'Set Password' }}
+                 {{ $hasPassword ? 'Change Password' : 'Set Password' }}
             </h1>
             <p class="text-yellow-100 text-sm mt-1">
                 {{ $hasPassword ? 'Update your login credentials' : 'Set a password for your account' }}
@@ -39,7 +39,7 @@
             @if(!$hasPassword)
                 <div class="mb-6 bg-yellow-50 border border-yellow-200 rounded-xl p-4">
                     <h3 class="text-sm font-semibold text-yellow-800">
-                        ℹ️ Set Your Password
+                        Set Your Password
                     </h3>
                     <p class="mt-1 text-sm text-yellow-700">
                         You signed in with Google. Set a password to enable email/password login.
@@ -99,7 +99,7 @@
 
                     <button type="submit"
                             class="px-6 py-2 rounded-xl bg-red-400 text-white font-medium hover:bg-red-600 transition">
-                            🔑 {{ $hasPassword ? 'Change Password' : 'Set Password' }}
+                             {{ $hasPassword ? 'Change Password' : 'Set Password' }}
                     </button>
                 </div>
 

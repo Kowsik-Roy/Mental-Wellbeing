@@ -148,7 +148,7 @@
     <!-- Footer -->
     <footer class="mt-12 border-t px-4 py-6">
         <div class="max-w-7xl mx-auto text-center text-gray-600 text-sm">
-            Mental Wellness Companion • CSE471 Project
+            Mental Wellness Companion
         </div>
     </footer>
 </body>

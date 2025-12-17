@@ -10,7 +10,7 @@
         <!-- Header -->
         <div class="px-6 py-4 border-b border-indigo-100 bg-gradient-to-r from-green-300 to-emerald-400 rounded-t-2xl">
             <h1 class="text-xl font-bold text-white">
-                ✏️ Edit Profile
+                 Edit Profile
             </h1>
             <p class="text-green-50 text-sm mt-1">
                 Update your personal information
@@ -62,7 +62,7 @@
                         {{ auth()->user()->email }}
                     </div>
                     <p class="mt-2 text-xs text-gray-500">
-                        🔒 Note: Email cannot be changed for security reasons.
+                         Note: Email cannot be changed for security reasons.
                     </p>
                 </div>
 
@@ -75,7 +75,7 @@
 
                     <button type="submit"
                             class="px-6 py-2 rounded-xl bg-green-400 text-white font-medium hover:bg-green-600 transition">
-                        💾 Update Profile
+                         Update Profile
                     </button>
                 </div>
             </form>
@@ -86,7 +86,7 @@
     <div class="bg-white/90 backdrop-blur rounded-2xl shadow-lg border border-red-200">
         <div class="px-6 py-4 border-b border-red-100 bg-gradient-to-r from-red-400 to-rose-500 rounded-t-2xl">
             <h2 class="text-lg font-bold text-white flex items-center">
-                ⚠️ Danger Zone
+                 Danger Zone
             </h2>
             <p class="text-red-50 text-sm mt-1">
                 Permanently delete your account and all associated data.
@@ -102,7 +102,7 @@
                 <input type="hidden" name="confirm_delete" value="DELETE">
                 <button type="submit"
                         class="w-full md:w-auto px-6 py-2 rounded-xl bg-red-600 text-white font-medium hover:bg-red-700 transition flex items-center justify-center gap-2">
-                    🗑️ Delete Account
+                     Delete Account
                 </button>
             </form>
         </div>

@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\VerificationCode;
+use App\Mail\VerificationCodeMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class ProfileController extends Controller
@@ -75,7 +78,7 @@ class ProfileController extends Controller
         $user = Auth::user();
         $hasPassword = !is_null($user->password);
 
-        // Validation rules
+        // Step 1: validate passwords and current password (no email code here)
         $rules = [
             'new_password' => 'required|string|min:8|confirmed',
         ];
@@ -95,15 +98,28 @@ class ProfileController extends Controller
             }
         }
 
-        // Update password
-        $user->password = Hash::make($request->new_password);
-        $user->save();
+        // At this point, input is valid and current password (if any) is correct.
+        // Generate a 5‑digit verification code and send email.
+        $code = (string) random_int(10000, 99999);
 
-        $message = $hasPassword 
-            ? 'Password changed successfully!' 
-            : 'Password set successfully! You can now login with your email and password.';
+        VerificationCode::create([
+            'user_id'    => $user->id,
+            'type'       => 'password_change',
+            'code'       => $code,
+            'expires_at' => now()->addMinutes(3),
+        ]);
 
-        return redirect()->route('dashboard')
-            ->with('success', $message);
+        Mail::to($user->email)->send(new VerificationCodeMail($user, $code, 'password_change'));
+
+        // Store pending password hash in session for later confirmation
+        $request->session()->put('pending_password_change', [
+            'user_id'      => $user->id,
+            'password'     => Hash::make($request->new_password),
+            'requested_at' => now(),
+        ]);
+
+        return redirect()
+            ->route('password.verify.show')
+            ->with('status', 'We sent a verification code to your email. Enter it to confirm your new password.');
     }
 }
