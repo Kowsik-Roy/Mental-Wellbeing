@@ -131,7 +131,7 @@
     @if(!$entry)
     <div class="bg-white rounded-2xl card-shadow mb-6 p-6">
         <h2 class="text-lg font-semibold text-gray-800 mb-3">
-            <span class="text-lg">😊</span>
+            <span class="text-lg"></span>
             How are you feeling today?
         </h2>
         <p class="text-gray-500 text-sm mb-4">
@@ -191,7 +191,7 @@
                 @if($entry->mood)
                     <div class="mb-6">
                         <label class="block text-gray-700 text-sm font-medium mb-3">
-                            <span class="text-lg">😊</span> Today's Mood
+                            <span class="text-lg"></span> Today's Mood
                         </label>
                         @php
                             $moodLabel = App\Models\Journal::MOODS[$entry->mood] ?? $entry->mood;
@@ -229,6 +229,39 @@
                     </div>
                 </div>
 
+                <!-- Emotional Reflection -->
+                @if($entry->emotional_reflection)
+                    <div class="mt-6 p-4 rounded-2xl bg-indigo-50 border border-indigo-200">
+                        <div class="flex items-start gap-3">
+                            <div class="flex-shrink-0 mt-0.5">
+                                <span class="text-2xl">💭</span>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-sm font-semibold text-indigo-900 mb-1">Emotional Reflection</h3>
+                                <p class="text-sm text-indigo-800 leading-relaxed">
+                                    {{ $entry->emotional_reflection }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                @else
+                    <!-- Show message if reflection is being generated (entry is recent, less than 1 minute old) -->
+                    @if($entry->created_at->isAfter(now()->subMinute()) || $entry->updated_at->isAfter(now()->subMinute()))
+                        <div class="mt-6 p-4 rounded-2xl bg-gray-50 border border-gray-200">
+                            <div class="flex items-center gap-3">
+                                <div class="flex-shrink-0">
+                                    <span class="text-xl">⏳</span>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm text-gray-600 italic">
+                                        Generating your emotional reflection... Please refresh the page in a few seconds.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                @endif
+
                 <!-- Action Buttons -->
                 <div class="flex flex-col sm:flex-row gap-4 mt-8">
                     <!-- Edit Button (go to edit page) -->
@@ -236,7 +269,7 @@
                         href="{{ route('journal.edit', $entry->id) }}"
                         class="btn-secondary flex-1 text-white py-3 px-6 rounded-xl font-semibold text-lg text-center transition duration-200 shadow-md hover:shadow-lg"
                     >
-                        <span>✏️</span>
+                        <span></span>
                         Edit Entry
                     </a>
 
@@ -246,7 +279,7 @@
                         onclick="confirmDelete('{{ route('journal.destroy', $entry->id) }}')"
                         class="btn-danger flex-1 text-white py-3 px-6 rounded-xl font-semibold text-lg transition duration-200 shadow-md hover:shadow-lg"
                     >
-                        <span>🗑️</span>
+                        <span></span>
                         Delete Entry
                     </button>
                 </div>

@@ -167,6 +167,23 @@
                     </div>
                 </div>
 
+                <!-- Emotional Reflection -->
+                @if($journal->emotional_reflection)
+                    <div class="mt-6 p-4 rounded-2xl bg-indigo-50 border border-indigo-200">
+                        <div class="flex items-start gap-3">
+                            <div class="flex-shrink-0 mt-0.5">
+                                <span class="text-2xl">💭</span>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-sm font-semibold text-indigo-900 mb-1">Emotional Reflection</h3>
+                                <p class="text-sm text-indigo-800 leading-relaxed">
+                                    {{ $journal->emotional_reflection }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
                 <!-- Action Buttons -->
                 <div class="flex flex-col sm:flex-row gap-4 mt-8">
                     <!-- Update Button -->

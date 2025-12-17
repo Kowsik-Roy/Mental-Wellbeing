@@ -233,6 +233,18 @@
                                                 </p>
                                             </div>
                                         @endif
+
+                                        <!-- Emotional Reflection Preview -->
+                                        @if($entry->emotional_reflection)
+                                            <div class="mt-3 pt-3 border-t border-indigo-100">
+                                                <div class="flex items-start gap-2">
+                                                    <span class="text-lg">💭</span>
+                                                    <p class="text-xs text-indigo-700 italic line-clamp-1">
+                                                        {{ Str::limit($entry->emotional_reflection, 60) }}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        @endif
                                     </div>
                                 </a>
                             @endforeach

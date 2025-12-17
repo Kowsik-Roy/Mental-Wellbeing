@@ -13,7 +13,8 @@ class Journal extends Model
     protected $fillable = [
         'user_id',
         'content',
-        'mood', // Add mood to fillable
+        'mood',
+        'emotional_reflection',
     ];
 
     // Define available moods
