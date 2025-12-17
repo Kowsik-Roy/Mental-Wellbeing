@@ -6,6 +6,9 @@ use App\Models\Habit;
 use App\Models\HabitLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Google\Service\Calendar\Event;
+use Google\Service\Calendar\EventDateTime;
+use Google\Service\Calendar\EventReminders;
 
 class HabitController extends Controller
 {
@@ -60,8 +63,6 @@ class HabitController extends Controller
             ->route('habits.index')
             ->with('success', 'Habit created successfully!');
     }
-
-
 
     /**
      * Show the form for editing the specified habit.
@@ -139,65 +140,112 @@ class HabitController extends Controller
             array_merge($validated, ['user_id' => Auth::id()])
         );
 
-        // Update streak if completed
-        if ($validated['completed']) {
-            // $this->updateStreak($habit);
-            $habit->recalculateStreaks();
-        }
+        // Recalculate streaks whenever a log is saved
+        $habit->recalculateStreaks();
 
         return redirect()->route('habits.index')
             ->with('success', 'Habit logged successfully!');
     }
 
     /**
-     * Update streak for a habit.
+     * Manually sync a habit to Google Calendar.
      */
-    // private function updateStreak(Habit $habit): void
-    // {
-    //     // Ensure user owns this habit
-    //     if ($habit->user_id !== Auth::id()) {
-    //         return;
-    //     }
+    public function syncCalendar(Habit $habit)
+    {
+        if ($habit->user_id !== Auth::id()) {
+            abort(403);
+        }
+        $user = Auth::user();
 
-    //     // Get today's log
-    //     $todayLog = $habit->logs()
-    //         ->whereDate('logged_date', today())
-    //         ->where('completed', true)
-    //         ->first();
+        if (! $user->calendar_sync_enabled) {
+            return back()->with('error', 'Google Calendar sync is not enabled. Please enable it first.');
+        }
 
-    //     if (!$todayLog) {
-    //         return;
-    //     }
+        if (! $habit->reminder_time) {
+            return back()->with('error', 'Please set a reminder time on this habit before syncing to Calendar.');
+        }
 
-    //     // Get yesterday's date
-    //     $yesterday = now()->subDay()->toDateString();
+        try {
+            $service = GoogleCalendarController::googleClient($user);
 
-    //     // Get yesterday's log
-    //     $yesterdayLog = $habit->logs()
-    //         ->whereDate('logged_date', $yesterday)
-    //         ->where('completed', true)
-    //         ->first();
+            // Determine next occurrence based on habit frequency
+            $base = now();
+            $time = $habit->reminder_time instanceof \Carbon\Carbon
+                ? $habit->reminder_time
+                : \Carbon\Carbon::parse($habit->reminder_time);
 
-    //     if ($yesterdayLog) {
-    //         // Continue streak
-    //         $newStreak = ($habit->current_streak ?? 0) + 1;
-    //         $habit->current_streak = $newStreak;
-           
-    //         // Update best streak if needed
-    //         if ($newStreak > $habit->best_streak) {
-    //             $habit->best_streak = $newStreak;
-    //         }
-    //     } else {
-    //         // Start new streak
-    //         $habit->current_streak = 1;
-    //         if ($habit->best_streak < 1) {
-    //             $habit->best_streak = 1;
-    //         }
-    //     }
-       
-    //     $habit->save();
-    // }
- 
+            $start = $base->copy()->setTime($time->hour, $time->minute, 0);
+
+            // Move to next appropriate day based on frequency if needed
+            if ($habit->frequency === 'weekdays') {
+                while (! $start->isWeekday()) {
+                    $start->addDay();
+                }
+            } elseif ($habit->frequency === 'weekend') {
+                while (! $start->isWeekend()) {
+                    $start->addDay();
+                }
+            } else { // daily
+                if ($start->isPast()) {
+                    $start->addDay();
+                }
+            }
+
+            $end = $start->copy()->addMinutes(30);
+            $timezone = config('app.timezone', 'UTC');
+
+            $startDateTime = new EventDateTime();
+            $startDateTime->setDateTime($start->toRfc3339String());
+            $startDateTime->setTimeZone($timezone);
+
+            $endDateTime = new EventDateTime();
+            $endDateTime->setDateTime($end->toRfc3339String());
+            $endDateTime->setTimeZone($timezone);
+
+            // Build recurrence rule based on frequency
+            $recurrence = [];
+            if ($habit->frequency === 'daily') {
+                $recurrence = ['RRULE:FREQ=DAILY'];
+            } elseif ($habit->frequency === 'weekdays') {
+                $recurrence = ['RRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR'];
+            } elseif ($habit->frequency === 'weekend') {
+                $recurrence = ['RRULE:FREQ=WEEKLY;BYDAY=SA,SU'];
+            }
+
+            $event = new Event([
+                'summary'     => $habit->title.' (Habit)',
+                'description' => $habit->description ?? 'Habit from WellBeing app',
+                'start'       => $startDateTime,
+                'end'         => $endDateTime,
+            ]);
+
+            if (! empty($recurrence)) {
+                $event->setRecurrence($recurrence);
+            }
+
+            // Configure reminders using the proper EventReminders type
+            $reminders = new EventReminders();
+            $reminders->setUseDefault(false);
+            $reminders->setOverrides([
+                ['method' => 'popup', 'minutes' => 10],
+            ]);
+            $event->setReminders($reminders);
+
+            if ($habit->google_event_id) {
+                $service->events->update('primary', $habit->google_event_id, $event);
+            } else {
+                $created = $service->events->insert('primary', $event);
+                $habit->update(['google_event_id' => $created->getId()]);
+            }
+
+            return back()->with('success', 'Habit synced to Google Calendar.');
+        } catch (\Exception $e) {
+            \Log::error('Google Calendar sync failed for habit '.$habit->id.': '.$e->getMessage());
+
+            return back()->with('error', 'Could not sync with Google Calendar. Please try again or reconnect your account.');
+        }
+    }
+
     /**
      * Show progress and analytics for a specific habit.
      */
@@ -214,14 +262,16 @@ class HabitController extends Controller
             ->limit(30)
             ->get();
 
-        // Calculate statistics
+        // Calculate statistics (frequency‑aware)
         $totalCompletions = $habit->logs()->where('completed', true)->count();
-        $totalDays = $habit->created_at->diffInDays(now()) + 1;
-        $completionRate = $totalDays > 0 ? ($totalCompletions / $totalDays) * 100 : 0;
+        $expectedDays = $habit->getExpectedDaysSinceCreation();
+        $completionRate = $expectedDays > 0 ? ($totalCompletions / $expectedDays) * 100 : 0;
 
         // Get streak info
         $currentStreak = $habit->current_streak;
         $bestStreak = $habit->best_streak;
+
+        $totalDays = $expectedDays; // show active days rather than raw calendar days
 
         return view('habits.progress', compact(
             'habit',

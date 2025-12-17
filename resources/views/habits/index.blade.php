@@ -11,10 +11,24 @@
         </div>
 
         <!-- Page Header -->
-        <div class="mb-8">
+        <div class="mb-8 flex items-center justify-between">
             <h1 class="text-3xl font-bold text-gray-900">My Habits</h1>
-        </div>
 
+            @if(auth()->check())
+                <form action="{{ route('calendar.toggle') }}" method="POST" class="inline-flex items-center gap-3">
+                    @csrf
+                    <div class="flex items-center gap-2 px-3 py-1.5 rounded-full border {{ auth()->user()->calendar_sync_enabled ? 'border-green-400 bg-green-50' : 'border-gray-300 bg-white' }}">
+                        <i class="fas fa-calendar-alt {{ auth()->user()->calendar_sync_enabled ? 'text-green-600' : 'text-gray-500' }}"></i>
+                        <span class="text-xs font-medium {{ auth()->user()->calendar_sync_enabled ? 'text-green-700' : 'text-gray-600' }}">
+                            {{ auth()->user()->calendar_sync_enabled ? 'Calendar Sync: On' : 'Calendar Sync: Off' }}
+                        </span>
+                    </div>
+                    <button type="submit" class="text-xs px-3 py-1 rounded-full border border-indigo-500 text-indigo-600 hover:bg-indigo-50">
+                        {{ auth()->user()->calendar_sync_enabled ? 'Disable' : 'Enable' }}
+                    </button>
+                </form>
+            @endif
+        </div>
 
         <!-- Habits List -->
         @if($habits->isEmpty())
@@ -83,9 +97,9 @@
 
                         <!-- Streak & Completion -->
                         <div class="px-6 py-2 flex justify-between items-center text-sm text-gray-600 border-t border-gray-200">
-                            <span><i class="fas fa-fire mr-1"></i>{{ $habit->current_streak }} day streak</span>
+                            <span><i class="fas fa-fire mr-1 text-orange-500"></i>{{ $habit->current_streak }} day streak</span>
                             @if($habit->todaysLog && $habit->todaysLog->completed)
-                                <span class="text-green-600"><i class="fas fa-check-circle mr-1"></i>Completed today</span>
+                                <span class="text-green-600 flex items-center"><i class="fas fa-check-circle mr-1"></i>Completed today</span>
                             @else
                                 <form method="POST" action="{{ route('habits.log', $habit) }}" class="inline">
                                     @csrf
@@ -96,21 +110,48 @@
                             @endif
                         </div>
 
-                        <!-- Action Buttons -->
-                        <div class="px-6 py-4 flex justify-between items-center bg-gray-50 border-t border-gray-200 space-x-2">
-                            <a href="{{ route('habits.progress', $habit) }}" class="flex-1 text-center px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm">
-                                <i class="fas fa-chart-line mr-1"></i> Progress
-                            </a>
-                            <a href="{{ route('habits.edit', $habit) }}" class="flex-1 text-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
-                                <i class="fas fa-edit mr-1"></i> Edit
-                            </a>
-                            <form method="POST" action="{{ route('habits.destroy', $habit) }}" onsubmit="return confirm('Delete this habit?')" class="flex-1">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="w-full px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm">
-                                    <i class="fas fa-trash mr-1"></i> Delete
-                                </button>
-                            </form>
+                        <!-- Action Buttons & Calendar Sync -->
+                        <div class="px-6 py-4 bg-gray-50 border-top border-gray-200">
+                            <div class="flex items-center justify-between flex-wrap gap-3">
+                                <div class="flex items-center gap-2">
+                                    <a href="{{ route('habits.progress', $habit) }}" class="px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm flex items-center">
+                                        <i class="fas fa-chart-line mr-1"></i> Progress
+                                    </a>
+                                    <a href="{{ route('habits.edit', $habit) }}" class="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm flex items-center">
+                                        <i class="fas fa-edit mr-1"></i> Edit
+                                    </a>
+                                    <form method="POST" action="{{ route('habits.destroy', $habit) }}" onsubmit="return confirm('Delete this habit?')" class="inline-block">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm flex items-center">
+                                            <i class="fas fa-trash mr-1"></i> Delete
+                                        </button>
+                                    </form>
+                                </div>
+
+                                @if(auth()->user()->calendar_sync_enabled ?? false)
+                                    <div class="flex items-center gap-2 text-xs">
+                                        @if(! $habit->reminder_time)
+                                            <span class="text-gray-400 flex items-center" title="Set a reminder time to enable calendar sync.">
+                                                <i class="fas fa-bell-slash mr-1"></i> No reminder set
+                                            </span>
+                                        @else
+                                            @if($habit->google_event_id)
+                                                <span class="text-green-600 flex items-center" title="This habit is synced with Google Calendar.">
+                                                    <i class="fas fa-calendar-check mr-1"></i> Synced
+                                                </span>
+                                            @else
+                                                <form method="POST" action="{{ route('habits.sync-calendar', $habit) }}" class="inline">
+                                                    @csrf
+                                                    <button type="submit" class="inline-flex items-center px-3 py-1 border border-indigo-500 text-indigo-600 rounded-full hover:bg-indigo-50">
+                                                        <i class="fas fa-calendar-plus mr-1"></i> Sync to Calendar
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        @endif
+                                    </div>
+                                @endif
+                            </div>
                         </div>
                     </div>
                 @endforeach
