@@ -254,6 +254,23 @@ main { position: relative; z-index: 10; }
 
 
 <main class="max-w-5xl mx-auto px-6 py-12">
+    <!-- Daily Motivation Quote -->
+    <div class="mb-10">
+        <div class="bg-white/80 backdrop-blur rounded-3xl shadow-xl px-8 py-6 border border-indigo-200 text-center">
+            <div class="text-indigo-900 text-lg font-semibold mb-2">
+                Motivation for today 😄
+            </div>
+
+            <blockquote class="text-gray-700 italic text-xl leading-relaxed">
+                “{{ $dailyQuote['text'] }}”
+            </blockquote>
+
+            <div class="mt-4 text-sm text-indigo-600 font-medium">
+                — {{ $dailyQuote['author'] }}
+            </div>
+        </div>
+    </div>
+
     @yield('content')
 </main>
 
