@@ -40,6 +40,7 @@ Route::get('/calendar/callback', [GoogleCalendarController::class, 'callback'])-
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/weekly-summary', [DashboardController::class, 'weeklySummary'])->name('dashboard.weekly-summary');
     Route::post('/dashboard/send-summary', [DashboardController::class, 'sendSummary'])->name('dashboard.send-summary');
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 

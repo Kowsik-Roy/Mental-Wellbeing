@@ -67,5 +67,95 @@ class DashboardController extends Controller
             ->route('dashboard')
             ->with('status', 'A weekly summary email has been sent to your inbox.');
     }
+
+    /**
+     * Show the weekly summary dashboard with mood trends and habit completion charts.
+     */
+    public function weeklySummary()
+    {
+        $user = auth()->user();
+
+        // Get last 7 days of mood data
+        $from = now()->subDays(7)->startOfDay();
+        $to = now()->endOfDay();
+
+        // Daily mood counts for the last 7 days
+        $dailyMoods = Journal::where('user_id', $user->id)
+            ->whereBetween('created_at', [$from, $to])
+            ->whereNotNull('mood')
+            ->selectRaw('DATE(created_at) as date, mood, count(*) as count')
+            ->groupBy('date', 'mood')
+            ->orderBy('date', 'asc')
+            ->get()
+            ->groupBy('date');
+
+        // Overall mood distribution
+        $moodStats = Journal::where('user_id', $user->id)
+            ->whereBetween('created_at', [$from, $to])
+            ->whereNotNull('mood')
+            ->selectRaw('mood, count(*) as count')
+            ->groupBy('mood')
+            ->get();
+
+        // Journal completion by day (last 7 days)
+        $journalCompletionByDay = [];
+        $journalStreak = 0;
+        $currentStreak = 0;
+        
+        for ($i = 6; $i >= 0; $i--) {
+            $date = now()->subDays($i)->format('Y-m-d');
+            $hasJournal = Journal::where('user_id', $user->id)
+                ->whereDate('created_at', $date)
+                ->exists();
+            
+            $journalCompletionByDay[$date] = $hasJournal;
+            
+            if ($hasJournal) {
+                $currentStreak++;
+                $journalStreak = max($journalStreak, $currentStreak);
+            } else {
+                $currentStreak = 0;
+            }
+        }
+
+        // Habit completion stats with daily breakdown
+        $habitStats = [];
+        $habits = Habit::where('user_id', $user->id)
+            ->where('is_active', true)
+            ->get();
+
+        foreach ($habits as $habit) {
+            // Get daily completion for this habit
+            $dailyCompletion = [];
+            for ($i = 6; $i >= 0; $i--) {
+                $date = now()->subDays($i)->format('Y-m-d');
+                $hasLog = \App\Models\HabitLog::where('habit_id', $habit->id)
+                    ->where('user_id', $user->id)
+                    ->whereDate('logged_date', $date)
+                    ->where('completed', true)
+                    ->exists();
+                $dailyCompletion[$date] = $hasLog;
+            }
+            
+            $habitStats[] = [
+                'id' => $habit->id,
+                'title' => $habit->title,
+                'weekly_completion' => round($habit->getWeeklyCompletionPercentage(), 1),
+                'current_streak' => $habit->current_streak ?? 0,
+                'best_streak' => $habit->best_streak ?? 0,
+                'daily_completion' => $dailyCompletion,
+            ];
+        }
+
+        return view('dashboard.weekly-summary', [
+            'dailyMoods' => $dailyMoods,
+            'moodStats' => $moodStats,
+            'habitStats' => $habitStats,
+            'journalCompletionByDay' => $journalCompletionByDay,
+            'journalStreak' => $journalStreak,
+            'periodStart' => $from,
+            'periodEnd' => $to,
+        ]);
+    }
 }
 
