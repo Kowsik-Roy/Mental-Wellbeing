@@ -1,6 +1,17 @@
 @extends('layouts.app')
 
 @section('content')
+<!-- Back Button -->
+<div class="mb-6 px-4 md:px-8 pt-4">
+    <div class="max-w-6xl mx-auto">
+        <a href="{{ route('habits.index') }}" 
+           class="inline-flex items-center px-5 py-2.5 glass-card shadow-lg text-gray-700 rounded-xl hover:shadow-xl hover:scale-105 transition-all duration-200 font-medium group">
+            <i class="fas fa-arrow-left mr-2 group-hover:-translate-x-1 transition-transform duration-200"></i>
+            <span>Back</span>
+        </a>
+    </div>
+</div>
+
 <div class="min-h-screen p-4 md:p-8 bg-gradient-to-br from-gray-100 to-blue-100">
     <div class="max-w-6xl mx-auto">
 
@@ -142,10 +153,10 @@
                 <!-- Progress Circle -->
                 <div class="text-center mb-8">
                     <div class="relative inline-block">
-                        <svg class="w-40 h-40 progress-ring">
-                            <circle class="text-gray-200" stroke-width="12" stroke="currentColor" fill="transparent" r="45" cx="50" cy="50" />
-                            <circle class="text-green-500 progress-ring-circle" stroke-width="12" stroke-linecap="round" stroke="currentColor" fill="transparent" r="45" cx="50" cy="50" 
-                                    style="stroke-dashoffset: {{ 283 - (283 * $completionRate / 100) }};" />
+                        <svg class="w-40 h-40 progress-ring" viewBox="0 0 100 100">
+                            <circle class="text-gray-200" stroke-width="10" stroke="currentColor" fill="transparent" r="45" cx="50" cy="50" />
+                            <circle class="text-green-500 progress-ring-circle" stroke-width="10" stroke-linecap="round" stroke="currentColor" fill="transparent" r="45" cx="50" cy="50" 
+                                    style="stroke-dashoffset: {{ 283 - (283 * min($completionRate, 100) / 100) }};" />
                         </svg>
                         <div class="absolute inset-0 flex items-center justify-center">
                             <div class="text-center">
@@ -174,42 +185,24 @@
                         <span class="font-medium text-gray-900">{{ $totalDays }} days</span>
                     </div>
 
-                    @if($habit->reminder_time)
+                    @if($habit->reminder_time && !empty(trim($habit->reminder_time)))
                         <div class="flex justify-between items-center p-4 bg-gray-50 rounded-xl">
                             <div class="flex items-center">
                                 <i class="fas fa-bell text-yellow-500 text-lg mr-3"></i>
                                 <span class="text-gray-700">Daily Reminder</span>
                             </div>
-                            <span class="font-medium text-gray-900">{{ \Carbon\Carbon::parse($habit->reminder_time)->format('g:i A') }}</span>
+                            <span class="font-medium text-gray-900">
+                                @php
+                                    // Handle reminder_time - it might be a Carbon instance or a string
+                                    $timeStr = is_string($habit->reminder_time) ? $habit->reminder_time : $habit->reminder_time->format('H:i');
+                                    if (!empty(trim($timeStr))) {
+                                        $time = \Carbon\Carbon::createFromFormat('H:i', $timeStr);
+                                        echo $time->format('g:i A');
+                                    }
+                                @endphp
+                            </span>
                         </div>
                     @endif
-
-                    <div class="flex justify-between items-center p-4 bg-gray-50 rounded-xl">
-                        <div class="flex items-center">
-                            <i class="fas fa-toggle-{{ $habit->is_active ? 'on' : 'off' }} text-{{ $habit->is_active ? 'green' : 'red' }}-500 text-lg mr-3"></i>
-                            <span class="text-gray-700">Status</span>
-                        </div>
-                        <span class="font-medium text-gray-900">{{ $habit->is_active ? 'Active' : 'Inactive' }}</span>
-                    </div>
-                </div>
-
-                <!-- Quick Actions -->
-                <div class="pt-6 border-t border-gray-200">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">Quick Actions</h3>
-                    <div class="grid grid-cols-2 gap-4">
-                        <a href="{{ route('habits.index') }}" 
-                           class="inline-flex items-center justify-center px-4 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition text-center">
-                            <i class="fas fa-list mr-2"></i> All Habits
-                        </a>
-                        <form method="POST" action="{{ route('habits.log', $habit) }}" class="inline">
-                            @csrf
-                            <input type="hidden" name="completed" value="1">
-                            <button type="submit" 
-                                    class="w-full inline-flex items-center justify-center px-4 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition">
-                                <i class="fas fa-check mr-2"></i> Log Today
-                            </button>
-                        </form>
-                    </div>
                 </div>
             </div>
         </div>
