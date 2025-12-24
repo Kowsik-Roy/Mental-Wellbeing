@@ -27,10 +27,12 @@ class AppServiceProvider extends ServiceProvider
         // Register Habit Policy
         Gate::policy(Habit::class, HabitPolicy::class);
 
-        // Share daily quote with all views
+        // Share daily quote with all views (user-specific)
         View::composer('*', function ($view) {
             $quoteService = app(QuoteService::class);
-            $view->with('dailyQuote', $quoteService->getDailyQuote());
+            // Get user ID if authenticated, otherwise null for guests
+            $userId = auth()->check() ? auth()->id() : null;
+            $view->with('dailyQuote', $quoteService->getDailyQuote($userId));
         });
     }
 }

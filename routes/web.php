@@ -83,4 +83,10 @@ Route::middleware('auth')->group(function () {
     // === WELLNESS RECOMMENDATIONS ===
     Route::get('/wellness', [WellnessController::class, 'index'])->name('wellness.index');
     Route::post('/wellness/generate', [WellnessController::class, 'generate'])->name('wellness.generate');
+
+// === PUSH NOTIFICATIONS ===
+    Route::post('/push/subscribe', [PushNotificationController::class, 'subscribe'])->name('push.subscribe');
+    Route::post('/push/unsubscribe', [PushNotificationController::class, 'unsubscribe'])->name('push.unsubscribe');
+    Route::get('/push/check-reminders', [PushNotificationController::class, 'checkReminders'])->name('push.check-reminders');
+
 });

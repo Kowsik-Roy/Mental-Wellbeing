@@ -56,3 +56,7 @@ Artisan::command('weekly:send-summaries', function () {
 // Schedule: run every Monday at 9 AM server time
 Schedule::command('weekly:send-summaries')->weeklyOn(1, '9:00');
 
+
+// Schedule: check for habit reminders every minute
+Schedule::command('habits:send-reminders')->everyMinute();
+

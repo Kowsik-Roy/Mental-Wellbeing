@@ -11,10 +11,10 @@
 
 <style>
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: linear-gradient(135deg, #D9C7FF, #F0EEFF);
-    overflow-x: hidden;
-    color: #1f2937;
+ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+ background: linear-gradient(135deg, #D9C7FF, #F0EEFF);
+ overflow-x: hidden;
+ color: #1f2937;
 }
 main { position: relative; z-index: 10; }
 
@@ -43,247 +43,421 @@ main { position: relative; z-index: 10; }
 <!-- BACKGROUND ART -->
 <div class="fixed inset-0 -z-10 pointer-events-none overflow-hidden">
 
-    <!-- Sun -->
-    <div class="absolute top-16 left-16 w-36 h-36 bg-yellow-300 rounded-full opacity-95 sun animate-[floatUpDown_6s_ease-in-out_infinite]"></div>
+ <!-- Sun -->
+ <div class="absolute top-16 left-16 w-36 h-36 bg-yellow-300 rounded-full opacity-95 sun animate-[floatUpDown_6s_ease-in-out_infinite]"></div>
 
-    <!-- Moon -->
-    <div class="absolute top-24 right-24 w-28 h-28 bg-indigo-400 rounded-full opacity-90 moon animate-[floatUpDown_8s_ease-in-out_infinite]"></div>
+ <!-- Moon -->
+ <div class="absolute top-24 right-24 w-28 h-28 bg-indigo-400 rounded-full opacity-90 moon animate-[floatUpDown_8s_ease-in-out_infinite]"></div>
 
-    <!-- Clouds -->
-    <svg class="absolute top-8 left-1/3 w-[560px] animate-[floatSideways_18s_linear_infinite]" viewBox="0 0 300 140">
-        <ellipse cx="90" cy="80" rx="90" ry="50" fill="#E0E7FF"/>
-        <ellipse cx="150" cy="65" rx="80" ry="45" fill="#E0E7FF"/>
-        <ellipse cx="210" cy="80" rx="90" ry="50" fill="#E0E7FF"/>
-        <ellipse cx="150" cy="100" rx="130" ry="50" fill="#E0E7FF"/>
-    </svg>
+ <!-- Clouds -->
+ <svg class="absolute top-8 left-1/3 w-[560px] animate-[floatSideways_18s_linear_infinite]" viewBox="0 0 300 140">
+ <ellipse cx="90" cy="80" rx="90" ry="50" fill="#E0E7FF"/>
+ <ellipse cx="150" cy="65" rx="80" ry="45" fill="#E0E7FF"/>
+ <ellipse cx="210" cy="80" rx="90" ry="50" fill="#E0E7FF"/>
+ <ellipse cx="150" cy="100" rx="130" ry="50" fill="#E0E7FF"/>
+ </svg>
 
-    <!-- Birds -->
-    <svg class="absolute top-40 left-24 w-24 animate-[floatSideways_12s_linear_infinite]" viewBox="0 0 100 100">
-        <circle cx="50" cy="50" r="30" fill="#FBB6CE"/>
-        <circle cx="60" cy="45" r="6" fill="#111"/>
-        <polygon points="78,50 92,55 78,60" fill="#FDE68A"/>
-    </svg>
+ <!-- Birds -->
+ <svg class="absolute top-40 left-24 w-24 animate-[floatSideways_12s_linear_infinite]" viewBox="0 0 100 100">
+ <circle cx="50" cy="50" r="30" fill="#FBB6CE"/>
+ <circle cx="60" cy="45" r="6" fill="#111"/>
+ <polygon points="78,50 92,55 78,60" fill="#FDE68A"/>
+ </svg>
 
-    <svg class="absolute top-56 right-56 w-28 animate-[floatSideways_14s_linear_infinite]" viewBox="0 0 100 100">
-        <circle cx="50" cy="50" r="34" fill="#BBF7D0"/>
-        <circle cx="60" cy="45" r="6" fill="#111"/>
-        <polygon points="78,50 92,55 78,60" fill="#86EFAC"/>
-    </svg>
+ <svg class="absolute top-56 right-56 w-28 animate-[floatSideways_14s_linear_infinite]" viewBox="0 0 100 100">
+ <circle cx="50" cy="50" r="34" fill="#BBF7D0"/>
+ <circle cx="60" cy="45" r="6" fill="#111"/>
+ <polygon points="78,50 92,55 78,60" fill="#86EFAC"/>
+ </svg>
 
-    <!-- Butterflies -->
-    <svg class="absolute left-16 top-[55%] w-32 animate-[floatUpDown_5s_ease-in-out_infinite]" viewBox="0 0 120 120">
-        <circle cx="40" cy="60" r="30" fill="#C4B5FD"/>
-        <circle cx="80" cy="60" r="30" fill="#C4B5FD"/>
-        <rect x="56" y="40" width="8" height="40" rx="4" fill="#6B7280"/>
-    </svg>
+ <!-- Butterflies -->
+ <svg class="absolute left-16 top-[55%] w-32 animate-[floatUpDown_5s_ease-in-out_infinite]" viewBox="0 0 120 120">
+ <circle cx="40" cy="60" r="30" fill="#C4B5FD"/>
+ <circle cx="80" cy="60" r="30" fill="#C4B5FD"/>
+ <rect x="56" y="40" width="8" height="40" rx="4" fill="#6B7280"/>
+ </svg>
 
-    <svg class="absolute right-20 bottom-56 w-36 animate-[floatUpDown_6s_ease-in-out_infinite]" viewBox="0 0 120 120">
-        <circle cx="40" cy="60" r="32" fill="#F9A8D4"/>
-        <circle cx="80" cy="60" r="32" fill="#F9A8D4"/>
-        <rect x="56" y="40" width="8" height="40" rx="4" fill="#6B7280"/>
-    </svg>
+ <svg class="absolute right-20 bottom-56 w-36 animate-[floatUpDown_6s_ease-in-out_infinite]" viewBox="0 0 120 120">
+ <circle cx="40" cy="60" r="32" fill="#F9A8D4"/>
+ <circle cx="80" cy="60" r="32" fill="#F9A8D4"/>
+ <rect x="56" y="40" width="8" height="40" rx="4" fill="#6B7280"/>
+ </svg>
 
-    <!-- Grass (stable) -->
-    <div class="absolute bottom-0 left-0 right-0 h-44 bg-emerald-300 rounded-t-[60px]"></div>
+ <!-- Grass (stable) -->
+ <div class="absolute bottom-0 left-0 right-0 h-44 bg-emerald-300 rounded-t-[60px]"></div>
 
-    <!-- Flowers -->
-    @for ($i = 0; $i < 8; $i++)
-        <div style="position:absolute; bottom:44px; left:{{ rand(5,90) }}%; width:8px; height:20px; background:#F472B6; border-radius:4px;"></div>
-    @endfor
+ <!-- Flowers -->
+ @for ($i = 0; $i < 8; $i++)
+ <div style="position:absolute; bottom:44px; left:{{ rand(5,90) }}%; width:8px; height:20px; background:#F472B6; border-radius:4px;"></div>
+ @endfor
 
-    <!-- Trees -->
-    @for ($i = 0; $i < 3; $i++)
-        <div style="position:absolute; bottom:44px; left:{{ rand(5,90) }}%; width:16px; height:60px; background:#065F46; border-radius:4px;"></div>
-    @endfor
+ <!-- Trees -->
+ @for ($i = 0; $i < 3; $i++)
+ <div style="position:absolute; bottom:44px; left:{{ rand(5,90) }}%; width:16px; height:60px; background:#065F46; border-radius:4px;"></div>
+ @endfor
 
-    <!-- Playful Animals -->
-    <svg class="absolute bottom-24 left-28 w-36 animate-[floatUpDown_5s_ease-in-out_infinite]" viewBox="0 0 120 200">
-        <circle cx="60" cy="30" r="22" fill="#FBCFE8"/>
-        <rect x="44" y="50" width="32" height="90" rx="14" fill="#C4B5FD"/>
-    </svg>
+ <!-- Playful Animals -->
+ <svg class="absolute bottom-24 left-28 w-36 animate-[floatUpDown_5s_ease-in-out_infinite]" viewBox="0 0 120 200">
+ <circle cx="60" cy="30" r="22" fill="#FBCFE8"/>
+ <rect x="44" y="50" width="32" height="90" rx="14" fill="#C4B5FD"/>
+ </svg>
 
-    <svg class="absolute bottom-24 right-40 w-36 animate-[floatUpDown_7s_ease-in-out_infinite]" viewBox="0 0 120 120">
-        <circle cx="60" cy="70" r="34" fill="#FED7AA"/>
-        <polygon points="40,40 30,20 50,35" fill="#FED7AA"/>
-        <polygon points="80,40 90,20 70,35" fill="#FED7AA"/>
-    </svg>
+ <svg class="absolute bottom-24 right-40 w-36 animate-[floatUpDown_7s_ease-in-out_infinite]" viewBox="0 0 120 120">
+ <circle cx="60" cy="70" r="34" fill="#FED7AA"/>
+ <polygon points="40,40 30,20 50,35" fill="#FED7AA"/>
+ <polygon points="80,40 90,20 70,35" fill="#FED7AA"/>
+ </svg>
 
-    <!-- Stars -->
-    @for ($i = 0; $i < 50; $i++)
-        <div class="star" style="top: {{ rand(5, 90) }}%; left: {{ rand(5, 95) }}%; width: {{ rand(1,3) }}px; height: {{ rand(1,3) }}px; animation-duration: {{ rand(2,5) }}s;"></div>
-    @endfor
+ <!-- Stars -->
+ @for ($i = 0; $i < 50; $i++)
+ <div class="star" style="top: {{ rand(5, 90) }}%; left: {{ rand(5, 95) }}%; width: {{ rand(1,3) }}px; height: {{ rand(1,3) }}px; animation-duration: {{ rand(2,5) }}s;"></div>
+ @endfor
 
 </div>
 
 <!-- NAVBAR -->
 <nav class="sticky top-0 z-50 bg-indigo-900/95 backdrop-blur border-b border-indigo-700 text-white shadow-lg">
-    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+ <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
 
-        <!-- Logo with cute cloud & star -->
-        <div class="flex items-center gap-3 relative">
-            <div class="w-16 h-16 rounded-full bg-indigo-600 flex items-center justify-center font-bold text-white text-lg shadow-lg relative overflow-hidden">
-                MWC
-                <!-- tiny star -->
-                <div class="absolute top-1 right-1 w-3 h-3 bg-yellow-300 rounded-full animate-[floatUpDown_2s_ease-in-out_infinite]"></div>
-                <!-- tiny cloud -->
-                <div class="absolute bottom-1 left-1 w-5 h-2 bg-white rounded-full animate-[floatSideways_3s_linear_infinite]"></div>
-            </div>
-            <div class="leading-tight">
-                <div class="font-semibold text-lg">Mental Wellness Companion</div>
-                <div class="text-xs text-indigo-200">Your peaceful space</div>
-            </div>
-        </div>
+ <!-- Logo with cute cloud & star -->
+ <div class="flex items-center gap-3 relative">
+ <div class="w-16 h-16 rounded-full bg-indigo-600 flex items-center justify-center font-bold text-white text-lg shadow-lg relative overflow-hidden">
+ MWC
+ <!-- tiny star -->
+ <div class="absolute top-1 right-1 w-3 h-3 bg-yellow-300 rounded-full animate-[floatUpDown_2s_ease-in-out_infinite]"></div>
+ <!-- tiny cloud -->
+ <div class="absolute bottom-1 left-1 w-5 h-2 bg-white rounded-full animate-[floatSideways_3s_linear_infinite]"></div>
+ </div>
+ <div class="leading-tight">
+ <div class="font-semibold text-lg">Mental Wellness Companion</div>
+ <div class="text-xs text-indigo-200">Your peaceful space</div>
+ </div>
+ </div>
 
-        <!-- Navigation links with soft hover -->
-        <div class="flex gap-3 text-sm">
-            <a href="{{ route('dashboard') }}"
-               class="px-5 py-2 rounded-full font-medium bg-gradient-to-r from-purple-400 to-indigo-500 shadow-lg text-white hover:scale-105 hover:from-purple-300 hover:to-indigo-400 transition transform">
-               Home
-            </a>
-            <a href="{{ route('journal.today') }}"
-               class="px-5 py-2 rounded-full font-medium bg-gradient-to-r from-pink-400 to-rose-500 shadow-lg text-white hover:scale-105 hover:from-pink-300 hover:to-rose-400 transition transform">
-               Journal
-            </a>
-            <a href="{{ route('habits.index') }}"
-               class="px-5 py-2 rounded-full font-medium bg-gradient-to-r from-green-400 to-emerald-500 shadow-lg text-white hover:scale-105 hover:from-green-300 hover:to-emerald-400 transition transform">
-               Habits
-            </a>
-            <a href="{{ route('wellness.index') }}"
-               class="px-5 py-2 rounded-full font-medium bg-gradient-to-r from-amber-400 to-orange-500 shadow-lg text-white hover:scale-105 hover:from-amber-300 hover:to-orange-400 transition transform">
-               Wellness
-            </a>
-        </div>
+ <!-- Navigation links with soft hover -->
+ <div class="flex gap-3 text-sm">
+ <a href="{{ route('dashboard') }}"
+ class="px-5 py-2 rounded-full font-medium bg-gradient-to-r from-purple-400 to-indigo-500 shadow-lg text-white hover:scale-105 hover:from-purple-300 hover:to-indigo-400 transition transform">
+ Home
+ </a>
+ <a href="{{ route('journal.today') }}"
+ class="px-5 py-2 rounded-full font-medium bg-gradient-to-r from-pink-400 to-rose-500 shadow-lg text-white hover:scale-105 hover:from-pink-300 hover:to-rose-400 transition transform">
+ Journal
+ </a>
+ <a href="{{ route('habits.index') }}"
+ class="px-5 py-2 rounded-full font-medium bg-gradient-to-r from-green-400 to-emerald-500 shadow-lg text-white hover:scale-105 hover:from-green-300 hover:to-emerald-400 transition transform">
+ Habits
+ </a>
+ <a href="{{ route('wellness.index') }}"
+ class="px-5 py-2 rounded-full font-medium bg-gradient-to-r from-amber-400 to-orange-500 shadow-lg text-white hover:scale-105 hover:from-amber-300 hover:to-orange-400 transition transform">
+ Wellness
+ </a>
+ </div>
 
-        <!-- Cute User Profile -->
-        <div class="relative">
-            <button id="userMenuButton" class="flex items-center gap-2 group">
-                <!-- Floating avatar with gradient and sparkle -->
-                <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-pink-400 via-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold shadow-lg relative animate-bounce-slow">
-                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                    <!-- Tiny floating sparkle -->
-                    <span class="absolute top-0 left-0 w-2 h-2 bg-yellow-300 rounded-full animate-pulse-slow"></span>
-                    <span class="absolute bottom-0 right-1 w-2 h-2 bg-white rounded-full animate-pulse-slow"></span>
-                </div>
-                <span class="text-sm group-hover:text-yellow-200 transition-colors font-medium">
-                    {{ Auth::user()->name }}
-                </span>
-            </button>
+ <!-- Cute User Profile -->
+ <div class="relative">
+ <button id="userMenuButton" class="flex items-center gap-2 group">
+ <!-- Floating avatar with gradient and sparkle -->
+ <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-pink-400 via-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold shadow-lg relative animate-bounce-slow">
+ {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+ <!-- Tiny floating sparkle -->
+ <span class="absolute top-0 left-0 w-2 h-2 bg-yellow-300 rounded-full animate-pulse-slow"></span>
+ <span class="absolute bottom-0 right-1 w-2 h-2 bg-white rounded-full animate-pulse-slow"></span>
+ </div>
+ <span class="text-sm group-hover:text-yellow-200 transition-colors font-medium">
+ {{ Auth::user()->name }}
+ </span>
+ </button>
 
-            <!-- Dropdown menu -->
-            <div id="userDropdown" 
-                class="dropdown-menu absolute right-0 mt-3 w-64 bg-gradient-to-br from-purple-50 via-indigo-50 to-pink-50 text-gray-700 rounded-3xl shadow-2xl border border-indigo-200 overflow-hidden transition-all scale-95 opacity-0 transform origin-top-right">
+ <!-- Dropdown menu -->
+ <div id="userDropdown" 
+ class="dropdown-menu absolute right-0 mt-3 w-64 bg-gradient-to-br from-purple-50 via-indigo-50 to-pink-50 text-gray-700 rounded-3xl shadow-2xl border border-indigo-200 overflow-hidden transition-all scale-95 opacity-0 transform origin-top-right">
 
-                <!-- Header -->
-                <div class="p-4 border-b border-indigo-200 relative rounded-t-3xl">
-                    <div class="font-bold text-indigo-900">{{ Auth::user()->name }}</div>
-                    <div class="font-semibold text-gray-500 truncate">{{ Auth::user()->email }}</div>
-                    <div class="text-xs text-gray-500 truncate">
-                                Member since {{ Auth::user()->created_at->format('F j, Y') }}</div>
+ <!-- Header -->
+ <div class="p-4 border-b border-indigo-200 relative rounded-t-3xl">
+ <div class="font-bold text-indigo-900">{{ Auth::user()->name }}</div>
+ <div class="font-semibold text-gray-500 truncate">{{ Auth::user()->email }}</div>
+ <div class="text-xs text-gray-500 truncate">
+ Member since {{ Auth::user()->created_at->format('F j, Y') }}</div>
 
-                    <!-- Tiny floating sparkles -->
-                    <span class="absolute top-1 left-2 w-2 h-2 bg-yellow-300 rounded-full animate-pulse-slow"></span>
-                    <span class="absolute top-3 right-3 w-1.5 h-1.5 bg-white rounded-full animate-pulse-slow"></span>
-                    <span class="absolute bottom-2 left-1.5 w-1.5 h-1.5 bg-pink-300 rounded-full animate-pulse-slow"></span>
-                </div>
+ <!-- Tiny floating sparkles -->
+ <span class="absolute top-1 left-2 w-2 h-2 bg-yellow-300 rounded-full animate-pulse-slow"></span>
+ <span class="absolute top-3 right-3 w-1.5 h-1.5 bg-white rounded-full animate-pulse-slow"></span>
+ <span class="absolute bottom-2 left-1.5 w-1.5 h-1.5 bg-pink-300 rounded-full animate-pulse-slow"></span>
+ </div>
 
-                <!-- Actions -->
-                <div class="p-2 text-sm space-y-2">
-                    <a href="{{ route('profile.edit') }}" 
-                    class="flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-100 hover:bg-purple-200 hover:shadow-md transition-all">
-                     Edit Profile
-                    </a>
-                    <a href="{{ route('profile.password.edit') }}" 
-                    class="flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-100 hover:bg-purple-200 hover:shadow-md transition-all">
-                     Change Password
-                    </a>
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button class="flex items-center gap-2 w-full text-left px-4 py-2 rounded-lg bg-purple-100 hover:bg-purple-200 hover:shadow-md transition-all">
-                             Logout
-                        </button>
-                    </form>
-                </div>
-            </div>
+ <!-- Actions -->
+ <div class="p-2 text-sm space-y-2">
+ <a href="{{ route('profile.edit') }}" 
+ class="flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-100 hover:bg-purple-200 hover:shadow-md transition-all">
+ Edit Profile
+ </a>
+ <a href="{{ route('profile.password.edit') }}" 
+ class="flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-100 hover:bg-purple-200 hover:shadow-md transition-all">
+ Change Password
+ </a>
+ <form method="POST" action="{{ route('logout') }}">
+ @csrf
+ <button class="flex items-center gap-2 w-full text-left px-4 py-2 rounded-lg bg-purple-100 hover:bg-purple-200 hover:shadow-md transition-all">
+ Logout
+ </button>
+ </form>
+ </div>
+ </div>
 
-            <!-- Dropdown Animations -->
-            <style>
-            /* Dropdown scale & fade animation */
-            .dropdown-menu.show {
-                opacity: 1;
-                transform: scale(1);
-                transition: transform 0.25s ease-out, opacity 0.25s ease-out;
-            }
+ <!-- Dropdown Animations -->
+ <style>
+ /* Dropdown scale & fade animation */
+ .dropdown-menu.show {
+ opacity: 1;
+ transform: scale(1);
+ transition: transform 0.25s ease-out, opacity 0.25s ease-out;
+ }
 
-            /* Slow pulsing sparkles */
-            @keyframes pulse-slow {
-                0%, 100% { opacity: 0.5; transform: scale(1); }
-                50% { opacity: 1; transform: scale(1.3); }
-            }
-            .animate-pulse-slow {
-                animation: pulse-slow 2s infinite ease-in-out;
-            }
-            </style>
-
-
-        </div>
-
-        <!-- Add animations -->
-        <style>
-        /* Slow bounce for avatar */
-        @keyframes bounce-slow {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-3px); }
-        }
-        .animate-bounce-slow {
-            animation: bounce-slow 2.5s infinite ease-in-out;
-        }
-
-        /* Slow pulsing for sparkles */
-        @keyframes pulse-slow {
-            0%, 100% { opacity: 0.5; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.3); }
-        }
-        .animate-pulse-slow {
-            animation: pulse-slow 2s infinite ease-in-out;
-        }
-        </style>
+ /* Slow pulsing sparkles */
+ @keyframes pulse-slow {
+ 0%, 100% { opacity: 0.5; transform: scale(1); }
+ 50% { opacity: 1; transform: scale(1.3); }
+ }
+ .animate-pulse-slow {
+ animation: pulse-slow 2s infinite ease-in-out;
+ }
+ </style>
 
 
-    </div>
+ </div>
+
+ <!-- Add animations -->
+ <style>
+ /* Slow bounce for avatar */
+ @keyframes bounce-slow {
+ 0%, 100% { transform: translateY(0); }
+ 50% { transform: translateY(-3px); }
+ }
+ .animate-bounce-slow {
+ animation: bounce-slow 2.5s infinite ease-in-out;
+ }
+
+ /* Slow pulsing for sparkles */
+ @keyframes pulse-slow {
+ 0%, 100% { opacity: 0.5; transform: scale(1); }
+ 50% { opacity: 1; transform: scale(1.3); }
+ }
+ .animate-pulse-slow {
+ animation: pulse-slow 2s infinite ease-in-out;
+ }
+ </style>
+
+
+ </div>
 </nav>
 
 
 <main class="max-w-5xl mx-auto px-6 py-12">
-    <!-- Daily Motivation Quote -->
-    <div class="mb-10">
-        <div class="bg-white/80 backdrop-blur rounded-3xl shadow-xl px-8 py-6 border border-indigo-200 text-center">
-            <div class="text-indigo-900 text-lg font-semibold mb-2">
-                Motivation for today 😄
-            </div>
+ <!-- Daily Motivation Quote -->
+ <div class="mb-10">
+ <div class="bg-white/80 backdrop-blur rounded-3xl shadow-xl px-8 py-6 border border-indigo-200 text-center">
+ <div class="text-indigo-900 text-lg font-semibold mb-2">
+ Motivation for today 😄
+ </div>
 
-            <blockquote class="text-gray-700 italic text-xl leading-relaxed">
-                “{{ $dailyQuote['text'] }}”
-            </blockquote>
+ <blockquote class="text-gray-700 italic text-xl leading-relaxed">
+ “{{ $dailyQuote['text'] }}”
+ </blockquote>
 
-            <div class="mt-4 text-sm text-indigo-600 font-medium">
-                — {{ $dailyQuote['author'] }}
-            </div>
-        </div>
-    </div>
+ <div class="mt-4 text-sm text-indigo-600 font-medium">
+ — {{ $dailyQuote['author'] }}
+ </div>
+ </div>
+ </div>
 
-    @yield('content')
+ @yield('content')
 </main>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    const btn = document.getElementById('userMenuButton');
-    const menu = document.getElementById('userDropdown');
-    btn.addEventListener('click', e => {
-        e.stopPropagation();
-        menu.classList.toggle('show');
-    });
-    document.addEventListener('click', () => menu.classList.remove('show'));
+ const btn = document.getElementById('userMenuButton');
+ const menu = document.getElementById('userDropdown');
+ btn.addEventListener('click', e => {
+ e.stopPropagation();
+ menu.classList.toggle('show');
+ });
+ document.addEventListener('click', () => menu.classList.remove('show'));
+
+ // Initialize push notifications
+ initPushNotifications();
 });
+
+// Push Notification System
+// Key used to avoid infinite reloads when a reminder is detected
+const REMINDER_REFRESH_KEY = 'habit-reminder-refreshed-' + new Date().toDateString();
+async function initPushNotifications() {
+ if (!('Notification' in window) || !('serviceWorker' in navigator)) {
+ console.log('Push notifications not supported');
+ return;
+ }
+
+ // Request permission
+ if (Notification.permission === 'default') {
+ await Notification.requestPermission();
+ }
+
+ if (Notification.permission === 'granted') {
+ console.log('Notification permission granted');
+ 
+ // Register service worker
+ try {
+ const registration = await navigator.serviceWorker.register('/sw.js');
+ console.log('Service Worker registered');
+
+ // Subscribe to push notifications
+ await subscribeToPush(registration);
+ } catch (error) {
+ console.error('Service Worker registration failed:', error);
+ }
+
+ // Start checking for reminders immediately, then every 30 seconds
+ // More frequent checks ensure we don't miss the reminder time
+ checkHabitReminders();
+ setInterval(checkHabitReminders, 30000); // Check every 30 seconds
+ 
+ // Also check every 10 seconds for testing (remove in production or make it configurable)
+ // setInterval(checkHabitReminders, 10000);
+ 
+ console.log('Reminder checking started. Check console for debug info.');
+ console.log('To test notifications, run: testNotification()');
+ } else if (Notification.permission === 'denied') {
+ console.warn('Notification permission denied');
+ } else {
+ console.log('Notification permission:', Notification.permission);
+ }
+}
+
+async function subscribeToPush(registration) {
+ // For now, we'll use browser notifications directly
+ // Push subscription can be added later if needed
+ console.log('Service worker ready for notifications');
+}
+
+async function checkHabitReminders(testMode = false) {
+ try {
+ const url = testMode 
+ ? '{{ route("push.check-reminders") }}?test=true'
+ : '{{ route("push.check-reminders") }}';
+ 
+ const response = await fetch(url, {
+ headers: {
+ 'X-CSRF-TOKEN': '{{ csrf_token() }}'
+ }
+ });
+ const data = await response.json();
+
+ // Debug logging
+ console.log('Reminder check:', {
+ has_reminders: data.has_reminders,
+ reminders: data.reminders,
+ current_time: data.current_time,
+ debug: data.debug
+ });
+
+ // If there are reminders and we haven't auto‑refreshed yet today, refresh once
+ // This avoids needing a manual refresh when a new reminder becomes active
+ if (data.has_reminders && !sessionStorage.getItem(REMINDER_REFRESH_KEY)) {
+ console.log('Reminders detected for the first time today, auto‑refreshing page...');
+ sessionStorage.setItem(REMINDER_REFRESH_KEY, '1');
+ window.location.reload();
+ return;
+ }
+
+ if (data.has_reminders && data.reminders.length > 0) {
+ data.reminders.forEach(reminder => {
+ console.log('Showing notification for:', reminder);
+ showNotification(reminder);
+ });
+ }
+ } catch (error) {
+ console.error('Error checking reminders:', error);
+ }
+}
+
+// Test notification function (for debugging)
+window.testNotification = function() {
+ if (Notification.permission === 'granted') {
+ const notification = new Notification('Test Notification', {
+ body: 'This is a test notification. If you see this, notifications are working!',
+ icon: '/favicon.ico',
+ badge: '/favicon.ico',
+ });
+ console.log('Test notification shown');
+ } else {
+ alert('Notification permission not granted. Please allow notifications.');
+ }
+};
+
+// Test habit reminders (bypasses time check)
+window.testHabitReminders = function() {
+ console.log('Testing habit reminders (test mode)...');
+ checkHabitReminders(true);
+};
+
+// Track which habits have already shown a reminder in this page session (avoid spam)
+const shownHabitReminders = new Set();
+
+function showNotification(reminder) {
+ console.log('showNotification called for:', reminder);
+ 
+ if (Notification.permission !== 'granted') {
+ console.warn('Notification permission not granted:', Notification.permission);
+ return;
+ }
+
+ // Only show once per page session per habit
+ if (shownHabitReminders.has(reminder.id)) {
+ console.log('Reminder already shown for this habit in this session, skipping');
+ return;
+ }
+
+ try {
+ console.log('Creating notification...');
+ const notification = new Notification('Habit Reminder', {
+ body: `Don't forget to complete: ${reminder.title}`,
+ icon: '/favicon.ico',
+ badge: '/favicon.ico',
+ tag: `habit-reminder-${reminder.id}`,
+ requireInteraction: false,
+ });
+
+ console.log('Notification created successfully:', notification);
+
+ // Mark as shown for this session
+ shownHabitReminders.add(reminder.id);
+ console.log('Marked habit as shown in this session:', reminder.id);
+
+ notification.onclick = function() {
+ console.log('Notification clicked');
+ window.focus();
+ window.location.href = '{{ route("habits.index") }}';
+ notification.close();
+ };
+
+ notification.onshow = function() {
+ console.log('Notification shown!');
+ };
+
+ notification.onerror = function(error) {
+ console.error('Notification error:', error);
+ };
+
+ // Auto-close after 10 seconds
+ setTimeout(() => {
+ notification.close();
+ console.log('Notification auto-closed');
+ }, 10000);
+ } catch (error) {
+ console.error('Error creating notification:', error);
+ }
+}
+
 </script>
 
 @stack('scripts')
