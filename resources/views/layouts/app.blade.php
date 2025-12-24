@@ -303,67 +303,35 @@ async function initPushNotifications() {
  }
 
  if (Notification.permission === 'granted') {
- console.log('Notification permission granted');
- 
  // Register service worker
  try {
  const registration = await navigator.serviceWorker.register('{{ asset('sw.js') }}');
- console.log('Service Worker registered');
-
- // Subscribe to push notifications
  await subscribeToPush(registration);
  } catch (error) {
  console.error('Service Worker registration failed:', error);
  }
 
  // Start checking for reminders immediately, then every 30 seconds
- // More frequent checks ensure we don't miss the reminder time
  checkHabitReminders();
- setInterval(checkHabitReminders, 30000); // Check every 30 seconds
- 
- // Also check every 10 seconds for testing (remove in production or make it configurable)
- // setInterval(checkHabitReminders, 10000);
- 
- console.log('Reminder checking started. Check console for debug info.');
- console.log('To test notifications, run: testNotification()');
- } else if (Notification.permission === 'denied') {
- console.warn('Notification permission denied');
- } else {
- console.log('Notification permission:', Notification.permission);
+ setInterval(checkHabitReminders, 30000);
  }
 }
 
 async function subscribeToPush(registration) {
- // For now, we'll use browser notifications directly
- // Push subscription can be added later if needed
- console.log('Service worker ready for notifications');
+ // Service worker ready for notifications
 }
 
-async function checkHabitReminders(testMode = false) {
+async function checkHabitReminders() {
  try {
- const url = testMode 
- ? '{{ route("push.check-reminders") }}?test=true'
- : '{{ route("push.check-reminders") }}';
- 
- const response = await fetch(url, {
+ const response = await fetch('{{ route("push.check-reminders") }}', {
  headers: {
  'X-CSRF-TOKEN': '{{ csrf_token() }}'
  }
  });
  const data = await response.json();
 
- // Debug logging
- console.log('Reminder check:', {
- has_reminders: data.has_reminders,
- reminders: data.reminders,
- current_time: data.current_time,
- debug: data.debug
- });
-
  // If there are reminders and we haven't auto‑refreshed yet today, refresh once
- // This avoids needing a manual refresh when a new reminder becomes active
  if (data.has_reminders && !sessionStorage.getItem(REMINDER_REFRESH_KEY)) {
- console.log('Reminders detected for the first time today, auto‑refreshing page...');
  sessionStorage.setItem(REMINDER_REFRESH_KEY, '1');
  window.location.reload();
  return;
@@ -371,7 +339,6 @@ async function checkHabitReminders(testMode = false) {
 
  if (data.has_reminders && data.reminders.length > 0) {
  data.reminders.forEach(reminder => {
- console.log('Showing notification for:', reminder);
  showNotification(reminder);
  });
  }
@@ -380,68 +347,36 @@ async function checkHabitReminders(testMode = false) {
  }
 }
 
-// Test notification function (for debugging)
-window.testNotification = function() {
- if (Notification.permission === 'granted') {
- const notification = new Notification('Test Notification', {
- body: 'This is a test notification. If you see this, notifications are working!',
- icon: '/favicon.ico',
- badge: '/favicon.ico',
- });
- console.log('Test notification shown');
- } else {
- alert('Notification permission not granted. Please allow notifications.');
- }
-};
-
-// Test habit reminders (bypasses time check)
-window.testHabitReminders = function() {
- console.log('Testing habit reminders (test mode)...');
- checkHabitReminders(true);
-};
-
 // Track which habits have already shown a reminder in this page session (avoid spam)
 const shownHabitReminders = new Set();
 
 function showNotification(reminder) {
- console.log('showNotification called for:', reminder);
- 
  if (Notification.permission !== 'granted') {
- console.warn('Notification permission not granted:', Notification.permission);
  return;
  }
 
  // Only show once per page session per habit
  if (shownHabitReminders.has(reminder.id)) {
- console.log('Reminder already shown for this habit in this session, skipping');
  return;
  }
 
  try {
- console.log('Creating notification...');
- const notification = new Notification('Habit Reminder', {
- body: `Don't forget to complete: ${reminder.title}`,
- icon: '/favicon.ico',
- badge: '/favicon.ico',
+ const iconUrl = '{{ asset("favicon.svg") }}';
+ const notification = new Notification('MentalWellbeing', {
+ body: `Don't Forget to do the Habit: ${reminder.title}`,
+ icon: iconUrl,
+ badge: iconUrl,
  tag: `habit-reminder-${reminder.id}`,
  requireInteraction: false,
  });
 
- console.log('Notification created successfully:', notification);
-
  // Mark as shown for this session
  shownHabitReminders.add(reminder.id);
- console.log('Marked habit as shown in this session:', reminder.id);
 
  notification.onclick = function() {
- console.log('Notification clicked');
  window.focus();
  window.location.href = '{{ route("habits.index") }}';
  notification.close();
- };
-
- notification.onshow = function() {
- console.log('Notification shown!');
  };
 
  notification.onerror = function(error) {
@@ -451,7 +386,6 @@ function showNotification(reminder) {
  // Auto-close after 10 seconds
  setTimeout(() => {
  notification.close();
- console.log('Notification auto-closed');
  }, 10000);
  } catch (error) {
  console.error('Error creating notification:', error);

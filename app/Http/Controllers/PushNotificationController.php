@@ -75,10 +75,6 @@ class PushNotificationController extends Controller
         $user = Auth::user();
         // Use Asia/Dhaka timezone explicitly
         $now = \Carbon\Carbon::now('Asia/Dhaka');
-        $currentTime = $now->format('H:i');
-        
-        // Allow test mode via query parameter (for debugging)
-        $testMode = $request->has('test') && $request->get('test') === 'true';
 
         // Get active habits with reminder times
         $habits = \App\Models\Habit::where('user_id', $user->id)
@@ -87,7 +83,6 @@ class PushNotificationController extends Controller
             ->get();
 
         $reminders = [];
-        $debug = [];
 
         foreach ($habits as $habit) {
             // Parse reminder time - handle different formats
@@ -111,33 +106,20 @@ class PushNotificationController extends Controller
                 'Asia/Dhaka'
             );
 
-            $reminderTimeFormatted = $reminderTime->format('H:i');
-            $currentTimeFormatted = $now->format('H:i');
-
             // Calculate minutes since reminder time (negative = before, positive = after)
             $minutesSinceReminder = $reminderTime->diffInMinutes($now, false);
-
-            $debug[] = [
-                'habit' => $habit->title,
-                'reminder_time' => $reminderTimeFormatted,
-                'current_time' => $currentTimeFormatted,
-                'minutes_since_reminder' => $minutesSinceReminder,
-                'is_past' => $now->greaterThanOrEqualTo($reminderTime),
-            ];
 
             // Only trigger in a small window at/after the reminder time
             // - Before the time: don't notify
             // - 0 to <2 minutes after time: notify
             // - 2+ minutes after: don't notify (time passed)
-            if (!$testMode) {
-                if ($minutesSinceReminder < 0) {
-                    // Reminder time not reached yet
-                    continue;
-                }
-                if ($minutesSinceReminder >= 2) {
-                    // Reminder window passed
-                    continue;
-                }
+            if ($minutesSinceReminder < 0) {
+                // Reminder time not reached yet
+                continue;
+            }
+            if ($minutesSinceReminder >= 2) {
+                // Reminder window passed
+                continue;
             }
 
             // Check if habit should be active today
@@ -155,7 +137,6 @@ class PushNotificationController extends Controller
                 $reminders[] = [
                     'id' => $habit->id,
                     'title' => $habit->title,
-                    'reminder_time' => $reminderTimeFormatted,
                 ];
             }
         }
@@ -163,9 +144,6 @@ class PushNotificationController extends Controller
         return response()->json([
             'has_reminders' => count($reminders) > 0,
             'reminders' => $reminders,
-            'debug' => $debug,
-            'current_time' => $currentTime,
-            'timezone' => 'Asia/Dhaka',
         ]);
     }
 

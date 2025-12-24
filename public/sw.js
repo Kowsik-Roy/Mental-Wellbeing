@@ -13,8 +13,8 @@ self.addEventListener('push', function(event) {
     
     const options = {
         body: data.body || 'You have a habit reminder!',
-        icon: data.icon || '/favicon.ico',
-        badge: data.badge || '/favicon.ico',
+        icon: data.icon || '/favicon.svg',
+        badge: data.badge || '/favicon.svg',
         tag: data.tag || 'habit-reminder',
         data: data.data || {},
         requireInteraction: false,
