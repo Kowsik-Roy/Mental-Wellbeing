@@ -307,7 +307,7 @@ async function initPushNotifications() {
  
  // Register service worker
  try {
- const registration = await navigator.serviceWorker.register('/sw.js');
+ const registration = await navigator.serviceWorker.register('{{ asset('sw.js') }}');
  console.log('Service Worker registered');
 
  // Subscribe to push notifications
