@@ -338,8 +338,11 @@ async function checkHabitReminders() {
  }
 
  if (data.has_reminders && data.reminders.length > 0) {
- data.reminders.forEach(reminder => {
+ // Show notifications with a small delay between each to avoid browser throttling
+ data.reminders.forEach((reminder, index) => {
+ setTimeout(() => {
  showNotification(reminder);
+ }, index * 500); // 500ms delay between each notification
  });
  }
  } catch (error) {
@@ -355,18 +358,22 @@ function showNotification(reminder) {
  return;
  }
 
- // Only show once per page session per habit
+ // Only show once per page session per habit (to prevent duplicates on refresh)
  if (shownHabitReminders.has(reminder.id)) {
  return;
  }
 
  try {
  const iconUrl = '{{ asset("favicon.svg") }}';
+ 
+ // Create unique tag for each notification to allow multiple simultaneous notifications
+ const uniqueTag = `habit-reminder-${reminder.id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+ 
  const notification = new Notification('MentalWellbeing', {
  body: `Don't Forget to do the Habit: ${reminder.title}`,
  icon: iconUrl,
  badge: iconUrl,
- tag: `habit-reminder-${reminder.id}`,
+ tag: uniqueTag,
  requireInteraction: false,
  });
 
@@ -381,6 +388,7 @@ function showNotification(reminder) {
 
  notification.onerror = function(error) {
  console.error('Notification error:', error);
+ shownHabitReminders.delete(reminder.id);
  };
 
  // Auto-close after 10 seconds
@@ -389,6 +397,7 @@ function showNotification(reminder) {
  }, 10000);
  } catch (error) {
  console.error('Error creating notification:', error);
+ shownHabitReminders.delete(reminder.id);
  }
 }
 

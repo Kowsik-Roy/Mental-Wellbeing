@@ -114,15 +114,13 @@ class PushNotificationController extends Controller
             // - 0 to <2 minutes after time: notify
             // - 2+ minutes after: don't notify (time passed)
             if ($minutesSinceReminder < 0) {
-                // Reminder time not reached yet
                 continue;
             }
             if ($minutesSinceReminder >= 2) {
-                // Reminder window passed
                 continue;
             }
 
-            // Check if habit should be active today
+            // Check if habit should be active today based on frequency
             if (!$this->isHabitActiveToday($habit, $now)) {
                 continue;
             }
@@ -133,12 +131,14 @@ class PushNotificationController extends Controller
                 ->where('completed', true)
                 ->first();
 
-            if (!$todayLog) {
-                $reminders[] = [
-                    'id' => $habit->id,
-                    'title' => $habit->title,
-                ];
+            if ($todayLog) {
+                continue;
             }
+
+            $reminders[] = [
+                'id' => $habit->id,
+                'title' => $habit->title,
+            ];
         }
 
         return response()->json([
@@ -149,6 +149,10 @@ class PushNotificationController extends Controller
 
     /**
      * Check if habit should be active today based on frequency.
+     * 
+     * - Daily: active every day
+     * - Weekdays: active Monday-Friday only
+     * - Weekend: active Saturday-Sunday only
      */
     private function isHabitActiveToday(\App\Models\Habit $habit, \Carbon\Carbon $date): bool
     {
@@ -160,6 +164,10 @@ class PushNotificationController extends Controller
             case 'weekend':
                 return $date->isWeekend();
             default:
+                Log::warning('Unknown habit frequency', [
+                    'habit_id' => $habit->id,
+                    'frequency' => $habit->frequency,
+                ]);
                 return true;
         }
     }

@@ -101,56 +101,18 @@
                     @enderror
                 </div>
 
-                <!-- Goal Type -->
-                <div class="mb-10">
-                    <label class="block text-sm font-semibold text-gray-700 mb-4">
-                        <i class="fas fa-bullseye mr-2 text-red-500"></i>
-                        What's your goal? *
-                    </label>
-
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        @foreach ([
-                            ['once', 'check-circle', 'Just Once', 'Complete it one time', 'text-red-500'],
-                            ['multiple_times', 'redo', 'Multiple Times', 'Repeat throughout the day', 'text-orange-500'],
-                            ['minutes', 'clock', 'Duration', 'Spend time on it', 'text-indigo-500'],
-                        ] as [$value, $icon, $title, $desc, $color])
-                            <label class="cursor-pointer">
-                                <input
-                                    type="radio"
-                                    name="goal_type"
-                                    value="{{ $value }}"
-                                    class="peer hidden"
-                                    {{ old('goal_type', 'once') === $value ? 'checked' : '' }}
-                                >
-                                <div
-                                    class="p-6 rounded-xl border-2 bg-white transition
-                                        hover:border-gray-400
-                                        peer-checked:border-indigo-500
-                                        peer-checked:ring-2 peer-checked:ring-indigo-300
-                                        peer-checked:scale-[1.02]"
-                                >
-                                    <div class="text-4xl mb-3 {{ $color }}">
-                                        <i class="fas fa-{{ $icon }}"></i>
-                                    </div>
-                                    <h3 class="font-bold text-gray-900 mb-2">{{ $title }}</h3>
-                                    <p class="text-sm text-gray-600">{{ $desc }}</p>
-                                </div>
-                            </label>
-                        @endforeach
-                    </div>
-
-                    @error('goal_type')
-                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-
-
                 <!-- Reminder -->
                 <div class="mb-10">
                     <label class="block text-sm font-semibold text-gray-700 mb-4">
                         <i class="fas fa-bell mr-2 text-yellow-500"></i>
-                        Daily Reminder (Optional)
+                        Reminder Time (Optional)
                     </label>
+                    <p class="text-sm text-gray-600 mb-3">
+                        Set a reminder time. Notifications will be sent based on your selected frequency:
+                        <span class="font-semibold">Daily</span> (every day), 
+                        <span class="font-semibold">Weekdays</span> (Mon-Fri), or 
+                        <span class="font-semibold">Weekend</span> (Sat-Sun).
+                    </p>
                     <input
                         type="time"
                         name="reminder_time"

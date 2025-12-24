@@ -43,7 +43,6 @@ class HabitController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'frequency' => 'required|in:daily,weekdays,weekend',
-            'goal_type' => 'required|in:once,multiple_times,minutes',
             'reminder_time' => 'nullable|date_format:H:i',
         ]);
 
@@ -52,7 +51,7 @@ class HabitController extends Controller
             'title' => $validated['title'],
             'description' => $validated['description'] ?? null,
             'frequency' => $validated['frequency'],
-            'goal_type' => $validated['goal_type'],
+            'goal_type' => 'once', // Default value, no longer user-selectable
             'reminder_time' => $validated['reminder_time'] ?? null,
             'current_streak' => 0,
             'best_streak' => 0,
@@ -89,10 +88,14 @@ class HabitController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'frequency' => 'required|in:daily,weekdays,weekend',
-            'goal_type' => 'required|in:once,multiple_times,minutes',
             'reminder_time' => 'nullable|date_format:H:i',
             'is_active' => 'boolean',
         ]);
+
+        // Preserve goal_type if it exists, otherwise set default
+        if (!isset($validated['goal_type'])) {
+            $validated['goal_type'] = $habit->goal_type ?? 'once';
+        }
 
         $habit->update($validated);
 
