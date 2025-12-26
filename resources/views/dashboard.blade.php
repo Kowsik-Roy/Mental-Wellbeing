@@ -33,35 +33,90 @@
 @endif
 
 
-
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-14">
+
+    {{-- Daily Journal --}}
     <div class="bg-white rounded-3xl p-6 shadow-sm card-hover">
         <h3 class="font-semibold mb-2">Daily Journal</h3>
         <p class="text-sm text-gray-600 mb-6">Write your thoughts freely.</p>
-        <a href="{{ route('journal.today') }}" class="text-indigo-600 text-sm font-medium hover:underline">Write today →</a>
+        <a href="{{ route('journal.today') }}" class="text-indigo-600 text-sm font-medium hover:underline">
+            Write today →
+        </a>
     </div>
 
+    {{-- Daily Habits --}}
     <div class="bg-white rounded-3xl p-6 shadow-sm card-hover">
         <h3 class="font-semibold mb-2">Daily Habits</h3>
         <p class="text-sm text-gray-600 mb-6">Build gentle routines.</p>
-        <a href="{{ route('habits.index') }}" class="text-indigo-600 text-sm font-medium hover:underline">View habits →</a>
+        <a href="{{ route('habits.index') }}" class="text-indigo-600 text-sm font-medium hover:underline">
+            View habits →
+        </a>
     </div>
 
+    {{-- Journal History --}}
     <div class="bg-white rounded-3xl p-6 shadow-sm card-hover">
         <h3 class="font-semibold mb-2">Journal History</h3>
         <p class="text-sm text-gray-600 mb-6">Reflect on your journey.</p>
-        <a href="{{ route('journal.history') }}" class="text-indigo-600 text-sm font-medium hover:underline">View history →</a>
+        <a href="{{ route('journal.history') }}" class="text-indigo-600 text-sm font-medium hover:underline">
+            View history →
+        </a>
     </div>
 
+    {{-- Meditation --}}
+    <div class="bg-white rounded-3xl p-6 shadow-sm card-hover">
+        <h3 class="font-semibold mb-2">Meditation Timer</h3>
+        <p class="text-sm text-gray-600 mb-6">
+            Relax, breathe, and focus with a guided timer.
+        </p>
+        <a href="{{ route('meditation') }}" class="text-indigo-600 text-sm font-medium hover:underline">
+            Start meditation →
+        </a>
+    </div>
+
+    {{-- Emotion Dashboard --}}
     <div class="bg-white rounded-3xl p-6 shadow-sm card-hover">
         <h3 class="font-semibold mb-2">Emotion Dashboard</h3>
         <p class="text-sm text-gray-600 mb-6">
-            See your weekly mood trends and habit completion with interactive charts.
+            See your weekly mood trends and habit completion.
         </p>
         <a href="{{ route('journal.history') }}" class="text-indigo-600 text-sm font-medium hover:underline">
             Open dashboard →
         </a>
     </div>
+
+    {{-- Mood & Day Tracker --}}
+    <div class="bg-white rounded-3xl p-6 shadow-sm card-hover">
+        <h3 class="font-semibold mb-2">Mood & Day Tracker</h3>
+        <p class="text-sm text-gray-600 mb-6">
+            Morning mood + plans, evening reflection & activity.
+        </p>
+        <a href="{{ route('mood.today') }}" class="text-indigo-600 text-sm font-medium hover:underline">
+            Open tracker →
+        </a>
+    </div>
+
+    {{-- Emergency Contact --}}
+    <div class="bg-white rounded-3xl p-6 shadow-sm card-hover">
+        <h3 class="font-semibold mb-2">Emergency Contact</h3>
+        <p class="text-sm text-gray-600 mb-6">
+            Manage who gets notified if you confirm an alert.
+        </p>
+        <a href="{{ route('emergency.edit') }}" class="text-indigo-600 text-sm font-medium hover:underline">
+            Update contact →
+        </a>
+    </div>
+
+    {{-- AI Support Chat (NEW) --}}
+    <div class="bg-white rounded-3xl p-6 shadow-sm card-hover">
+        <h3 class="font-semibold mb-2">AI Support Chat</h3>
+        <p class="text-sm text-gray-600 mb-6">
+            Talk about your feelings and receive gentle, cozy support.
+        </p>
+        <a href="{{ route('ai.chat') }}" class="text-indigo-600 text-sm font-medium hover:underline">
+            Open chat →
+        </a>
+    </div>
+
 </div>
 
 <div class="bg-indigo-100 rounded-3xl p-10 card-hover">

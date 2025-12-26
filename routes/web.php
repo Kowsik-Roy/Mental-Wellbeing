@@ -10,10 +10,16 @@ use App\Http\Controllers\JournalController;
 use App\Http\Controllers\HabitController;
 use App\Http\Controllers\GoogleCalendarController;
 use App\Http\Controllers\WellnessController;
+use App\Http\Controllers\MoodLogController;
+use App\Http\Controllers\EmergencyContactController;
+use App\Http\Controllers\AiChatController;
 
 Route::get('/', function () {
     return view('welcome');
 });
+Route::get('/meditation', function () {
+    return view('meditation');
+})->name('meditation'); 
 
 // Authentication Routes
 Route::middleware('guest')->group(function () {
@@ -42,6 +48,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::post('/dashboard/send-summary', [DashboardController::class, 'sendSummary'])->name('dashboard.send-summary');
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+    
+    // === Member:4:MOOD TRACKER ===
+    Route::get('/mood', [MoodLogController::class, 'today'])->name('mood.today');
+    Route::post('/mood/morning', [MoodLogController::class, 'saveMorning'])->name('mood.morning');
+    Route::post('/mood/evening', [MoodLogController::class, 'saveEvening'])->name('mood.evening');
+    Route::post('/mood/confirm-alert', [MoodLogController::class, 'confirmAlert'])->name('mood.confirm-alert');
+
 
     // === MEMBER 2: PROFILE MANAGEMENT ===
     Route::prefix('profile')->group(function () {
@@ -82,4 +95,28 @@ Route::middleware('auth')->group(function () {
     // === WELLNESS RECOMMENDATIONS ===
     Route::get('/wellness', [WellnessController::class, 'index'])->name('wellness.index');
     Route::post('/wellness/generate', [WellnessController::class, 'generate'])->name('wellness.generate');
+    
+
+    // === MEMBER 4: MOOD TRACKER ===
+
+   Route::get('/mood', [MoodLogController::class, 'today'])->name('mood.today');
+   Route::post('/mood/morning', [MoodLogController::class, 'saveMorning'])->name('mood.morning');
+   Route::post('/mood/evening', [MoodLogController::class, 'saveEvening'])->name('mood.evening');
+   Route::post('/mood/alert/confirm', [\App\Http\Controllers\MoodLogController::class, 'confirmAlert'])
+    ->name('mood.alert.confirm');
+
+   Route::post('/mood/alert/dismiss', [\App\Http\Controllers\MoodLogController::class, 'dismissAlert'])
+    ->name('mood.alert.dismiss');
+   Route::get('/settings/emergency-contact', [EmergencyContactController::class, 'edit'])
+    ->name('emergency.edit');
+
+   Route::post('/settings/emergency-contact', [EmergencyContactController::class, 'update'])
+    ->name('emergency.update');
+   
+
+   // === MEMBER 4: AI CHATBOT ===
+   Route::get('/ai-chat', [AiChatController::class, 'index'])->name('ai.chat');
+   Route::post('/ai-chat/message', [AiChatController::class, 'message'])->name('ai.chat.message');
+
 });
+

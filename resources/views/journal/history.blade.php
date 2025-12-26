@@ -140,6 +140,98 @@
         </div>
     </div>
 
+    @php
+    use Carbon\Carbon;
+
+    // 1) Get all journal entry dates (from your grouped $entries)
+    $allDates = collect();
+    foreach ($entries as $month => $monthEntries) {
+        foreach ($monthEntries as $entry) {
+            $allDates->push(Carbon::parse($entry->created_at)->toDateString());
+        }
+    }
+
+    $uniqueDates = $allDates->unique()->values();
+
+    // 2) Calculate current streak (today → backwards)
+    $streak = 0;
+
+    // allow streak start from today; if no today entry, allow yesterday
+    $expected = Carbon::today()->toDateString();
+
+    // Sort dates descending
+    $sorted = $uniqueDates->sortDesc()->values();
+
+    foreach ($sorted as $d) {
+        if ($d === $expected) {
+            $streak++;
+            $expected = Carbon::parse($expected)->subDay()->toDateString();
+            continue;
+        }
+
+        // allow streak to start from yesterday if no entry today
+        if ($streak === 0 && $d === Carbon::yesterday()->toDateString()) {
+            $streak++;
+            $expected = Carbon::yesterday()->subDay()->toDateString();
+            continue;
+        }
+
+        break;
+    }
+
+    // 3) Badge rules
+    $badgeList = [
+        ['days' => 3,  'label' => '🌱 Seedling (3-day streak)'],
+        ['days' => 7,  'label' => '🔥 Flame (7-day streak)'],
+        ['days' => 14, 'label' => '🌼 Bloom (14-day streak)'],
+        ['days' => 30, 'label' => '🏆 Champion (30-day streak)'],
+    ];
+
+    $earnedBadges = [];
+    foreach ($badgeList as $b) {
+        if ($streak >= $b['days']) $earnedBadges[] = $b['label'];
+    }
+@endphp
+
+<!-- ✅ Achievement Badges -->
+<div class="bg-white rounded-2xl shadow-md p-6 mb-8 border border-indigo-100">
+    <div class="flex items-start justify-between gap-4 flex-wrap">
+        <div>
+            <h2 class="text-xl font-bold text-gray-800">
+                🏅 Achievement Badges
+            </h2>
+            <p class="text-gray-600 mt-1">
+                Current streak: <span class="font-semibold text-indigo-700">{{ $streak }}</span> day(s)
+            </p>
+        </div>
+
+        <div class="text-sm text-gray-500">
+            Keep journaling daily to unlock more badges ✨
+        </div>
+    </div>
+
+    <div class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+        @foreach($badgeList as $b)
+            @php $unlocked = $streak >= $b['days']; @endphp
+
+            <div class="rounded-xl p-4 border {{ $unlocked ? 'bg-indigo-50 border-indigo-200' : 'bg-gray-50 border-gray-200' }}">
+                <div class="flex items-center justify-between">
+                    <div class="font-semibold {{ $unlocked ? 'text-indigo-800' : 'text-gray-600' }}">
+                        {{ $b['label'] }}
+                    </div>
+                    <div class="text-sm {{ $unlocked ? 'text-emerald-700' : 'text-gray-500' }}">
+                        {{ $unlocked ? 'Unlocked ✅' : 'Locked 🔒' }}
+                    </div>
+                </div>
+
+                <div class="mt-2 text-xs {{ $unlocked ? 'text-indigo-700' : 'text-gray-500' }}">
+                    Requirement: {{ $b['days'] }} consecutive days
+                </div>
+            </div>
+        @endforeach
+    </div>
+</div> 
+
     @if($entries->count() === 0)
         <!-- Empty State -->
         <div class="empty-state">
