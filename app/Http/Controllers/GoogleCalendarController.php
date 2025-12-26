@@ -67,6 +67,14 @@ class GoogleCalendarController extends Controller
     public function callback()
     {
         try {
+            // User must be logged in to connect Google Calendar
+            if (! Auth::check()) {
+                return redirect()->route('login')
+                    ->with('error', 'Please log in to WellBeing first, then try connecting Google Calendar again.');
+            }
+
+            $loggedInUser = Auth::user();
+
             // Use the same redirect URL and scopes as in redirect(), and disable state
             $calendarRedirect = env('GOOGLE_CALENDAR_REDIRECT_URI', env('GOOGLE_REDIRECT_URI'));
 
@@ -81,15 +89,21 @@ class GoogleCalendarController extends Controller
                 ->redirectUrl($calendarRedirect)
                 ->user();
 
-            // Find the local user by email (so this works even if the auth session was not preserved)
-            $user = User::where('email', $googleUser->getEmail())->first();
-            if (! $user) {
-                return redirect()->route('login')
-                    ->with('error', 'No account found for '.$googleUser->getEmail().'. Log in to WellBeing first, then try connecting Calendar again.');
+            // SECURITY: Verify that the Google account email matches the logged-in user's email
+            $googleEmail = $googleUser->getEmail();
+            if ($loggedInUser->email !== $googleEmail) {
+                Log::warning('Google Calendar sync attempted with mismatched email', [
+                    'logged_in_user_id' => $loggedInUser->id,
+                    'logged_in_email' => $loggedInUser->email,
+                    'google_email' => $googleEmail,
+                ]);
+                
+                return redirect()->route('habits.index')
+                    ->with('error', 'The Google account you selected ('.$googleEmail.') does not match your WellBeing account ('.$loggedInUser->email.'). Please select the correct Google account or use a different WellBeing account.');
             }
 
-            // Ensure the user is logged in for the rest of the app
-            Auth::login($user, true);
+            // Use the logged-in user (don't switch users)
+            $user = $loggedInUser;
 
             // Build token payload; refreshToken may be null if Google does not resend it.
             $tokenData = [

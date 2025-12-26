@@ -135,26 +135,50 @@ main { position: relative; z-index: 10; }
  </div>
 
  <!-- Navigation links with soft hover -->
- <div class="flex gap-3 text-sm">
+ @auth
+ <div class="flex flex-wrap gap-2 text-sm">
  <a href="{{ route('dashboard') }}"
- class="px-5 py-2 rounded-full font-medium bg-gradient-to-r from-purple-400 to-indigo-500 shadow-lg text-white hover:scale-105 hover:from-purple-300 hover:to-indigo-400 transition transform">
- Home
+ class="px-4 py-2 rounded-full font-medium bg-gradient-to-r from-purple-400 to-indigo-500 shadow-lg text-white hover:scale-105 hover:from-purple-300 hover:to-indigo-400 transition transform">
+ <i class="fas fa-home mr-1"></i> Home
  </a>
  <a href="{{ route('journal.today') }}"
- class="px-5 py-2 rounded-full font-medium bg-gradient-to-r from-pink-400 to-rose-500 shadow-lg text-white hover:scale-105 hover:from-pink-300 hover:to-rose-400 transition transform">
- Journal
+ class="px-4 py-2 rounded-full font-medium bg-gradient-to-r from-pink-400 to-rose-500 shadow-lg text-white hover:scale-105 hover:from-pink-300 hover:to-rose-400 transition transform">
+ <i class="fas fa-book mr-1"></i> Journal
  </a>
  <a href="{{ route('habits.index') }}"
- class="px-5 py-2 rounded-full font-medium bg-gradient-to-r from-green-400 to-emerald-500 shadow-lg text-white hover:scale-105 hover:from-green-300 hover:to-emerald-400 transition transform">
- Habits
+ class="px-4 py-2 rounded-full font-medium bg-gradient-to-r from-green-400 to-emerald-500 shadow-lg text-white hover:scale-105 hover:from-green-300 hover:to-emerald-400 transition transform">
+ <i class="fas fa-tasks mr-1"></i> Habits
  </a>
  <a href="{{ route('wellness.index') }}"
- class="px-5 py-2 rounded-full font-medium bg-gradient-to-r from-amber-400 to-orange-500 shadow-lg text-white hover:scale-105 hover:from-amber-300 hover:to-orange-400 transition transform">
- Wellness
+ class="px-4 py-2 rounded-full font-medium bg-gradient-to-r from-amber-400 to-orange-500 shadow-lg text-white hover:scale-105 hover:from-amber-300 hover:to-orange-400 transition transform">
+ <i class="fas fa-heart mr-1"></i> Wellness
+ </a>
+ <a href="{{ route('dashboard.weekly-summary') }}"
+ class="px-4 py-2 rounded-full font-medium bg-gradient-to-r from-cyan-400 to-blue-500 shadow-lg text-white hover:scale-105 hover:from-cyan-300 hover:to-blue-400 transition transform">
+ <i class="fas fa-chart-line mr-1"></i> <span class="hidden md:inline">Weekly</span> Summary
  </a>
  </div>
+ @else
+ <div class="flex flex-wrap gap-2 text-sm">
+ <a href="{{ route('about.index') }}"
+ class="px-4 py-2 rounded-full font-medium bg-gradient-to-r from-purple-400 to-indigo-500 shadow-lg text-white hover:scale-105 hover:from-purple-300 hover:to-indigo-400 transition transform">
+ <i class="fas fa-info-circle mr-1"></i> About
+ </a>
+ <a href="{{ route('login') }}"
+ class="px-4 py-2 rounded-full font-medium bg-gradient-to-r from-pink-400 to-rose-500 shadow-lg text-white hover:scale-105 hover:from-pink-300 hover:to-rose-400 transition transform">
+ <i class="fas fa-sign-in-alt mr-1"></i> Log In
+ </a>
+ @if (Route::has('register'))
+ <a href="{{ route('register') }}"
+ class="px-4 py-2 rounded-full font-medium bg-gradient-to-r from-green-400 to-emerald-500 shadow-lg text-white hover:scale-105 hover:from-green-300 hover:to-emerald-400 transition transform">
+ <i class="fas fa-user-plus mr-1"></i> Sign Up
+ </a>
+ @endif
+ </div>
+ @endauth
 
- <!-- Cute User Profile -->
+ <!-- Cute User Profile (only for authenticated users) -->
+ @auth
  <div class="relative">
  <button id="userMenuButton" class="flex items-center gap-2 group">
  <!-- Floating avatar with gradient and sparkle -->
@@ -204,6 +228,7 @@ main { position: relative; z-index: 10; }
  </form>
  </div>
  </div>
+ @endauth
 
  <!-- Dropdown Animations -->
  <style>
@@ -274,20 +299,162 @@ main { position: relative; z-index: 10; }
  @yield('content')
 </main>
 
+<!-- FOOTER -->
+<footer class="mt-12 bg-indigo-900/95 backdrop-blur border-t border-indigo-700 text-white">
+    <div class="max-w-7xl mx-auto px-6 py-6">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
+            <!-- Left: Copyright -->
+            <div class="text-indigo-200 text-center md:text-left">
+                <p>&copy; {{ date('Y') }} Mental Wellness Companion. All rights reserved.</p>
+            </div>
+
+            <!-- Center: Links with hover effects -->
+            <div class="flex flex-wrap items-center justify-center gap-6 text-indigo-200">
+                <a href="{{ route('about.index') }}" 
+                   class="group flex items-center gap-2 hover:text-white transition-colors duration-200 cursor-pointer">
+                    <i class="fas fa-info-circle text-purple-400 group-hover:text-purple-300 transition-colors"></i>
+                    <span class="font-medium group-hover:underline">About Us</span>
+                </a>
+                <button onclick="openContactModal()" 
+                        class="group flex items-center gap-2 hover:text-white transition-colors duration-200 cursor-pointer">
+                    <i class="fas fa-envelope text-green-400 group-hover:text-green-300 transition-colors"></i>
+                    <span class="font-medium group-hover:underline">Contact Us</span>
+                </button>
+            </div>
+
+            <!-- Right: Location -->
+            <div class="text-indigo-200 text-center md:text-right">
+                <p class="text-xs flex items-center justify-center md:justify-end gap-1.5">
+                    <i class="fas fa-map-marker-alt text-green-400"></i>
+                    <span>Dhaka, Bangladesh</span>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Contact Us Modal -->
+<div id="contactModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-2xl w-full p-8 relative max-h-[90vh] overflow-y-auto">
+        <!-- Close Button -->
+        <button onclick="closeContactModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition">
+            <i class="fas fa-times text-2xl"></i>
+        </button>
+
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <div class="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-envelope text-white text-2xl"></i>
+            </div>
+            <h2 class="text-3xl font-bold text-indigo-900 mb-2">Contact Us</h2>
+            <p class="text-gray-600">We'd love to hear from you</p>
+        </div>
+
+        <!-- Contact Information -->
+        <div class="space-y-6">
+            <div class="bg-indigo-50 rounded-xl p-6">
+                <h3 class="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <i class="fas fa-envelope text-indigo-600"></i>
+                    Email
+                </h3>
+                <p class="text-gray-700 mb-2">For support and inquiries:</p>
+                <a href="mailto:support@mentalwellness.com" class="text-indigo-600 hover:text-indigo-700 font-medium">
+                    kowsik.roy@g.bracu.ac.bd
+                </a>
+            </div>
+
+            <div class="bg-green-50 rounded-xl p-6">
+                <h3 class="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <i class="fas fa-map-marker-alt text-green-600"></i>
+                    Location
+                </h3>
+                <p class="text-gray-700 mb-2">We're based in:</p>
+                <p class="text-gray-800 font-medium">
+                    Mental Wellness Companion<br>
+                    Dhaka, Bangladesh<br>
+                </p>
+            </div>
+
+            <div class="bg-purple-50 rounded-xl p-6">
+                <h3 class="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <i class="fas fa-clock text-purple-600"></i>
+                    Response Time
+                </h3>
+                <p class="text-gray-700">
+                    We typically respond to emails within 24-48 hours. Your message is important to us, and we'll get back to you as soon as possible.
+                </p>
+            </div>
+
+            <div class="bg-blue-50 rounded-xl p-6">
+                <h3 class="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <i class="fas fa-heart text-blue-600"></i>
+                    We're Here to Help
+                </h3>
+                <p class="text-gray-700">
+                    Whether you have questions about using the platform, suggestions for improvement, or just want to share your wellness journey, 
+                    we're here to listen and support you.
+                </p>
+            </div>
+        </div>
+
+        <!-- Close Button -->
+        <div class="mt-8 text-center">
+            <button onclick="closeContactModal()" 
+                    class="px-6 py-3 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition">
+                Close
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+function openContactModal() {
+    document.getElementById('contactModal').classList.remove('hidden');
+    document.getElementById('contactModal').classList.add('flex');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeContactModal() {
+    document.getElementById('contactModal').classList.add('hidden');
+    document.getElementById('contactModal').classList.remove('flex');
+    document.body.style.overflow = 'auto';
+}
+
+// Close modal when clicking outside
+document.getElementById('contactModal')?.addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeContactModal();
+    }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeContactModal();
+    }
+});
+</script>
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+ // User menu dropdown (only if user is authenticated)
  const btn = document.getElementById('userMenuButton');
  const menu = document.getElementById('userDropdown');
+ if (btn && menu) {
  btn.addEventListener('click', e => {
  e.stopPropagation();
  menu.classList.toggle('show');
  });
  document.addEventListener('click', () => menu.classList.remove('show'));
+ }
 
- // Initialize push notifications
+ // Initialize push notifications (only if user is authenticated)
+ @auth
  initPushNotifications();
+ @endauth
 });
 
+@auth
 // Push Notification System
 // Key used to avoid infinite reloads when a reminder is detected
 const REMINDER_REFRESH_KEY = 'habit-reminder-refreshed-' + new Date().toDateString();
@@ -400,6 +567,7 @@ function showNotification(reminder) {
  shownHabitReminders.delete(reminder.id);
  }
 }
+@endauth
 
 </script>
 

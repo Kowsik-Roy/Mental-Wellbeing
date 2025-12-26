@@ -46,6 +46,15 @@
 
 @section('content')
 <div class="max-w-7xl mx-auto">
+    <!-- Dashboard Button -->
+    <div class="mb-4 flex justify-start">
+        <a href="{{ route('dashboard') }}" 
+           class="inline-flex items-center gap-2 px-4 py-2 rounded-full font-medium bg-gradient-to-r from-purple-400 to-indigo-500 shadow-lg text-white hover:scale-105 hover:from-purple-300 hover:to-indigo-400 transition transform text-sm">
+            <i class="fas fa-home"></i>
+            <span>Dashboard</span>
+        </a>
+    </div>
+
     <!-- Header -->
     <div class="flex items-center justify-between mb-8">
         <div>
@@ -59,13 +68,11 @@
                 @csrf
                 <button
                     type="submit"
-                    class="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-indigo-700 text-white text-sm font-medium button-hover hover:bg-indigo-800 shadow-md">
-                    <span> Send email summary</span>
+                    class="inline-flex items-center gap-2 px-4 py-2 rounded-full font-medium bg-gradient-to-r from-indigo-600 to-purple-600 shadow-lg text-white hover:scale-105 hover:from-indigo-500 hover:to-purple-500 transition transform text-sm">
+                    <i class="fas fa-envelope"></i>
+                    <span>Send Email Summary</span>
                 </button>
             </form>
-            <a href="{{ route('dashboard') }}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">
-                ← Back to Dashboard
-            </a>
         </div>
     </div>
 
@@ -171,14 +178,20 @@
                                 
                                 $largeArcFlag = $anglePerDay > 180 ? 1 : 0;
                                 
-                                $color = $day['hasData'] ? $day['color'] : '#e5e7eb';
+                                // For empty segments, alternate between lighter and darker shades
+                                if ($day['hasData']) {
+                                    $color = $day['color'];
+                                } else {
+                                    // Alternate pattern: lighter (#e5e7eb) for even indices, darker (#d1d5db) for odd indices
+                                    $color = ($index % 2 == 0) ? '#e5e7eb' : '#d1d5db';
+                                }
                                 
                                 $pathData = "M $cx $cy L $x1 $y1 A $radius $radius 0 $largeArcFlag 1 $x2 $y2 Z";
                                 
-                                // Calculate label position (middle of segment, slightly outside)
+                                // Calculate label position (middle of segment, pulled down a bit)
                                 $labelRadius = $radius * 0.65;
                                 $labelX = $cx + $labelRadius * cos(deg2rad($midAngle));
-                                $labelY = $cy + $labelRadius * sin(deg2rad($midAngle));
+                                $labelY = $cy + $labelRadius * sin(deg2rad($midAngle)) + 8; // Pull down by 8px
                                 
                                 $currentAngle += $anglePerDay;
                             @endphp
@@ -194,10 +207,10 @@
                             />
                             <!-- Emoji and mood label on segment -->
                             @if($day['hasData'] && $day['moodEmoji'])
-                                <text x="{{ $labelX }}" y="{{ $labelY - 8 }}" text-anchor="middle" font-size="24" fill="#1f2937">
+                                <text x="{{ $labelX }}" y="{{ $labelY - 1 }}" text-anchor="middle" font-size="24" fill="#1f2937">
                                     {{ $day['moodEmoji'] }}
                                 </text>
-                                <text x="{{ $labelX }}" y="{{ $labelY + 12 }}" text-anchor="middle" font-size="10" font-weight="bold" fill="#4b5563">
+                                <text x="{{ $labelX }}" y="{{ $labelY + 15 }}" text-anchor="middle" font-size="10" font-weight="bold" fill="#4b5563">
                                     {{ strlen($day['moodText']) > 8 ? substr($day['moodText'], 0, 8) . '...' : $day['moodText'] }}
                                 </text>
                             @else
@@ -207,7 +220,7 @@
                             @endif
                         @endforeach
                         <!-- Center circle for donut effect -->
-                        <circle cx="{{ $cx }}" cy="{{ $cy }}" r="80" fill="white"/>
+                        <circle cx="{{ $cx }}" cy="{{ $cy }}" r="65" fill="white"/>
                         <text x="{{ $cx }}" y="{{ $cy - 10 }}" text-anchor="middle" font-size="24" font-weight="bold" fill="#4f46e5">
                             {{ $totalDaysWithData }}/7
                         </text>
@@ -220,7 +233,7 @@
 
             <!-- Legend -->
             <div class="pie-legend">
-                @foreach($daysData as $day)
+                @foreach($daysData as $index => $day)
                     @php
                         $moodEmoji = '';
                         $moodText = '';
@@ -230,9 +243,11 @@
                             $moodEmoji = $moodParts[0] ?? '';
                             $moodText = $moodParts[1] ?? $moodLabel;
                         }
+                        // Use same alternating pattern for empty segments
+                        $legendColor = $day['hasData'] ? $day['color'] : (($index % 2 == 0) ? '#e5e7eb' : '#d1d5db');
                     @endphp
                     <div class="legend-item">
-                        <div class="legend-color" style="background-color: {{ $day['hasData'] ? $day['color'] : '#e5e7eb' }}"></div>
+                        <div class="legend-color" style="background-color: {{ $legendColor }}"></div>
                         <span class="text-sm font-medium text-gray-700">
                             <strong>{{ $day['dayLabel'] }}</strong> ({{ $day['date'] }}):
                             @if($day['hasData'])

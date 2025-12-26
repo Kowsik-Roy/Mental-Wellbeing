@@ -11,10 +11,14 @@ use App\Http\Controllers\HabitController;
 use App\Http\Controllers\GoogleCalendarController;
 use App\Http\Controllers\WellnessController;
 use App\Http\Controllers\PushNotificationController;
+use App\Http\Controllers\AboutController;
 
 Route::get('/', function () {
     return view('welcome');
 });
+
+// Public routes
+Route::get('/about', [AboutController::class, 'index'])->name('about.index');
 
 // Authentication Routes
 Route::middleware('guest')->group(function () {

@@ -6,6 +6,7 @@ use App\Models\Habit;
 use App\Models\HabitLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Google\Service\Calendar\Event;
 use Google\Service\Calendar\EventDateTime;
 use Google\Service\Calendar\EventReminders;
@@ -104,6 +105,27 @@ class HabitController extends Controller
     {
         if ($habit->user_id !== Auth::id()) {
             abort(403);
+        }
+       
+        $user = Auth::user();
+        
+        // Delete Google Calendar event if habit was synced
+        if ($habit->google_event_id && $user->calendar_sync_enabled) {
+            try {
+                $service = GoogleCalendarController::googleClient($user);
+                $service->events->delete('primary', $habit->google_event_id);
+                Log::info('Google Calendar event deleted for habit', [
+                    'habit_id' => $habit->id,
+                    'event_id' => $habit->google_event_id,
+                ]);
+            } catch (\Exception $e) {
+                // Log error but continue with habit deletion
+                Log::warning('Failed to delete Google Calendar event when deleting habit', [
+                    'habit_id' => $habit->id,
+                    'event_id' => $habit->google_event_id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
         }
        
         $habit->delete();

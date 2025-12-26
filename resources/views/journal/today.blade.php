@@ -79,12 +79,12 @@
 <div class="max-w-4xl mx-auto">
     <!-- Header -->
     <div class="flex items-center justify-between mb-8">
-        <!-- Home Button -->
+        <!-- Dashboard Button -->
         <a 
             href="{{ route('dashboard') }}" 
-            class="flex items-center gap-2 text-gray-700 hover:text-gray-900 font-medium text-lg transition duration-200"
+            class="inline-flex items-center gap-2 px-4 py-2 rounded-full font-medium bg-gradient-to-r from-purple-400 to-indigo-500 shadow-lg text-white hover:scale-105 hover:from-purple-300 hover:to-indigo-400 transition transform"
         >
-            <span class="text-xl">🏠</span>
+            <i class="fas fa-home"></i>
             <span>Dashboard</span>
         </a>
 
@@ -99,9 +99,9 @@
         <!-- History Button -->
         <a 
             href="{{ route('journal.history') }}" 
-            class="flex items-center gap-2 text-gray-700 hover:text-gray-900 font-medium text-lg transition duration-200"
+            class="inline-flex items-center gap-2 px-4 py-2 rounded-full font-medium bg-gradient-to-r from-pink-400 to-rose-500 shadow-lg text-white hover:scale-105 hover:from-pink-300 hover:to-rose-400 transition transform"
         >
-            <span class="text-xl">📅</span>
+            <i class="fas fa-history"></i>
             <span>History</span>
         </a>
     </div>

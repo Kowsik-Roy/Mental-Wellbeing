@@ -3,13 +3,6 @@
 @section('content')
 <div class="py-8">
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <!-- New Habit Button -->
-        <div class="mb-6 flex justify-end">
-            <a href="{{ route('habits.create') }}" class="inline-flex items-center px-4 py-2 bg-green-400 text-white rounded-lg hover:bg-green-700">
-                <i class="fas fa-plus mr-2"></i> + New Habit
-            </a>
-        </div>
-
         <!-- Success/Error Messages -->
         @if(session('success'))
             <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
@@ -21,6 +14,20 @@
                 <i class="fas fa-exclamation-circle mr-2"></i>{{ session('error') }}
             </div>
         @endif
+
+        <!-- Action Buttons -->
+        <div class="mb-6 flex items-center justify-between">
+            <a href="{{ route('dashboard') }}" 
+               class="inline-flex items-center gap-2 px-4 py-2 rounded-full font-medium bg-gradient-to-r from-purple-400 to-indigo-500 shadow-lg text-white hover:scale-105 hover:from-purple-300 hover:to-indigo-400 transition transform text-sm">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="{{ route('habits.create') }}" 
+               class="inline-flex items-center gap-2 px-4 py-2 rounded-full font-medium bg-gradient-to-r from-green-400 to-emerald-500 shadow-lg text-white hover:scale-105 hover:from-green-300 hover:to-emerald-400 transition transform text-sm">
+                <i class="fas fa-plus"></i>
+                <span>New Habit</span>
+            </a>
+        </div>
 
         <!-- Page Header -->
         <div class="mb-8 flex items-center justify-between">
