@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Models\Journal;
 use App\Models\Habit;
+use App\Models\HabitLog;
 use App\Mail\WeeklySummaryMail;
 
 class DashboardController extends Controller
@@ -25,9 +26,9 @@ class DashboardController extends Controller
     {
         $user = $request->user();
 
-        // Use the same period as the scheduled weekly summary: previous full week
-        $from = now()->subWeek()->startOfWeek();
-        $to = now()->subWeek()->endOfWeek();
+        // Use last 7 days (including today)
+        $from = now()->subDays(6)->startOfDay(); // 6 days ago to today = 7 days total
+        $to = now()->endOfDay();
         $periodLabel = $from->format('M d, Y') . ' - ' . $to->format('M d, Y');
 
         // Mood stats for the period
@@ -38,16 +39,53 @@ class DashboardController extends Controller
             ->groupBy('mood')
             ->get();
 
-        // Habit stats (re-using the same structure as the console command)
+        // Habit stats for the last 7 days
         $habitStats = [];
         $habits = Habit::where('user_id', $user->id)
             ->where('is_active', true)
             ->get();
 
         foreach ($habits as $habit) {
+            // Calculate completion percentage for the last 7 days
+            $completedDays = 0;
+            $expectedDays = 0;
+            
+            // Count expected days based on frequency
+            for ($i = 6; $i >= 0; $i--) {
+                $date = now()->subDays($i)->startOfDay();
+                
+                // Check if this date is active for the habit's frequency
+                $isActive = false;
+                if ($habit->frequency === 'daily') {
+                    $isActive = true;
+                } elseif ($habit->frequency === 'weekdays') {
+                    $isActive = $date->isWeekday();
+                } elseif ($habit->frequency === 'weekend') {
+                    $isActive = $date->isWeekend();
+                }
+                
+                if ($isActive) {
+                    $expectedDays++;
+                    // Check if habit was completed on this day
+                    $hasCompleted = HabitLog::where('habit_id', $habit->id)
+                        ->where('user_id', $user->id)
+                        ->whereDate('logged_date', $date->format('Y-m-d'))
+                        ->where('completed', true)
+                        ->exists();
+                    
+                    if ($hasCompleted) {
+                        $completedDays++;
+                    }
+                }
+            }
+            
+            $completionPercentage = $expectedDays > 0 
+                ? round(($completedDays / $expectedDays) * 100, 1) 
+                : 0;
+            
             $habitStats[] = [
                 'title' => $habit->title,
-                'weekly_completion' => round($habit->getWeeklyCompletionPercentage(), 1),
+                'weekly_completion' => $completionPercentage,
                 'current_streak' => $habit->current_streak ?? 0,
                 'best_streak' => $habit->best_streak ?? 0,
             ];
@@ -56,7 +94,7 @@ class DashboardController extends Controller
         if ($moodStats->count() === 0 && count($habitStats) === 0) {
             return redirect()
                 ->route('dashboard')
-                ->with('error', 'No data available for the last week to generate a summary.');
+                ->with('error', 'No data available for the last 7 days to generate a summary.');
         }
 
         Mail::to($user->email)->send(
@@ -65,7 +103,7 @@ class DashboardController extends Controller
 
         return redirect()
             ->route('dashboard')
-            ->with('status', 'A weekly summary email has been sent to your inbox.');
+            ->with('status', 'A summary email for the last 7 days has been sent to your inbox.');
     }
 
     /**
