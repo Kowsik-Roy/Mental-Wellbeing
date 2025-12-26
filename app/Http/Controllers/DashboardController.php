@@ -26,42 +26,53 @@ class DashboardController extends Controller
     {
         $user = $request->user();
 
-        // Use last 7 days (including today)
-        $from = now()->subDays(6)->startOfDay(); // 6 days ago to today = 7 days total
-        $to = now()->endOfDay();
+        // Use previous full week: Monday to Sunday (matching habit's week definition)
+        // Week starts on Monday and ends on Sunday
+        // Use Asia/Dhaka timezone explicitly
+        $now = \Carbon\Carbon::now('Asia/Dhaka');
+        $lastMonday = $now->copy()->subWeek()->startOfWeek(\Carbon\Carbon::MONDAY);
+        $lastSunday = $lastMonday->copy()->endOfWeek(\Carbon\Carbon::SUNDAY);
+        
+        $from = $lastMonday->startOfDay();
+        $to = $lastSunday->endOfDay();
         $periodLabel = $from->format('M d, Y') . ' - ' . $to->format('M d, Y');
 
         // Mood stats for the period
+        // Query by date range, converting UTC timestamps to Asia/Dhaka dates
+        // Use CONVERT_TZ to convert created_at from UTC to Asia/Dhaka, then filter by date
+        $fromDate = $from->format('Y-m-d');
+        $toDate = $to->format('Y-m-d');
+        
         $moodStats = Journal::where('user_id', $user->id)
-            ->whereBetween('created_at', [$from, $to])
             ->whereNotNull('mood')
+            ->whereRaw("DATE(CONVERT_TZ(created_at, '+00:00', '+06:00')) >= ?", [$fromDate])
+            ->whereRaw("DATE(CONVERT_TZ(created_at, '+00:00', '+06:00')) <= ?", [$toDate])
             ->selectRaw('mood, count(*) as count')
             ->groupBy('mood')
             ->get();
 
-        // Habit stats for the last 7 days
+        // Habit stats for the Monday-Sunday week period
         $habitStats = [];
         $habits = Habit::where('user_id', $user->id)
             ->where('is_active', true)
             ->get();
 
         foreach ($habits as $habit) {
-            // Calculate completion percentage for the last 7 days
+            // Calculate completion percentage for the Monday-Sunday week period
             $completedDays = 0;
             $expectedDays = 0;
             
-            // Count expected days based on frequency
-            for ($i = 6; $i >= 0; $i--) {
-                $date = now()->subDays($i)->startOfDay();
-                
+            // Iterate through each day in the Monday-Sunday period
+            $currentDate = $from->copy();
+            while ($currentDate <= $to) {
                 // Check if this date is active for the habit's frequency
                 $isActive = false;
                 if ($habit->frequency === 'daily') {
                     $isActive = true;
                 } elseif ($habit->frequency === 'weekdays') {
-                    $isActive = $date->isWeekday();
+                    $isActive = $currentDate->isWeekday();
                 } elseif ($habit->frequency === 'weekend') {
-                    $isActive = $date->isWeekend();
+                    $isActive = $currentDate->isWeekend();
                 }
                 
                 if ($isActive) {
@@ -69,7 +80,7 @@ class DashboardController extends Controller
                     // Check if habit was completed on this day
                     $hasCompleted = HabitLog::where('habit_id', $habit->id)
                         ->where('user_id', $user->id)
-                        ->whereDate('logged_date', $date->format('Y-m-d'))
+                        ->whereDate('logged_date', $currentDate->format('Y-m-d'))
                         ->where('completed', true)
                         ->exists();
                     
@@ -77,6 +88,8 @@ class DashboardController extends Controller
                         $completedDays++;
                     }
                 }
+                
+                $currentDate->addDay();
             }
             
             $completionPercentage = $expectedDays > 0 
@@ -94,7 +107,7 @@ class DashboardController extends Controller
         if ($moodStats->count() === 0 && count($habitStats) === 0) {
             return redirect()
                 ->route('dashboard')
-                ->with('error', 'No data available for the last 7 days to generate a summary.');
+                ->with('error', 'No data available for the previous week to generate a summary.');
         }
 
         Mail::to($user->email)->send(
@@ -103,7 +116,7 @@ class DashboardController extends Controller
 
         return redirect()
             ->route('dashboard')
-            ->with('status', 'A summary email for the last 7 days has been sent to your inbox.');
+            ->with('status', 'A weekly summary email has been sent to your inbox.');
     }
 
     /**

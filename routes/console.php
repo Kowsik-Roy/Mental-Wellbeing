@@ -15,33 +15,33 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Artisan::command('weekly:send-summaries', function () {
-    // Calculate previous full week: Friday to Thursday
-    // If today is Friday, we want last Friday to last Thursday
-    // If today is any other day, we want the most recent Friday-Thursday period
-    $now = now();
+    // Calculate previous full week: Monday to Sunday (matching habit's week definition)
+    // Week starts on Monday and ends on Sunday
+    // Use Asia/Dhaka timezone explicitly
+    $now = \Carbon\Carbon::now('Asia/Dhaka');
     
-    // Find the most recent Friday
-    $lastFriday = $now->copy();
-    while ($lastFriday->dayOfWeek !== 5) { // 5 = Friday
-        $lastFriday->subDay();
-    }
+    // Get the previous week (Monday to Sunday)
+    // If today is Monday, we want last Monday to last Sunday
+    // If today is any other day, we want the most recent Monday-Sunday period
+    $lastMonday = $now->copy()->subWeek()->startOfWeek(\Carbon\Carbon::MONDAY);
+    $lastSunday = $lastMonday->copy()->endOfWeek(\Carbon\Carbon::SUNDAY);
     
-    // If today is Friday, go back one week
-    if ($now->dayOfWeek === 5) {
-        $lastFriday->subWeek();
-    }
-    
-    // Previous week's Friday to Thursday
-    $from = $lastFriday->copy()->startOfDay();
-    $to = $lastFriday->copy()->addDays(6)->endOfDay(); // Thursday (6 days after Friday)
+    $from = $lastMonday->startOfDay();
+    $to = $lastSunday->endOfDay();
     $periodLabel = $from->format('M d, Y') . ' - ' . $to->format('M d, Y');
 
     User::chunk(100, function ($users) use ($from, $to, $periodLabel) {
         foreach ($users as $user) {
             // Mood stats for last week
+            // Query by date range, converting UTC timestamps to Asia/Dhaka dates
+            // Use CONVERT_TZ to convert created_at from UTC to Asia/Dhaka, then filter by date
+            $fromDate = $from->format('Y-m-d');
+            $toDate = $to->format('Y-m-d');
+            
             $moodStats = Journal::where('user_id', $user->id)
-                ->whereBetween('created_at', [$from, $to])
                 ->whereNotNull('mood')
+                ->whereRaw("DATE(CONVERT_TZ(created_at, '+00:00', '+06:00')) >= ?", [$fromDate])
+                ->whereRaw("DATE(CONVERT_TZ(created_at, '+00:00', '+06:00')) <= ?", [$toDate])
                 ->selectRaw('mood, count(*) as count')
                 ->groupBy('mood')
                 ->get();
@@ -109,8 +109,8 @@ Artisan::command('weekly:send-summaries', function () {
     });
 })->purpose('Send weekly mood and habit summaries to all users');
 
-// Schedule: run every Friday at 9 AM server time
-Schedule::command('weekly:send-summaries')->weeklyOn(5, '9:00');
+// Schedule: run every Monday at 9 AM server time (matching habit's week definition)
+Schedule::command('weekly:send-summaries')->weeklyOn(1, '9:00');
 
 // Schedule: check for habit reminders every minute
 Schedule::command('habits:send-reminders')->everyMinute();
