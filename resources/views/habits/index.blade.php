@@ -3,10 +3,29 @@
 @section('content')
 <div class="py-8">
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <!-- New Habit Button -->
-        <div class="mb-6 flex justify-end">
-            <a href="{{ route('habits.create') }}" class="inline-flex items-center px-4 py-2 bg-green-400 text-white rounded-lg hover:bg-green-700">
-                <i class="fas fa-plus mr-2"></i> + New Habit
+        <!-- Success/Error Messages -->
+        @if(session('success'))
+            <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
+                <i class="fas fa-check-circle mr-2"></i>{{ session('success') }}
+            </div>
+        @endif
+        @if(session('error'))
+            <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                <i class="fas fa-exclamation-circle mr-2"></i>{{ session('error') }}
+            </div>
+        @endif
+
+        <!-- Action Buttons -->
+        <div class="mb-6 flex items-center justify-between">
+            <a href="{{ route('dashboard') }}" 
+               class="inline-flex items-center gap-2 px-4 py-2 rounded-full font-medium bg-gradient-to-r from-purple-400 to-indigo-500 shadow-lg text-white hover:scale-105 hover:from-purple-300 hover:to-indigo-400 transition transform text-sm">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="{{ route('habits.create') }}" 
+               class="inline-flex items-center gap-2 px-4 py-2 rounded-full font-medium bg-gradient-to-r from-green-400 to-emerald-500 shadow-lg text-white hover:scale-105 hover:from-green-300 hover:to-emerald-400 transition transform text-sm">
+                <i class="fas fa-plus"></i>
+                <span>New Habit</span>
             </a>
         </div>
 
@@ -83,16 +102,6 @@
                                     <div class="bg-green-600 h-1.5 rounded-full transition-all" style="width: {{ min($habit->getMonthlyCompletionPercentage(), 100) }}%"></div>
                                 </div>
                             </div>
-                            <!-- Consistency -->
-                            <div>
-                                <div class="flex justify-between text-xs text-gray-600 mb-1">
-                                    <span>Consistency</span>
-                                    <span>{{ number_format($habit->getConsistencyScore(), 0) }}%</span>
-                                </div>
-                                <div class="w-full bg-gray-200 rounded-full h-1.5">
-                                    <div class="bg-orange-600 h-1.5 rounded-full transition-all" style="width: {{ min($habit->getConsistencyScore(), 100) }}%"></div>
-                                </div>
-                            </div>
                         </div>
 
                         <!-- Streak & Completion -->
@@ -100,13 +109,24 @@
                             <span><i class="fas fa-fire mr-1 text-orange-500"></i>{{ $habit->current_streak }} day streak</span>
                             @if($habit->todaysLog && $habit->todaysLog->completed)
                                 <span class="text-green-600 flex items-center"><i class="fas fa-check-circle mr-1"></i>Completed today</span>
-                            @else
+                            @elseif($habit->isActiveToday())
                                 <form method="POST" action="{{ route('habits.log', $habit) }}" class="inline">
                                     @csrf
                                     <button type="submit" name="completed" value="1" class="inline-flex items-center px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700">
                                         <i class="fas fa-check mr-1"></i> Mark Complete
                                     </button>
                                 </form>
+                            @else
+                                <span class="text-gray-500 flex items-center">
+                                    <i class="fas fa-calendar-times mr-1"></i>
+                                    @if($habit->frequency === 'weekdays')
+                                        Available Mon-Fri only
+                                    @elseif($habit->frequency === 'weekend')
+                                        Available Sat-Sun only
+                                    @else
+                                        Not available today
+                                    @endif
+                                </span>
                             @endif
                         </div>
 

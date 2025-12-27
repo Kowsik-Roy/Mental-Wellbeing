@@ -12,7 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('habits', function (Blueprint $table) {
-    $table->string('google_event_id')->nullable();
+            // Remove goal_type column as it's no longer functionally necessary
+            // We can infer the type from value_achieved in habit_logs
+            if (Schema::hasColumn('habits', 'goal_type')) {
+                $table->dropColumn('goal_type');
+            }
         });
     }
 
@@ -22,8 +26,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('habits', function (Blueprint $table) {
-            if (Schema::hasColumn('habits', 'google_event_id')) {
-                $table->dropColumn('google_event_id');
+            // Add goal_type back if needed
+            if (!Schema::hasColumn('habits', 'goal_type')) {
+                $table->enum('goal_type', ['once', 'multiple_times', 'minutes'])->default('once')->after('frequency');
             }
         });
     }

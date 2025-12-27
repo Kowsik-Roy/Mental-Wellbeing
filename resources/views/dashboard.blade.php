@@ -11,26 +11,7 @@
             A gentle space designed for reflection, healing, and growth.
         </p>
     </div>
-
-    <form method="POST" action="{{ route('dashboard.send-summary') }}" class="flex justify-center md:justify-end">
-        @csrf
-        <button
-            type="submit"
-            class="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-indigo-700 text-white text-sm font-medium button-hover hover:bg-indigo-800 shadow-md">
-            <span>Send weekly email summary</span>
-        </button>
-    </form>
 </section>
-
-@if (session('status'))
-    <div class="mb-6 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 text-sm">
-        {{ session('status') }}
-    </div>
-@elseif (session('error'))
-    <div class="mb-6 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 px-4 py-3 text-sm">
-        {{ session('error') }}
-    </div>
-@endif
 
 
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-14">
@@ -75,12 +56,12 @@
 
     {{-- Emotion Dashboard --}}
     <div class="bg-white rounded-3xl p-6 shadow-sm card-hover">
-        <h3 class="font-semibold mb-2">Emotion Dashboard</h3>
+        <h3 class="font-semibold mb-2">Weekly Summary</h3>
         <p class="text-sm text-gray-600 mb-6">
             See your weekly mood trends and habit completion.
         </p>
-        <a href="{{ route('journal.history') }}" class="text-indigo-600 text-sm font-medium hover:underline">
-            Open dashboard →
+        <a href="{{ route('dashboard.weekly-summary') }}" class="text-indigo-600 text-sm font-medium hover:underline">
+            View summary →
         </a>
     </div>
 

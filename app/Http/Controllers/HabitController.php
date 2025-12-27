@@ -6,6 +6,7 @@ use App\Models\Habit;
 use App\Models\HabitLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Google\Service\Calendar\Event;
 use Google\Service\Calendar\EventDateTime;
 use Google\Service\Calendar\EventReminders;
@@ -43,7 +44,6 @@ class HabitController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'frequency' => 'required|in:daily,weekdays,weekend',
-            'goal_type' => 'required|in:once,multiple_times,minutes',
             'reminder_time' => 'nullable|date_format:H:i',
         ]);
 
@@ -52,7 +52,6 @@ class HabitController extends Controller
             'title' => $validated['title'],
             'description' => $validated['description'] ?? null,
             'frequency' => $validated['frequency'],
-            'goal_type' => $validated['goal_type'],
             'reminder_time' => $validated['reminder_time'] ?? null,
             'current_streak' => 0,
             'best_streak' => 0,
@@ -89,7 +88,6 @@ class HabitController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'frequency' => 'required|in:daily,weekdays,weekend',
-            'goal_type' => 'required|in:once,multiple_times,minutes',
             'reminder_time' => 'nullable|date_format:H:i',
             'is_active' => 'boolean',
         ]);
@@ -109,6 +107,27 @@ class HabitController extends Controller
             abort(403);
         }
        
+        $user = Auth::user();
+        
+        // Delete Google Calendar event if habit was synced
+        if ($habit->google_event_id && $user->calendar_sync_enabled) {
+            try {
+                $service = GoogleCalendarController::googleClient($user);
+                $service->events->delete('primary', $habit->google_event_id);
+                Log::info('Google Calendar event deleted for habit', [
+                    'habit_id' => $habit->id,
+                    'event_id' => $habit->google_event_id,
+                ]);
+            } catch (\Exception $e) {
+                // Log error but continue with habit deletion
+                Log::warning('Failed to delete Google Calendar event when deleting habit', [
+                    'habit_id' => $habit->id,
+                    'event_id' => $habit->google_event_id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
+       
         $habit->delete();
 
         return redirect()->route('habits.index')
@@ -122,6 +141,18 @@ class HabitController extends Controller
     {
         if ($habit->user_id !== Auth::id()) {
             abort(403);
+        }
+
+        // Check if habit is active today based on frequency
+        if (!$habit->isActiveToday()) {
+            $message = match($habit->frequency) {
+                'weekdays' => 'This habit can only be completed on weekdays (Monday-Friday).',
+                'weekend' => 'This habit can only be completed on weekends (Saturday-Sunday).',
+                default => 'This habit cannot be completed today.',
+            };
+            
+            return redirect()->route('habits.index')
+                ->with('error', $message);
         }
        
         $validated = $request->validate([
@@ -256,22 +287,54 @@ class HabitController extends Controller
             abort(403);
         }
 
-        // Get recent logs
-        $recentLogs = $habit->logs()
+        // Get recent logs and filter to only show logs on active days for this habit's frequency
+        $allRecentLogs = $habit->logs()
             ->orderBy('logged_date', 'desc')
             ->limit(30)
             ->get();
+        
+        // Filter to only show logs on active days
+        $recentLogs = $allRecentLogs->filter(function($log) use ($habit) {
+            $logDate = $log->logged_date instanceof \Carbon\Carbon 
+                ? $log->logged_date->copy()
+                : \Carbon\Carbon::parse($log->logged_date);
+            $logDate->setTimezone('Asia/Dhaka')->startOfDay();
+            return $habit->isActiveOnDate($logDate);
+        })->values();
 
         // Calculate statistics (frequency‑aware)
-        $totalCompletions = $habit->logs()->where('completed', true)->count();
+        // Only count completions that occurred on active days for this habit's frequency
+        $allCompletedLogs = $habit->logs()->where('completed', true)->get();
+        $totalCompletions = 0;
+        
+        foreach ($allCompletedLogs as $log) {
+            $logDate = $log->logged_date instanceof \Carbon\Carbon 
+                ? $log->logged_date->copy()
+                : \Carbon\Carbon::parse($log->logged_date);
+            $logDate->setTimezone('Asia/Dhaka')->startOfDay();
+            
+            // Only count if this log is on an active day for the habit's frequency
+            if ($habit->isActiveOnDate($logDate)) {
+                $totalCompletions++;
+            }
+        }
+        
         $expectedDays = $habit->getExpectedDaysSinceCreation();
-        $completionRate = $expectedDays > 0 ? ($totalCompletions / $expectedDays) * 100 : 0;
+        $completionRate = $expectedDays > 0 ? min(($totalCompletions / $expectedDays) * 100, 100) : 0;
+        $completionRate = round($completionRate, 1);
+
+        // Recalculate streaks to ensure they're up to date with frequency-based logic
+        $habit->recalculateStreaks();
+        $habit->refresh();
 
         // Get streak info
         $currentStreak = $habit->current_streak;
         $bestStreak = $habit->best_streak;
 
-        $totalDays = $expectedDays; // show active days rather than raw calendar days
+        // Tracking duration: actual calendar days since creation (not frequency-aware)
+        $createdAt = $habit->created_at->copy()->setTimezone('Asia/Dhaka')->startOfDay();
+        $now = \Carbon\Carbon::now('Asia/Dhaka')->startOfDay();
+        $totalDays = $createdAt->diffInDays($now) + 1; // +1 to include today
 
         return view('habits.progress', compact(
             'habit',
