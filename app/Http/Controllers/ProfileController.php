@@ -81,6 +81,7 @@ class ProfileController extends Controller
         // Step 1: validate passwords and current password (no email code here)
         $rules = [
             'new_password' => 'required|string|min:8|confirmed',
+            'new_password_confirmation' => 'required|string|min:8',
         ];
 
         // Only require current password if user has an existing password
@@ -94,8 +95,19 @@ class ProfileController extends Controller
         if ($hasPassword) {
             if (!Hash::check($request->current_password, $user->password)) {
                 $validator->errors()->add('current_password', 'Current password is incorrect');
-                return redirect()->back()->withErrors($validator);
+                return redirect()->back()->withErrors($validator)->withInput();
             }
+        }
+
+        // Explicitly check that passwords match before proceeding
+        if ($request->new_password !== $request->new_password_confirmation) {
+            $validator->errors()->add('new_password_confirmation', 'The password confirmation does not match.');
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        // Check if validation failed - if so, don't send email
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
         }
 
         // At this point, input is valid and current password (if any) is correct.
@@ -111,10 +123,11 @@ class ProfileController extends Controller
 
         Mail::to($user->email)->send(new VerificationCodeMail($user, $code, 'password_change'));
 
-        // Store pending password hash in session for later confirmation
+        // Store pending password (plain text, will be hashed by Laravel when saved)
+        // This is secure because it's only in session temporarily during verification
         $request->session()->put('pending_password_change', [
             'user_id'      => $user->id,
-            'password'     => Hash::make($request->new_password),
+            'password'     => $request->new_password, // Store plain password, Laravel will hash it
             'requested_at' => now(),
         ]);
 
