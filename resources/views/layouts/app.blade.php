@@ -270,78 +270,9 @@ main { position: relative; z-index: 10; }
  </div>
 </nav>
 
-
 <main class="max-w-5xl mx-auto px-6 py-16">
-
-
-  <div class="mb-20">
-    <div class="relative mx-auto max-w-3xl">
-
-
-      <!-- Outer rainbow frame -->
-      <div class="rounded-[3.5rem] p-2
-                  bg-gradient-to-br from-pink-300 via-purple-300 to-sky-300
-                  shadow-[0_25px_80px_-20px_rgba(180,120,255,0.7)]">
-
-
-        <!-- Inner card -->
-        <div class="relative rounded-[3.2rem]
-                    bg-gradient-to-br from-pink-200 via-purple-200 to-sky-200
-                    px-14 py-14 text-center overflow-hidden">
-
-
-          <!-- Sticker blobs -->
-          <div class="absolute -top-16 -left-16 w-64 h-64 bg-pink-200 rounded-full opacity-40 blur-2xl"></div>
-          <div class="absolute -bottom-20 -right-20 w-72 h-72 bg-purple-200 rounded-full opacity-40 blur-2xl"></div>
-
-
-          <!-- Stars & hearts -->
-          <span class="absolute top-8 left-10 text-pink-400 text-2xl">★</span>
-          <span class="absolute bottom-14 left-16 text-purple-400 text-xl">♡</span>
-          <span class="absolute top-16 right-12 text-pink-400 text-2xl">♡</span>
-          <span class="absolute bottom-10 right-20 text-sky-400 text-xl">✦</span>
-
-
-          <!-- Mascot -->
-          <div class="absolute -top-10 left-1/2 -translate-x-1/2
-                      w-20 h-20 bg-yellow-200 rounded-full
-                      flex items-center justify-center text-3xl
-                      shadow-md">
-            😊
-        </div>
-
-
-        <!-- Quote -->
-        <blockquote
-            class="mt-6 text-[2.1rem] leading-snug text-gray-800
-                    font-medium"
-            style="font-family: 'Patrick Hand', cursive;"
-            >
-            {{ $dailyQuote['text'] }}
-        </blockquote>
-
-
-
-
-
-
-          <!-- Author -->
-          <div class="mt-6 text-base font-semibold text-purple-500">
-            — {{ $dailyQuote['author'] }}
-          </div>
-
-
-        </div>
-      </div>
-    </div>
-  </div>
-
-
   @yield('content')
-
-
 </main>
-
 
 <!-- FOOTER -->
 <footer class="mt-12 bg-indigo-900/95 backdrop-blur border-t border-indigo-700 text-white">
