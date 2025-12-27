@@ -58,12 +58,30 @@
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 Current Password
                             </label>
-                            <input type="password" name="current_password"
-                                   class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400"
-                                   required>
+                            <div class="relative">
+                                <input type="password" name="current_password" id="current_password"
+                                       class="w-full px-4 py-3 pr-10 rounded-xl border border-gray-300 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400"
+                                       required>
+                                <button 
+                                    type="button" 
+                                    onclick="togglePassword('current_password')"
+                                    class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700"
+                                >
+                                    <i class="fas fa-eye" id="current_password-eye"></i>
+                                </button>
+                            </div>
                             @error('current_password')
                                 <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                             @enderror
+                            <div class="mt-2">
+                                <a 
+                                    href="{{ route('password.reset.send.authenticated') }}" 
+                                    id="reset-password-link"
+                                    class="text-sm text-blue-600 hover:text-blue-500 underline"
+                                >
+                                    Forgot your current password? Reset it via email
+                                </a>
+                            </div>
                         </div>
                     @endif
 
@@ -71,9 +89,18 @@
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             New Password
                         </label>
-                        <input type="password" name="new_password"
-                               class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400"
-                               required>
+                        <div class="relative">
+                            <input type="password" name="new_password" id="new_password"
+                                   class="w-full px-4 py-3 pr-10 rounded-xl border border-gray-300 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400"
+                                   required>
+                            <button 
+                                type="button" 
+                                onclick="togglePassword('new_password')"
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700"
+                            >
+                                <i class="fas fa-eye" id="new_password-eye"></i>
+                            </button>
+                        </div>
                         @error('new_password')
                             <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                         @enderror
@@ -83,9 +110,18 @@
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             Confirm New Password
                         </label>
-                        <input type="password" name="new_password_confirmation"
-                               class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400"
-                               required>
+                        <div class="relative">
+                            <input type="password" name="new_password_confirmation" id="new_password_confirmation"
+                                   class="w-full px-4 py-3 pr-10 rounded-xl border border-gray-300 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400"
+                                   required>
+                            <button 
+                                type="button" 
+                                onclick="togglePassword('new_password_confirmation')"
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700"
+                            >
+                                <i class="fas fa-eye" id="new_password_confirmation-eye"></i>
+                            </button>
+                        </div>
                     </div>
 
                 </div>
@@ -108,5 +144,52 @@
     </div>
 
 </div>
+
+<script>
+function togglePassword(fieldId) {
+    const field = document.getElementById(fieldId);
+    const eye = document.getElementById(fieldId + '-eye');
+    
+    if (field.type === 'password') {
+        field.type = 'text';
+        eye.classList.remove('fa-eye');
+        eye.classList.add('fa-eye-slash');
+    } else {
+        field.type = 'password';
+        eye.classList.remove('fa-eye-slash');
+        eye.classList.add('fa-eye');
+    }
+}
+
+// Handle password reset link click
+document.addEventListener('DOMContentLoaded', function() {
+    const resetLink = document.getElementById('reset-password-link');
+    if (resetLink) {
+        resetLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Create and submit form outside of the parent form
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{{ route("password.reset.send.authenticated") }}';
+            form.style.display = 'none';
+            
+            // Add CSRF token
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = '_token';
+            csrfInput.value = '{{ csrf_token() }}';
+            form.appendChild(csrfInput);
+            
+            // Append to body (outside any other form) and submit
+            document.body.appendChild(form);
+            form.submit();
+            
+            return false;
+        });
+    }
+});
+</script>
 
 @endsection

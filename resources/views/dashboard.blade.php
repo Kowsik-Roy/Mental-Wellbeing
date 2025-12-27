@@ -24,9 +24,9 @@
                 <span class="absolute bottom-10 right-20 text-sky-400 text-xl">✦</span>
                 
                 <!-- Mascot -->
-                <div class="absolute -top-10 left-1/2 -translate-x-1/2
+                <div class="absolute -top-3 left-1/2 -translate-x-1/2
                             w-20 h-20 bg-yellow-200 rounded-full
-                            flex items-center justify-center text-3xl
+                            flex items-center justify-center text-4xl
                             shadow-md">
                     😊
                 </div>

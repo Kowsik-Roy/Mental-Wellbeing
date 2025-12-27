@@ -42,28 +42,52 @@
         
         <div>
             <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Password</label>
-            <input 
-                type="password" 
-                id="password" 
-                name="password" 
-                required
-                autocomplete="new-password"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ease-in-out duration-150"
-                placeholder="Enter your password"
-            >
+            <div class="relative">
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    required
+                    autocomplete="new-password"
+                    class="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ease-in-out duration-150"
+                    placeholder="Enter your password"
+                >
+                <button 
+                    type="button" 
+                    onclick="togglePassword('password')"
+                    class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700"
+                >
+                    <i class="fas fa-eye" id="password-eye"></i>
+                </button>
+            </div>
         </div>
         
         <div>
             <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
-            <input 
-                type="password" 
-                id="password_confirmation" 
-                name="password_confirmation" 
-                required
-                autocomplete="new-password"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ease-in-out duration-150"
-                placeholder="Confirm your password"
-            >
+            <div class="relative">
+                <input 
+                    type="password" 
+                    id="password_confirmation" 
+                    name="password_confirmation" 
+                    required
+                    autocomplete="new-password"
+                    class="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ease-in-out duration-150"
+                    placeholder="Confirm your password"
+                >
+                <button 
+                    type="button" 
+                    onclick="togglePassword('password_confirmation')"
+                    class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700"
+                >
+                    <i class="fas fa-eye" id="password_confirmation-eye"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="flex items-center justify-end">
+            <a href="{{ route('password.reset.request') }}" class="text-sm text-blue-600 hover:text-blue-500">
+                Forgot password?
+            </a>
         </div>
         
         <button 
@@ -100,6 +124,23 @@
         </a>
     </div>
 </div>
+
+<script>
+function togglePassword(fieldId) {
+    const field = document.getElementById(fieldId);
+    const eye = document.getElementById(fieldId + '-eye');
+    
+    if (field.type === 'password') {
+        field.type = 'text';
+        eye.classList.remove('fa-eye');
+        eye.classList.add('fa-eye-slash');
+    } else {
+        field.type = 'password';
+        eye.classList.remove('fa-eye-slash');
+        eye.classList.add('fa-eye');
+    }
+}
+</script>
 @endsection
 
 @section('footer')

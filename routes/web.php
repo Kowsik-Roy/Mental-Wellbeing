@@ -68,6 +68,19 @@ Route::middleware('guest')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
+| Password Reset Routes (Available for both guests and authenticated users)
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/forgot-password', [\App\Http\Controllers\Auth\PasswordResetController::class, 'showRequestForm'])->name('password.reset.request');
+Route::post('/forgot-password', [\App\Http\Controllers\Auth\PasswordResetController::class, 'sendResetCode'])->name('password.reset.send');
+Route::get('/reset-password/verify', [\App\Http\Controllers\Auth\PasswordResetController::class, 'showVerifyForm'])->name('password.reset.verify');
+Route::post('/reset-password/verify', [\App\Http\Controllers\Auth\PasswordResetController::class, 'verifyCode'])->name('password.reset.verify.code');
+Route::get('/reset-password', [\App\Http\Controllers\Auth\PasswordResetController::class, 'showResetForm'])->name('password.reset.form');
+Route::post('/reset-password', [\App\Http\Controllers\Auth\PasswordResetController::class, 'reset'])->name('password.reset');
+
+/*
+|--------------------------------------------------------------------------
 | Google Calendar OAuth (Public callback routes)
 |--------------------------------------------------------------------------
 */
@@ -103,6 +116,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/verify-password', [VerificationController::class, 'showPasswordVerificationForm'])->name('password.verify.show');
         Route::post('/verify-password', [VerificationController::class, 'verifyPasswordChange'])->name('password.verify.perform');
     });
+
+    // Password reset for authenticated users (sends code directly to their email)
+    Route::post('/password/reset/send', [\App\Http\Controllers\Auth\PasswordResetController::class, 'sendResetCodeForAuthenticated'])->name('password.reset.send.authenticated');
 
     // Journal
     Route::get('/journal', [JournalController::class, 'today'])->name('journal.today');

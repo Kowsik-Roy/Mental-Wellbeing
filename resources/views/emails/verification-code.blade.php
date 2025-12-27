@@ -1,7 +1,10 @@
 @php
-    $title = $type === 'registration'
-        ? 'Verify your email address'
-        : 'Confirm your password change';
+    $title = match($type) {
+        'registration' => 'Verify your email address',
+        'password_reset' => 'Reset your password',
+        'password_change' => 'Confirm your password change',
+        default => 'Verification code',
+    };
 @endphp
 
 <!DOCTYPE html>
@@ -23,6 +26,10 @@
         @if($type === 'registration')
             <p style="font-size:14px; color:#4b5563; margin-bottom:16px;">
                 Use the verification code below to complete your registration for the WellBeing app.
+            </p>
+        @elseif($type === 'password_reset')
+            <p style="font-size:14px; color:#4b5563; margin-bottom:16px;">
+                Use the verification code below to reset your password for the WellBeing app.
             </p>
         @else
             <p style="font-size:14px; color:#4b5563; margin-bottom:16px;">
