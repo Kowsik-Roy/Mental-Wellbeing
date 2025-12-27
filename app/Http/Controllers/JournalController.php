@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Journal;
+use App\Models\JournalBadge;
 use App\Services\HuggingFaceService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class JournalController extends Controller
 {
@@ -38,6 +40,9 @@ class JournalController extends Controller
         // Generate emotional reflection asynchronously (don't block the response)
         $this->generateReflectionAsync($journal);
 
+        // Check and award badges based on streak
+        $this->checkAndAwardBadges(auth()->id());
+
         return redirect()->route('journal.today')->with('success', 'Journal saved successfully!');
     }
 
@@ -66,6 +71,9 @@ class JournalController extends Controller
 
         // Regenerate emotional reflection if content or mood changed
         $this->generateReflectionAsync($journal);
+
+        // Check and award badges based on streak
+        $this->checkAndAwardBadges(auth()->id());
 
         return redirect()->route('journal.today')->with('success', 'Journal updated successfully!');
     }
@@ -104,10 +112,24 @@ class JournalController extends Controller
                           ->orderBy('count', 'desc')
                           ->get();
 
+        // Get earned badges from database
+        $earnedBadges = JournalBadge::where('user_id', auth()->id())
+            ->pluck('badge_key')
+            ->toArray();
+
+        // Check and award badges if needed (in case they weren't awarded before)
+        $this->checkAndAwardBadges(auth()->id());
+        
+        // Refresh earned badges after checking
+        $earnedBadges = JournalBadge::where('user_id', auth()->id())
+            ->pluck('badge_key')
+            ->toArray();
+
         return view('journal.history', [
             'entries' => $groupedEntries,
             'totalEntries' => $totalEntries,
             'moodStats' => $moodStats,
+            'earnedBadges' => $earnedBadges,
         ]);
     }
 
@@ -177,6 +199,92 @@ class JournalController extends Controller
             return "It's meaningful that you're taking time to reflect and write about your experiences.";
         } else {
             return "Your thoughtful reflection shows self-awareness, and expressing yourself here is a valuable practice.";
+        }
+    }
+
+    /**
+     * Calculate current journal streak for a user.
+     */
+    private function calculateJournalStreak(int $userId): int
+    {
+        // Get all journal entry dates for this user
+        $allDates = Journal::where('user_id', $userId)
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($entry) {
+                return Carbon::parse($entry->created_at)->toDateString();
+            })
+            ->unique()
+            ->values();
+
+        if ($allDates->isEmpty()) {
+            return 0;
+        }
+
+        // Calculate streak from today backwards
+        $streak = 0;
+        $expected = Carbon::today()->toDateString();
+
+        // Sort dates descending
+        $sorted = $allDates->sortDesc()->values();
+
+        foreach ($sorted as $date) {
+            if ($date === $expected) {
+                $streak++;
+                $expected = Carbon::parse($expected)->subDay()->toDateString();
+                continue;
+            }
+
+            // Allow streak to start from yesterday if no entry today
+            if ($streak === 0 && $date === Carbon::yesterday()->toDateString()) {
+                $streak++;
+                $expected = Carbon::yesterday()->subDay()->toDateString();
+                continue;
+            }
+
+            break;
+        }
+
+        return $streak;
+    }
+
+    /**
+     * Check current streak and award badges if milestones are reached.
+     */
+    private function checkAndAwardBadges(int $userId): void
+    {
+        $currentStreak = $this->calculateJournalStreak($userId);
+        
+        if ($currentStreak === 0) {
+            return;
+        }
+
+        $badgeDefinitions = JournalBadge::getBadgeDefinitions();
+
+        foreach ($badgeDefinitions as $badge) {
+            // Only award badge if streak meets requirement
+            if ($currentStreak >= $badge['days']) {
+                // Check if user already has this badge
+                $existingBadge = JournalBadge::where('user_id', $userId)
+                    ->where('badge_key', $badge['key'])
+                    ->first();
+
+                // Award badge if not already earned
+                if (!$existingBadge) {
+                    JournalBadge::create([
+                        'user_id' => $userId,
+                        'badge_key' => $badge['key'],
+                        'badge_name' => $badge['name'],
+                        'earned_at' => now(),
+                    ]);
+
+                    Log::info('Journal badge awarded', [
+                        'user_id' => $userId,
+                        'badge_key' => $badge['key'],
+                        'streak' => $currentStreak,
+                    ]);
+                }
+            }
         }
     }
 }

@@ -71,4 +71,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(HabitLog::class);
     }
+
+    /**
+     * Get the journal badges for the user.
+     */
+    public function journalBadges(): HasMany
+    {
+        return $this->hasMany(JournalBadge::class);
+    }
 }

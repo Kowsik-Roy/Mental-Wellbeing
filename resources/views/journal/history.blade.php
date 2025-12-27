@@ -181,16 +181,14 @@
 
     // 3) Badge rules
     $badgeList = [
-        ['days' => 3,  'label' => '🌱 Seedling (3-day streak)'],
-        ['days' => 7,  'label' => '🔥 Flame (7-day streak)'],
-        ['days' => 14, 'label' => '🌼 Bloom (14-day streak)'],
-        ['days' => 30, 'label' => '🏆 Champion (30-day streak)'],
+        ['days' => 3,  'key' => 'streak_3',  'label' => '🌱 Seedling (3-day streak)'],
+        ['days' => 7,  'key' => 'streak_7',  'label' => '🔥 Flame (7-day streak)'],
+        ['days' => 14, 'key' => 'streak_14', 'label' => '🌼 Bloom (14-day streak)'],
+        ['days' => 30, 'key' => 'streak_30', 'label' => '🏆 Champion (30-day streak)'],
     ];
 
-    $earnedBadges = [];
-    foreach ($badgeList as $b) {
-        if ($streak >= $b['days']) $earnedBadges[] = $b['label'];
-    }
+    // Use earned badges from database (passed from controller)
+    $earnedBadgeKeys = $earnedBadges ?? [];
 @endphp
 
 <!-- ✅ Achievement Badges -->
@@ -212,7 +210,9 @@
 
     <div class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4">
         @foreach($badgeList as $b)
-            @php $unlocked = $streak >= $b['days']; @endphp
+            @php 
+                $unlocked = $streak >= $b['days'] && in_array($b['key'], $earnedBadgeKeys);
+            @endphp
 
             <div class="rounded-xl p-4 border {{ $unlocked ? 'bg-indigo-50 border-indigo-200' : 'bg-gray-50 border-gray-200' }}">
                 <div class="flex items-center justify-between">
