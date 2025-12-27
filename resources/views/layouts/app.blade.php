@@ -6,7 +6,7 @@
 <title>@yield('title', 'Mental Wellness Companion')</title>
 <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
 <link rel="alternate icon" type="image/png" href="{{ asset('favicon.png') }}">
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://cdn.tailwindcss.com"></script>
 
 <style>
@@ -119,20 +119,13 @@ main { position: relative; z-index: 10; }
 <nav class="sticky top-0 z-50 bg-indigo-900/95 backdrop-blur border-b border-indigo-700 text-white shadow-lg">
  <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
 
- <!-- Logo with cute cloud & star -->
- <div class="flex items-center gap-3 relative">
- <div class="w-16 h-16 rounded-full bg-indigo-600 flex items-center justify-center font-bold text-white text-lg shadow-lg relative overflow-hidden">
- MWC
- <!-- tiny star -->
- <div class="absolute top-1 right-1 w-3 h-3 bg-yellow-300 rounded-full animate-[floatUpDown_2s_ease-in-out_infinite]"></div>
- <!-- tiny cloud -->
- <div class="absolute bottom-1 left-1 w-5 h-2 bg-white rounded-full animate-[floatSideways_3s_linear_infinite]"></div>
- </div>
- <div class="leading-tight">
- <div class="font-semibold text-lg">Mental Wellness Companion</div>
- <div class="text-xs text-indigo-200">Your peaceful space</div>
- </div>
- </div>
+<!-- Logo -->
+<div class="flex items-center gap-3"><img src="{{ asset('favicon.svg') }}" alt="Mental Wellness Companion Logo" class="w-10 h-10">
+  <div class="leading-tight">
+    <div class="font-semibold text-lg">Mental Wellness Companion</div>
+    <div class="text-xs text-indigo-200">Your peaceful space</div>
+  </div>
+</div>
 
  <!-- Navigation links with soft hover -->
  @auth
@@ -277,26 +270,8 @@ main { position: relative; z-index: 10; }
  </div>
 </nav>
 
-
-<main class="max-w-5xl mx-auto px-6 py-12">
- <!-- Daily Motivation Quote -->
- <div class="mb-10">
- <div class="bg-white/80 backdrop-blur rounded-3xl shadow-xl px-8 py-6 border border-indigo-200 text-center">
- <div class="text-indigo-900 text-lg font-semibold mb-2">
- Motivation for today 😄
- </div>
-
- <blockquote class="text-gray-700 italic text-xl leading-relaxed">
- “{{ $dailyQuote['text'] }}”
- </blockquote>
-
- <div class="mt-4 text-sm text-indigo-600 font-medium">
- — {{ $dailyQuote['author'] }}
- </div>
- </div>
- </div>
-
- @yield('content')
+<main class="max-w-5xl mx-auto px-6 py-16">
+  @yield('content')
 </main>
 
 <!-- FOOTER -->

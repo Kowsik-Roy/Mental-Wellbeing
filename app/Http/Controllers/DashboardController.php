@@ -106,7 +106,7 @@ class DashboardController extends Controller
 
         if ($moodStats->count() === 0 && count($habitStats) === 0) {
             return redirect()
-                ->route('dashboard')
+                ->route('dashboard.weekly-summary')
                 ->with('error', 'No data available for the previous week to generate a summary.');
         }
 
@@ -115,7 +115,7 @@ class DashboardController extends Controller
         );
 
         return redirect()
-            ->route('dashboard')
+            ->route('dashboard.weekly-summary')
             ->with('status', 'A weekly summary email has been sent to your inbox.');
     }
 

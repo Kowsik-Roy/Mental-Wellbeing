@@ -3,7 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>WellBeing | Welcome</title>
+<link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
 <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
 <link rel="alternate icon" type="image/png" href="{{ asset('favicon.png') }}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -14,8 +18,13 @@ body {
     background: linear-gradient(135deg, #0f172a, #1e293b, #0f172a);
     color: #fff;
     overflow-x: hidden;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding-bottom: 0;
 }
-main { position: relative; z-index: 10; }
+main { position: relative; z-index: 10; flex: 1; padding-bottom: 2rem; }
 
 @keyframes floatUpDown {0%,100%{transform:translateY(0);}50%{transform:translateY(-12px);}}
 @keyframes floatSideways {0%,100%{transform:translateX(0);}50%{transform:translateX(20px);}}
@@ -24,42 +33,64 @@ main { position: relative; z-index: 10; }
 /* Cards hover */
 .card-hover:hover { transform: translateY(-6px); box-shadow: 0 16px 28px rgba(0,0,0,0.15); transition: 0.3s; }
 
-/* Stars */
-.star { position: absolute; border-radius:50%; background:white; opacity:0.8; animation: twinkle 2s infinite; }
+/* Stars - fixed positioning to prevent layout shifts */
+.star { 
+    position: fixed; 
+    border-radius:50%; 
+    background:white; 
+    opacity:0.8; 
+    animation: twinkle 2s infinite; 
+    will-change: opacity;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Prevent layout shifts */
+header { min-height: 80px; z-index: 20; position: relative; }
+img { display: block; }
+footer { 
+    z-index: 20; 
+    position: relative;
+    margin-top: auto;
+    width: 100%;
+}
 </style>
 </head>
-<body class="relative min-h-screen overflow-hidden">
+<body class="relative min-h-screen">
 
 <!-- STARFIELD -->
+@php
+    // Use a fixed seed based on a constant to ensure stars are always in the same positions
+    mt_srand(42); // Fixed seed for consistent star positions
+@endphp
 @for ($i = 0; $i < 80; $i++)
-<div class="star" style="top: {{ rand(5, 95) }}%; left: {{ rand(5, 95) }}%; width: {{ rand(1,3) }}px; height: {{ rand(1,3) }}px; animation-duration: {{ rand(2,5) }}s;"></div>
+<div class="star" style="top: {{ mt_rand(5, 95) }}%; left: {{ mt_rand(5, 95) }}%; width: {{ mt_rand(1,3) }}px; height: {{ mt_rand(1,3) }}px; animation-duration: {{ mt_rand(2,5) }}s;"></div>
 @endfor
 
 <!-- HEADER -->
-<header class="relative z-20 max-w-6xl mx-auto px-6 py-6 flex items-center justify-between">
-    <div class="flex items-center gap-3">
-        <div class="w-16 h-16 rounded-full bg-indigo-600 flex items-center justify-center font-bold text-white text-lg shadow-lg relative overflow-hidden">
-            MWC
-                <!-- tiny star -->
-            <div class="absolute top-1 right-1 w-3 h-3 bg-yellow-300 rounded-full animate-[floatUpDown_2s_ease-in-out_infinite]"></div>
-                <!-- tiny cloud -->
-            <div class="absolute bottom-1 left-1 w-5 h-2 bg-white rounded-full animate-[floatSideways_3s_linear_infinite]"></div>
-         </div>
-        <div>
-            <div class="font-semibold text-lg">Mental Wellness Companion</div>
-            <p class="text-sm text-indigo-200/70">Habits • Journal • Mood</p>
+<header class="relative z-20 w-full px-6 py-6">
+    <div class="max-w-6xl mx-auto flex items-center justify-between gap-6">
+        <!-- Left: Logo and Name -->
+        <div class="flex items-center gap-3">
+            <img src="{{ asset('favicon.svg') }}" alt="WellBeing Logo" class="w-10 h-10 object-contain" width="40" height="40" loading="eager">
+            <div class="leading-tight">
+                <div class="font-semibold text-lg">Mental Wellness Companion</div>
+                <p class="text-sm text-indigo-200/70">Habits • Journal • Mood</p>
+            </div>
         </div>
+
+        <!-- Right: Navigation Buttons -->
+        <nav class="flex items-center gap-3 text-sm flex-shrink-0">
+            @auth
+                <a href="{{ url('/dashboard') }}" class="px-4 py-2 rounded-full bg-white text-slate-900 font-semibold shadow hover:shadow-lg transition">Dashboard</a>
+            @else
+                <a href="{{ route('login') }}" class="px-4 py-2 rounded-full border border-white/30 text-white hover:bg-white hover:text-slate-900 transition">Log in</a>
+                @if (Route::has('register'))
+                    <a href="{{ route('register') }}" class="px-4 py-2 rounded-full bg-indigo-500 hover:bg-indigo-400 text-white font-semibold transition">Get Started</a>
+                @endif
+            @endauth
+        </nav>
     </div>
-    <nav class="flex items-center gap-3 text-sm">
-        @auth
-            <a href="{{ url('/dashboard') }}" class="px-4 py-2 rounded-full bg-white text-slate-900 font-semibold shadow hover:shadow-lg transition">Dashboard</a>
-        @else
-            <a href="{{ route('login') }}" class="px-4 py-2 rounded-full border border-white/30 text-white hover:bg-white hover:text-slate-900 transition">Log in</a>
-            @if (Route::has('register'))
-                <a href="{{ route('register') }}" class="px-4 py-2 rounded-full bg-indigo-500 hover:bg-indigo-400 text-white font-semibold transition">Get Started</a>
-            @endif
-        @endauth
-    </nav>
 </header>
 
 <main class="max-w-6xl mx-auto px-6 py-12 relative z-10 space-y-12">
@@ -67,7 +98,6 @@ main { position: relative; z-index: 10; }
     <!-- HERO SECTION -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
         <div class="space-y-6">
-            <p class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/20 border border-indigo-400/30 text-indigo-100">Mental Wellbeing Toolkit</p>
             <h1 class="text-4xl lg:text-5xl font-bold leading-tight">
                 Track habits, journal moods and stay consistent every day.
             </h1>
@@ -104,7 +134,7 @@ main { position: relative; z-index: 10; }
 </main>
 
 <!-- FOOTER -->
-<footer class="mt-12 bg-indigo-900/95 backdrop-blur border-t border-indigo-700 text-white relative z-10">
+<footer class="mt-auto bg-indigo-900/95 backdrop-blur border-t border-indigo-700 text-white relative z-20 w-full">
     <div class="max-w-7xl mx-auto px-6 py-6">
         <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
             <!-- Left: Copyright -->
@@ -163,7 +193,7 @@ main { position: relative; z-index: 10; }
                 </h3>
                 <p class="text-gray-700 mb-2">For support and inquiries:</p>
                 <a href="mailto:support@mentalwellness.com" class="text-indigo-600 hover:text-indigo-700 font-medium">
-                    support@mentalwellness.com
+                    kowsik.roy@g.bracu.ac.bd
                 </a>
             </div>
 
@@ -176,7 +206,6 @@ main { position: relative; z-index: 10; }
                 <p class="text-gray-800 font-medium">
                     Mental Wellness Companion<br>
                     Dhaka, Bangladesh<br>
-                    <span class="text-sm text-gray-600">Asia/Dhaka Timezone</span>
                 </p>
             </div>
 

@@ -27,7 +27,13 @@ use App\Http\Controllers\AiChatController;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return response()
+        ->view('welcome')
+        ->header('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0')
+        ->header('Pragma', 'no-cache')
+        ->header('Expires', '0')
+        ->header('Last-Modified', gmdate('D, d M Y H:i:s') . ' GMT')
+        ->header('ETag', md5(time()));
 });
 
 Route::get('/meditation', function () {
