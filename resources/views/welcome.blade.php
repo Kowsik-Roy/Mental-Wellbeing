@@ -38,18 +38,15 @@ main { position: relative; z-index: 10; }
 <!-- HEADER -->
 <header class="relative z-20 max-w-6xl mx-auto px-6 py-6 flex items-center justify-between">
     <div class="flex items-center gap-3">
-        <div class="w-16 h-16 rounded-full bg-indigo-600 flex items-center justify-center font-bold text-white text-lg shadow-lg relative overflow-hidden">
-            MWC
-                <!-- tiny star -->
-            <div class="absolute top-1 right-1 w-3 h-3 bg-yellow-300 rounded-full animate-[floatUpDown_2s_ease-in-out_infinite]"></div>
-                <!-- tiny cloud -->
-            <div class="absolute bottom-1 left-1 w-5 h-2 bg-white rounded-full animate-[floatSideways_3s_linear_infinite]"></div>
-         </div>
-        <div>
-            <div class="font-semibold text-lg">Mental Wellness Companion</div>
-            <p class="text-sm text-indigo-200/70">Habits • Journal • Mood</p>
+    <!-- Logo -->
+        <div class="flex items-center gap-3"><img src="{{ asset('favicon.svg') }}" alt="Mental Wellness Companion Logo" class="w-10 h-10">
+            <div class="leading-tight">
+                <div class="font-semibold text-lg">Mental Wellness Companion</div>
+                <div class="text-xs text-indigo-200">Your peaceful space</div>
+            </div>
         </div>
     </div>
+
     <nav class="flex items-center gap-3 text-sm">
         @auth
             <a href="{{ url('/dashboard') }}" class="px-4 py-2 rounded-full bg-white text-slate-900 font-semibold shadow hover:shadow-lg transition">Dashboard</a>

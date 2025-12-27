@@ -119,20 +119,13 @@ main { position: relative; z-index: 10; }
 <nav class="sticky top-0 z-50 bg-indigo-900/95 backdrop-blur border-b border-indigo-700 text-white shadow-lg">
  <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
 
- <!-- Logo with cute cloud & star -->
- <div class="flex items-center gap-3 relative">
- <div class="w-16 h-16 rounded-full bg-indigo-600 flex items-center justify-center font-bold text-white text-lg shadow-lg relative overflow-hidden">
- MWC
- <!-- tiny star -->
- <div class="absolute top-1 right-1 w-3 h-3 bg-yellow-300 rounded-full animate-[floatUpDown_2s_ease-in-out_infinite]"></div>
- <!-- tiny cloud -->
- <div class="absolute bottom-1 left-1 w-5 h-2 bg-white rounded-full animate-[floatSideways_3s_linear_infinite]"></div>
- </div>
- <div class="leading-tight">
- <div class="font-semibold text-lg">Mental Wellness Companion</div>
- <div class="text-xs text-indigo-200">Your peaceful space</div>
- </div>
- </div>
+<!-- Logo -->
+<div class="flex items-center gap-3"><img src="{{ asset('favicon.svg') }}" alt="Mental Wellness Companion Logo" class="w-10 h-10">
+  <div class="leading-tight">
+    <div class="font-semibold text-lg">Mental Wellness Companion</div>
+    <div class="text-xs text-indigo-200">Your peaceful space</div>
+  </div>
+</div>
 
  <!-- Navigation links with soft hover -->
  @auth
@@ -278,26 +271,77 @@ main { position: relative; z-index: 10; }
 </nav>
 
 
-<main class="max-w-5xl mx-auto px-6 py-12">
- <!-- Daily Motivation Quote -->
- <div class="mb-10">
- <div class="bg-white/80 backdrop-blur rounded-3xl shadow-xl px-8 py-6 border border-indigo-200 text-center">
- <div class="text-indigo-900 text-lg font-semibold mb-2">
- Motivation for today 😄
- </div>
+<main class="max-w-5xl mx-auto px-6 py-16">
 
- <blockquote class="text-gray-700 italic text-xl leading-relaxed">
- “{{ $dailyQuote['text'] }}”
- </blockquote>
 
- <div class="mt-4 text-sm text-indigo-600 font-medium">
- — {{ $dailyQuote['author'] }}
- </div>
- </div>
- </div>
+  <div class="mb-20">
+    <div class="relative mx-auto max-w-3xl">
 
- @yield('content')
+
+      <!-- Outer rainbow frame -->
+      <div class="rounded-[3.5rem] p-2
+                  bg-gradient-to-br from-pink-300 via-purple-300 to-sky-300
+                  shadow-[0_25px_80px_-20px_rgba(180,120,255,0.7)]">
+
+
+        <!-- Inner card -->
+        <div class="relative rounded-[3.2rem]
+                    bg-gradient-to-br from-pink-200 via-purple-200 to-sky-200
+                    px-14 py-14 text-center overflow-hidden">
+
+
+          <!-- Sticker blobs -->
+          <div class="absolute -top-16 -left-16 w-64 h-64 bg-pink-200 rounded-full opacity-40 blur-2xl"></div>
+          <div class="absolute -bottom-20 -right-20 w-72 h-72 bg-purple-200 rounded-full opacity-40 blur-2xl"></div>
+
+
+          <!-- Stars & hearts -->
+          <span class="absolute top-8 left-10 text-pink-400 text-2xl">★</span>
+          <span class="absolute bottom-14 left-16 text-purple-400 text-xl">♡</span>
+          <span class="absolute top-16 right-12 text-pink-400 text-2xl">♡</span>
+          <span class="absolute bottom-10 right-20 text-sky-400 text-xl">✦</span>
+
+
+          <!-- Mascot -->
+          <div class="absolute -top-10 left-1/2 -translate-x-1/2
+                      w-20 h-20 bg-yellow-200 rounded-full
+                      flex items-center justify-center text-3xl
+                      shadow-md">
+            😊
+        </div>
+
+
+        <!-- Quote -->
+        <blockquote
+            class="mt-6 text-[2.1rem] leading-snug text-gray-800
+                    font-medium"
+            style="font-family: 'Patrick Hand', cursive;"
+            >
+            {{ $dailyQuote['text'] }}
+        </blockquote>
+
+
+
+
+
+
+          <!-- Author -->
+          <div class="mt-6 text-base font-semibold text-purple-500">
+            — {{ $dailyQuote['author'] }}
+          </div>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  @yield('content')
+
+
 </main>
+
 
 <!-- FOOTER -->
 <footer class="mt-12 bg-indigo-900/95 backdrop-blur border-t border-indigo-700 text-white">

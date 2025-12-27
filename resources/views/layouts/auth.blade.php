@@ -19,16 +19,13 @@
 <body class="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-950 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-md w-full space-y-8">
         <div class="bg-white rounded-2xl shadow-xl border border-indigo-100 p-8">
-            <!-- App Logo / Branding -->
-            <div class="flex flex-col items-center mb-6">
-                <div class="w-14 h-14 rounded-2xl bg-indigo-600 flex items-center justify-center font-bold text-white text-xl shadow-lg mb-2">
-                    MWC
-                </div>
-                <div class="text-center">
-                    <p class="text-sm font-semibold text-indigo-900">Mental Wellness Companion</p>
-                    <p class="text-xs text-gray-500">Your peaceful space</p>
-                </div>
+        <!-- Logo -->
+        <div class="flex items-center gap-3"><img src="{{ asset('favicon.svg') }}" alt="Mental Wellness Companion Logo" class="w-10 h-10">
+            <div class="leading-tight">
+                <div class="font-semibold text-lg">Mental Wellness Companion</div>
+                <div class="text-xs text-indigo-200">Your peaceful space</div>
             </div>
+        </div>
 
             <div class="mb-6 text-center">
                 <h1 class="text-2xl font-bold text-gray-900">@yield('heading')</h1>
