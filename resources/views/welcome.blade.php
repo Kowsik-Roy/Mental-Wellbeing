@@ -98,7 +98,6 @@ footer {
     <!-- HERO SECTION -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
         <div class="space-y-6">
-            <p class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/20 border border-indigo-400/30 text-indigo-100">Mental Wellbeing Toolkit</p>
             <h1 class="text-4xl lg:text-5xl font-bold leading-tight">
                 Track habits, journal moods and stay consistent every day.
             </h1>
