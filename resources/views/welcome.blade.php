@@ -68,27 +68,29 @@ footer {
 @endfor
 
 <!-- HEADER -->
-<header class="relative z-20 max-w-6xl mx-auto px-6 py-6 flex items-center justify-between gap-6">
-    <div class="flex items-center gap-4">
-        <div class="w-16 h-16 rounded-full bg-indigo-600 flex items-center justify-center shadow-lg relative overflow-hidden flex-shrink-0">
+<header class="relative z-20 w-full px-6 py-6">
+    <div class="max-w-6xl mx-auto flex items-center justify-between gap-6">
+        <!-- Left: Logo and Name -->
+        <div class="flex items-center gap-3">
             <img src="{{ asset('favicon.svg') }}" alt="WellBeing Logo" class="w-10 h-10 object-contain" width="40" height="40" loading="eager">
+            <div class="leading-tight">
+                <div class="font-semibold text-lg">Mental Wellness Companion</div>
+                <p class="text-sm text-indigo-200/70">Habits • Journal • Mood</p>
+            </div>
         </div>
-        <div class="leading-tight">
-            <div class="font-semibold text-lg">Mental Wellness Companion</div>
-            <p class="text-sm text-indigo-200/70">Habits • Journal • Mood</p>
-        </div>
-    </div>
 
-    <nav class="flex items-center gap-3 text-sm flex-shrink-0">
-        @auth
-            <a href="{{ url('/dashboard') }}" class="px-4 py-2 rounded-full bg-white text-slate-900 font-semibold shadow hover:shadow-lg transition">Dashboard</a>
-        @else
-            <a href="{{ route('login') }}" class="px-4 py-2 rounded-full border border-white/30 text-white hover:bg-white hover:text-slate-900 transition">Log in</a>
-            @if (Route::has('register'))
-                <a href="{{ route('register') }}" class="px-4 py-2 rounded-full bg-indigo-500 hover:bg-indigo-400 text-white font-semibold transition">Get Started</a>
-            @endif
-        @endauth
-    </nav>
+        <!-- Right: Navigation Buttons -->
+        <nav class="flex items-center gap-3 text-sm flex-shrink-0">
+            @auth
+                <a href="{{ url('/dashboard') }}" class="px-4 py-2 rounded-full bg-white text-slate-900 font-semibold shadow hover:shadow-lg transition">Dashboard</a>
+            @else
+                <a href="{{ route('login') }}" class="px-4 py-2 rounded-full border border-white/30 text-white hover:bg-white hover:text-slate-900 transition">Log in</a>
+                @if (Route::has('register'))
+                    <a href="{{ route('register') }}" class="px-4 py-2 rounded-full bg-indigo-500 hover:bg-indigo-400 text-white font-semibold transition">Get Started</a>
+                @endif
+            @endauth
+        </nav>
+    </div>
 </header>
 
 <main class="max-w-6xl mx-auto px-6 py-12 relative z-10 space-y-12">
