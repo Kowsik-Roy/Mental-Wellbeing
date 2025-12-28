@@ -71,22 +71,22 @@ footer {
 <header class="relative z-20 w-full px-6 py-6">
     <div class="max-w-6xl mx-auto flex items-center justify-between gap-6">
         <!-- Left: Logo and Name -->
-        <div class="flex items-center gap-3">
+        <a href="{{ url('/') }}" class="flex items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer">
             <img src="{{ asset('favicon.svg') }}" alt="WellBeing Logo" class="w-10 h-10 object-contain" width="40" height="40" loading="eager">
             <div class="leading-tight">
                 <div class="font-semibold text-lg">Mental Wellness Companion</div>
                 <p class="text-sm text-indigo-200/70">Habits • Journal • Mood</p>
             </div>
-        </div>
+        </a>
 
         <!-- Right: Navigation Buttons -->
         <nav class="flex items-center gap-3 text-sm flex-shrink-0">
             @auth
                 <a href="{{ url('/dashboard') }}"
                 class="px-5 py-2.5 rounded-full 
-                        bg-gradient-to-r from-indigo-200 to-purple-200 
+                        bg-gradient-to-r from-indigo-500 to-pink-600 
                         text-white font-semibold shadow-md 
-                        hover:shadow-indigo-500/40 hover:scale-105 
+                        hover:shadow-pink-300/50 hover:scale-110 
                         transition-all duration-300">
                     ✨ Dashboard
                 </a>
@@ -129,7 +129,7 @@ footer {
             </p>
             <div class="flex flex-wrap gap-4">
                 @auth
-                    <a href="{{ url('/dashboard') }}" class="px-5 py-3 rounded-lg bg-white text-slate-900 font-semibold shadow hover:shadow-lg transition">Open Dashboard</a>
+                    <a href="{{ url('/dashboard') }}" class="px-5 py-3 rounded-full bg-gradient-to-r from-indigo-500 to-pink-600 text-white font-semibold shadow-md hover:shadow-pink-300/50 hover:scale-110 transition-all duration-300">✨ Open Dashboard</a>
                 @else
                     <a href="{{ route('register') }}"
                     class="px-6 py-3 rounded-2xl 
