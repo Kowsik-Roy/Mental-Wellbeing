@@ -12,7 +12,7 @@
 <style>
 body {
  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
- background: linear-gradient(135deg, #D9C7FF, #F0EEFF);
+ background: linear-gradient(135deg, #f8d0eeff, #edf1f3ff);
  overflow-x: hidden;
  color: #1f2937;
 }
