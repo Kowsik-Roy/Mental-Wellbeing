@@ -50,41 +50,94 @@ class AiChatController extends Controller
 "- Do not provide instructions for self-harm.\n";
 
 
-        // ✅ NEW: Use OpenAI Responses API
-        $response = Http::withToken(env('OPENAI_API_KEY'))
-            ->timeout(30)
-            ->post('https://api.openai.com/v1/responses', [
-                'model' => env('OPENAI_MODEL', 'gpt-4.1-mini'),
-                'input' => array_merge(
+        // Use Google Gemini API
+        $geminiApiKey = env('GEMINI_API_KEY', 'AIzaSyBY4dIq90Ylu8UD2jRVeiVGrDjWxrh79Lw');
+        $model = env('GEMINI_MODEL', 'gemini-2.5-flash');
+        
+        if (empty($geminiApiKey)) {
+            \Log::error('Gemini API key not set');
+            $messages[] = [
+                'role' => 'assistant',
+                'content' => "I'm here with you, but I'm having trouble responding right now 💛",
+            ];
+            session(['ai_chat_messages' => $messages]);
+            return back();
+        }
+
+        // Convert messages to Gemini format
+        // Gemini uses contents array with alternating user/assistant messages
+        $geminiContents = [];
+        
+        // Add system instruction as system instruction (if supported) or first user message
+        // For now, we'll prepend it to the conversation
+        $conversationHistory = [];
+        
+        // Add system prompt as the first instruction
+        $fullPrompt = $systemPromptText . "\n\nPlease respond as the assistant in this conversation:\n\n";
+        
+        // Convert messages to text format for Gemini
+        foreach ($messages as $msg) {
+            if ($msg['role'] === 'user') {
+                $fullPrompt .= "User: " . $msg['content'] . "\n";
+            } elseif ($msg['role'] === 'assistant') {
+                $fullPrompt .= "Assistant: " . $msg['content'] . "\n";
+            }
+        }
+        
+        $fullPrompt .= "Assistant:";
+        
+        // Use Gemini generateContent API
+        $response = Http::timeout(30)
+            ->post("https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$geminiApiKey}", [
+                'contents' => [
                     [
-                        ['role' => 'system', 'content' => $systemPromptText],
-                    ],
-                    $messages
-                ),
-                'temperature' => 0.7,
+                        'parts' => [
+                            [
+                                'text' => $fullPrompt
+                            ]
+                        ]
+                    ]
+                ],
+                'generationConfig' => [
+                    'temperature' => 0.7,
+                    'topK' => 40,
+                    'topP' => 0.95,
+                    'maxOutputTokens' => 1024,
+                ],
             ]);
 
         if (!$response->successful()) {
-            // Optional: log the error for debugging
-            \Log::error('OpenAI API error', [
+            // Log the error for debugging
+            \Log::error('Gemini API error', [
                 'status' => $response->status(),
                 'body' => $response->body(),
             ]);
 
             $messages[] = [
                 'role' => 'assistant',
-                'content' => "I’m here with you, but I’m having trouble responding right now 💛",
+                'content' => "I'm here with you, but I'm having trouble responding right now 💛",
             ];
 
             session(['ai_chat_messages' => $messages]);
             return back();
         }
 
-        // ✅ NEW: Responses API returns output_text
-        $reply = $response->json('output_text');
+        // Extract response from Gemini API
+        $responseData = $response->json();
+        
+        // Handle Gemini API response structure
+        if (isset($responseData['candidates'][0]['content']['parts'][0]['text'])) {
+            $reply = $responseData['candidates'][0]['content']['parts'][0]['text'];
+        } elseif (isset($responseData['candidates'][0]['content']['parts'][0])) {
+            // Fallback if structure is slightly different
+            $reply = $responseData['candidates'][0]['content']['parts'][0]['text'] ?? null;
+        } else {
+            $reply = null;
+        }
 
-        if (!$reply) {
-            $reply = "I’m really glad you shared that 💛 Want to tell me a little more about what’s been weighing on you?";
+        if (!$reply || trim($reply) === '') {
+            \Log::warning('Gemini API returned empty response', ['response' => $responseData]);
+            $reply = "I'm really glad you shared that 💛 Want to tell me a little more about what's been weighing on you?";
         }
 
         $messages[] = ['role' => 'assistant', 'content' => $reply];
