@@ -17,7 +17,6 @@ use App\Http\Controllers\PushNotificationController;
 use App\Http\Controllers\AboutController;
 
 use App\Http\Controllers\MoodLogController;
-use App\Http\Controllers\EmergencyContactController;
 use App\Http\Controllers\AiChatController;
 
 /*
@@ -140,18 +139,16 @@ Route::middleware('auth')->group(function () {
     Route::post('/push/unsubscribe', [PushNotificationController::class, 'unsubscribe'])->name('push.unsubscribe');
     Route::get('/push/check-reminders', [PushNotificationController::class, 'checkReminders'])->name('push.check-reminders');
 
-    // Mood Tracker (ONLY ONCE)
+    // Mood Tracker
     Route::get('/mood', [MoodLogController::class, 'today'])->name('mood.today');
     Route::post('/mood/morning', [MoodLogController::class, 'saveMorning'])->name('mood.morning');
     Route::post('/mood/evening', [MoodLogController::class, 'saveEvening'])->name('mood.evening');
-
-    // If you already have these methods in MoodLogController, keep them:
-    Route::post('/mood/alert/confirm', [MoodLogController::class, 'confirmAlert'])->name('mood.alert.confirm');
-    Route::post('/mood/alert/dismiss', [MoodLogController::class, 'dismissAlert'])->name('mood.alert.dismiss');
-
-    // Emergency Contact
-    Route::get('/settings/emergency-contact', [EmergencyContactController::class, 'edit'])->name('emergency.edit');
-    Route::post('/settings/emergency-contact', [EmergencyContactController::class, 'update'])->name('emergency.update');
+    Route::post('/mood/morning/clear', [MoodLogController::class, 'clearMorning'])->name('mood.morning.clear');
+    Route::post('/mood/evening/clear', [MoodLogController::class, 'clearEvening'])->name('mood.evening.clear');
+    
+    // Context API (weather and air quality)
+    Route::get('/api/context/today', [MoodLogController::class, 'getContext'])->name('api.context.today');
+    Route::post('/api/location/update', [MoodLogController::class, 'updateLocation'])->name('api.location.update');
 
     // AI Chat
     Route::get('/ai-chat', [AiChatController::class, 'index'])->name('ai.chat');

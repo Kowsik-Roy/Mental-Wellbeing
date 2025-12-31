@@ -76,17 +76,6 @@
         </a>
     </div>
 
-    {{-- Emergency Contact --}}
-    <div class="bg-white rounded-3xl p-6 shadow-sm card-hover">
-        <h3 class="font-semibold mb-2">Emergency Contact</h3>
-        <p class="text-sm text-gray-600 mb-6">
-            Manage who gets notified if you confirm an alert.
-        </p>
-        <a href="{{ route('emergency.edit') }}" class="text-indigo-600 text-sm font-medium hover:underline">
-            Update contact →
-        </a>
-    </div>
-
     {{-- AI Support Chat (NEW) --}}
     <div class="bg-white rounded-3xl p-6 shadow-sm card-hover">
         <h3 class="font-semibold mb-2">AI Support Chat</h3>
