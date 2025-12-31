@@ -85,6 +85,12 @@ class Habit extends Model
         return $this->calculateCompletionPercentage($startDate, $endDate);
     }
 
+    /** Calculate completion percentage for a custom date range (respects frequency). */
+    public function getCompletionPercentageForRange($startDate, $endDate): float
+    {
+        return $this->calculateCompletionPercentage($startDate, $endDate);
+    }
+
     /** Calculate completion percentage for the current month (respects frequency). */
     public function getMonthlyCompletionPercentage(): float
     {
