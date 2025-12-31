@@ -29,6 +29,13 @@ class AiChatController extends Controller
 
     public function message(Request $request)
     {
+        // Check if this is an AJAX request first
+        $isAjax = $request->ajax() 
+            || $request->wantsJson() 
+            || $request->header('X-Requested-With') === 'XMLHttpRequest'
+            || $request->expectsJson()
+            || $request->header('Accept') === 'application/json';
+        
         $request->validate([
             'message' => 'required|string|max:2000',
         ]);
@@ -89,6 +96,16 @@ $safetyInstructions;
                 'content' => "I'm here with you, but I'm having trouble responding right now 💛 Please configure the Hugging Face API token.",
             ];
             session(['ai_chat_messages' => $messages]);
+            
+            // Return JSON for AJAX requests
+            if ($isAjax || $request->header('Accept') && str_contains($request->header('Accept'), 'application/json')) {
+                return response()->json([
+                    'success' => true,
+                    'message' => $messages[count($messages) - 1]['content'],
+                    'messages' => $messages
+                ], 200, ['Content-Type' => 'application/json']);
+            }
+            
             return back()->with('error', 'AI service is not available. Please configure HF_TOKEN in your .env file.');
         }
 
@@ -128,6 +145,22 @@ $safetyInstructions;
 
         // Save updated conversation
         session(['ai_chat_messages' => $messages]);
+
+        // Return JSON for AJAX requests (like the homepage chat widget)
+        // Always check Accept header first, then other methods
+        $acceptHeader = $request->header('Accept', '');
+        $wantsJson = str_contains($acceptHeader, 'application/json');
+        
+        if ($isAjax || $wantsJson || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+            return response()->json([
+                'success' => true,
+                'message' => $reply,
+                'messages' => $messages
+            ], 200, [
+                'Content-Type' => 'application/json',
+                'Cache-Control' => 'no-cache'
+            ]);
+        }
 
         return back();
     }

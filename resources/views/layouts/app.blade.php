@@ -330,7 +330,7 @@ main { position: relative; z-index: 10; }
 </main>
 
 <!-- FOOTER -->
-<footer class="mt-12 bg-indigo-900/95 backdrop-blur border-t border-indigo-700 text-white">
+<footer class="mt-12 bg-indigo-900/95 backdrop-blur border-t border-indigo-700 text-white relative z-10 pb-24 md:pb-6">
     <div class="max-w-7xl mx-auto px-6 py-6">
         <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
             <!-- Left: Copyright -->

@@ -85,10 +85,107 @@
             A gentle space designed for reflection, healing, and growth.
         </p>
     </div>
+    <!-- AI Chat Widget - Inline with Welcome -->
+    <div id="aiChatWidget" class="relative">
+        <!-- Chat Window -->
+        <div id="chatWindow" class="{{ session('chat_window_open', false) ? '' : 'hidden' }} w-80 h-[500px] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-gray-200 fixed top-24 right-6 z-50">
+            <!-- Chat Header -->
+            <div class="bg-gradient-to-r from-pink-500 to-purple-600 px-4 py-3 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-xl">
+                        💛
+                    </div>
+                    <div>
+                        <div class="text-white font-semibold text-sm">AI Companion</div>
+                        <div class="text-white/80 text-xs">Always here to listen</div>
+                    </div>
+                </div>
+                <button onclick="toggleAIChat()" class="text-white hover:bg-white/20 rounded-full p-1.5 transition">
+                    <i class="fas fa-times text-sm"></i>
+                </button>
+            </div>
+
+            <!-- Messages Container -->
+            <div id="chatMessages" class="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
+                @php
+                    $messages = session('ai_chat_messages', [
+                        ['role' => 'assistant', 'content' => "Hi 💛 I'm here to listen. How are you feeling right now?"],
+                    ]);
+                @endphp
+                @foreach($messages as $msg)
+                    @if($msg['role'] === 'user')
+                        <div class="flex justify-end items-start gap-2">
+                            <div class="bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-2xl rounded-tr-sm px-4 py-2.5 max-w-[75%] shadow-sm">
+                                <p class="text-sm">{{ $msg['content'] }}</p>
+                            </div>
+                        </div>
+                    @else
+                        <div class="flex items-start gap-2">
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-pink-300 to-purple-400 flex items-center justify-center text-sm flex-shrink-0">
+                                💛
+                            </div>
+                            <div class="bg-white rounded-2xl rounded-tl-sm px-4 py-2.5 shadow-sm max-w-[75%]">
+                                <p class="text-sm text-gray-800">{{ $msg['content'] }}</p>
+                            </div>
+                        </div>
+                    @endif
+                @endforeach
+            </div>
+
+            <!-- Typing Indicator (hidden by default) -->
+            <div id="typingIndicator" class="hidden px-4 pb-2">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-pink-300 to-purple-400 flex items-center justify-center text-sm flex-shrink-0">
+                        💛
+                    </div>
+                    <div class="bg-white rounded-2xl rounded-tl-sm px-4 py-2.5 shadow-sm">
+                        <div class="flex gap-1">
+                            <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0s;"></div>
+                            <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s;"></div>
+                            <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.4s;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="border-t border-gray-200 p-3 bg-white">
+                <form id="chatForm" action="{{ route('ai.chat.message') }}" method="POST" class="flex gap-2">
+                    @csrf
+                    <input 
+                        type="text" 
+                        id="chatInput" 
+                        name="message"
+                        placeholder="Type a message..." 
+                        class="flex-1 px-4 py-2 bg-gray-100 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:bg-white transition"
+                        maxlength="2000"
+                        autocomplete="off"
+                        required
+                    />
+                    <button 
+                        type="submit" 
+                        class="w-10 h-10 rounded-full bg-gradient-to-r from-pink-500 to-purple-600 text-white flex items-center justify-center hover:shadow-lg transition transform hover:scale-105"
+                    >
+                        <i class="fas fa-paper-plane text-sm"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Floating Chat Button -->
+        <button 
+            id="chatButton" 
+            onclick="toggleAIChat()" 
+            class="w-14 h-14 rounded-full bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-lg hover:shadow-xl transition transform hover:scale-110 flex items-center justify-center"
+            title="Chat with AI"
+        >
+            <i class="fas fa-comments text-xl"></i>
+        </button>
+    </div>
 </section>
 
 
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-14">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-14">
     {{-- Daily Journal --}}
     <div class="relative rounded-3xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 group hover:bg-gradient-to-br hover:from-blue-100 hover:to-blue-50 hover:border-blue-300 hover:-translate-y-1">
         <!-- Decorative corner accent -->
@@ -312,5 +409,231 @@
         </div>
     </div>
 </div>
+
+
+@push('styles')
+<style>
+/* Chat Widget Styles */
+#chatWindow {
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#chatMessages::-webkit-scrollbar {
+    width: 6px;
+}
+
+#chatMessages::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#chatMessages::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+
+#chatMessages::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+</style>
+@endpush
+
+@push('scripts')
+<script>
+let chatOpen = false;
+
+function toggleAIChat() {
+    const chatWindow = document.getElementById('chatWindow');
+    const chatButton = document.getElementById('chatButton');
+    
+    chatOpen = !chatOpen;
+    
+    if (chatOpen) {
+        chatWindow.classList.remove('hidden');
+        document.getElementById('chatInput').focus();
+        scrollToBottom();
+    } else {
+        chatWindow.classList.add('hidden');
+    }
+}
+
+function scrollToBottom() {
+    const messagesContainer = document.getElementById('chatMessages');
+    if (messagesContainer) {
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+}
+
+function addMessage(role, content) {
+    const messagesContainer = document.getElementById('chatMessages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `flex items-start gap-2 ${role === 'user' ? 'justify-end' : ''}`;
+    
+    if (role === 'user') {
+        messageDiv.innerHTML = `
+            <div class="bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-2xl rounded-tr-sm px-4 py-2.5 max-w-[75%] shadow-sm">
+                <p class="text-sm">${escapeHtml(content)}</p>
+            </div>
+        `;
+    } else {
+        messageDiv.innerHTML = `
+            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-pink-300 to-purple-400 flex items-center justify-center text-sm flex-shrink-0">
+                💛
+            </div>
+            <div class="bg-white rounded-2xl rounded-tl-sm px-4 py-2.5 shadow-sm max-w-[75%]">
+                <p class="text-sm text-gray-800">${escapeHtml(content)}</p>
+            </div>
+        `;
+    }
+    
+    messagesContainer.appendChild(messageDiv);
+    scrollToBottom();
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function showTypingIndicator() {
+    document.getElementById('typingIndicator').classList.remove('hidden');
+    scrollToBottom();
+}
+
+function hideTypingIndicator() {
+    document.getElementById('typingIndicator').classList.add('hidden');
+}
+
+// Handle form submission with AJAX
+document.getElementById('chatForm')?.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const input = document.getElementById('chatInput');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    // Create FormData BEFORE clearing the input (important!)
+    const formData = new FormData(this);
+    
+    // Verify message is in formData
+    const formMessage = formData.get('message');
+    if (!formMessage || !formMessage.trim()) {
+        console.error('Message is missing from form data');
+        addMessage('assistant', "Please enter a message 💛");
+        return;
+    }
+    
+    console.log('Sending message:', formMessage);
+    
+    // Add user message to UI
+    addMessage('user', message);
+    
+    // NOW clear the input AFTER creating FormData
+    input.value = '';
+    
+    // Show typing indicator
+    showTypingIndicator();
+    
+    // Disable input and button
+    input.disabled = true;
+    const submitBtn = this.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    
+    try {
+        
+        const response = await fetch('{{ route("ai.chat.message") }}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json',
+            },
+            credentials: 'same-origin',
+            redirect: 'manual'
+        });
+        
+        console.log('Response status:', response.status);
+        console.log('Response type:', response.type);
+        
+        // Check if it's a redirect (302, 301, or opaqueredirect)
+        if (response.status === 302 || response.status === 301 || response.type === 'opaqueredirect' || response.status === 0) {
+            console.log('Redirect detected - this means controller returned back()');
+            // The controller returned a redirect, so we need to reload
+            // But first, save chat state
+            sessionStorage.setItem('chatWindowOpen', 'true');
+            hideTypingIndicator();
+            setTimeout(() => {
+                location.reload();
+            }, 500);
+            return;
+        }
+        
+        // Try to parse as JSON
+        try {
+            const data = await response.json();
+            console.log('Got JSON response:', data);
+            hideTypingIndicator();
+            
+            if (data && data.message) {
+                addMessage('assistant', data.message);
+                input.disabled = false;
+                submitBtn.disabled = false;
+                input.focus();
+            } else {
+                console.error('Invalid JSON response:', data);
+                sessionStorage.setItem('chatWindowOpen', 'true');
+                setTimeout(() => {
+                    location.reload();
+                }, 500);
+            }
+        } catch (jsonError) {
+            console.error('Failed to parse JSON:', jsonError);
+            // Try to read as text
+            const text = await response.text();
+            console.log('Response text:', text.substring(0, 200));
+            sessionStorage.setItem('chatWindowOpen', 'true');
+            hideTypingIndicator();
+            setTimeout(() => {
+                location.reload();
+            }, 500);
+        }
+    } catch (error) {
+        console.error('Chat error:', error);
+        hideTypingIndicator();
+        addMessage('assistant', "I'm having trouble connecting 💛 Please check your internet connection and try again.");
+        input.disabled = false;
+        submitBtn.disabled = false;
+    }
+});
+
+// Auto-scroll on load and restore chat window state
+document.addEventListener('DOMContentLoaded', function() {
+    scrollToBottom();
+    
+    // Restore chat window state if it was open before reload
+    if (sessionStorage.getItem('chatWindowOpen') === 'true') {
+        const chatWindow = document.getElementById('chatWindow');
+        if (chatWindow) {
+            chatWindow.classList.remove('hidden');
+            document.getElementById('chatInput')?.focus();
+            scrollToBottom();
+        }
+        sessionStorage.removeItem('chatWindowOpen');
+    }
+});
+</script>
+@endpush
 
 @endsection
