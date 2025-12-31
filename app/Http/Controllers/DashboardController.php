@@ -16,7 +16,10 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        return view('dashboard');
+        $user = auth()->user();
+        $hasEmergencyContact = $user->emergencyContact()->exists();
+        
+        return view('dashboard', compact('hasEmergencyContact'));
     }
 
     /**

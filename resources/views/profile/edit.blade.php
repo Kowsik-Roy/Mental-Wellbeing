@@ -82,6 +82,100 @@
         </div>
     </div>
 
+    <!-- Emergency Contact Card -->
+    <div class="bg-red/90 backdrop-blur rounded-2xl shadow-xl border border-red-200">
+        <!-- Header -->
+        <div class="px-6 py-4 border-b border-red-100 bg-gradient-to-r from-red-400 to-rose-500 rounded-t-2xl">
+            <h2 class="text-xl font-bold text-white">
+                Emergency Contact
+            </h2>
+            <p class="text-red-50 text-sm mt-1">
+                Add a trusted contact who will be notified if you have 3 consecutive days of sad mood
+            </p>
+        </div>
+
+        <div class="p-6">
+            @php
+                $emergencyContact = auth()->user()->emergencyContact()->first();
+            @endphp
+
+            <form method="POST" action="{{ route('profile.emergency-contact.update') }}">
+                @csrf
+                @method('PUT')
+
+                <!-- Name -->
+                <div class="mb-6">
+                    <label for="emergency_name" class="block text-sm font-medium text-gray-800 mb-2">
+                        Contact Name <span class="text-red-600">*</span>
+                    </label>
+                    <input type="text"
+                           id="emergency_name"
+                           name="name"
+                           value="{{ old('name', $emergencyContact->name ?? '') }}"
+                           class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-red-400 focus:border-red-400"
+                           required>
+                    @error('name')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Email -->
+                <div class="mb-6">
+                    <label for="emergency_email" class="block text-sm font-medium text-gray-800 mb-2">
+                        Contact Email <span class="text-red-600">*</span>
+                    </label>
+                    <input type="email"
+                           id="emergency_email"
+                           name="email"
+                           value="{{ old('email', $emergencyContact->email ?? '') }}"
+                           class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-red-400 focus:border-red-400"
+                           required>
+                    @error('email')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                    <p class="mt-2 text-xs text-gray-500">
+                        This person will receive an alert if you have 3 consecutive days with sad mood.
+                    </p>
+                </div>
+
+                <!-- Relationship (Optional) -->
+                <div class="mb-6">
+                    <label for="emergency_relationship" class="block text-sm font-medium text-gray-800 mb-2">
+                        Relationship (Optional)
+                    </label>
+                    <input type="text"
+                           id="emergency_relationship"
+                           name="relationship"
+                           value="{{ old('relationship', $emergencyContact->relationship ?? '') }}"
+                           class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-red-400 focus:border-red-400"
+                           placeholder="e.g., Family, Friend, Partner">
+                    @error('relationship')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Actions -->
+                <div class="flex justify-end gap-3 pt-6 border-t border-gray-200">
+                    @if($emergencyContact)
+                        <form method="POST" action="{{ route('profile.emergency-contact.delete') }}" onsubmit="return confirm('Are you sure you want to remove your emergency contact?');" class="inline">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit"
+                                    class="px-6 py-2 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
+                                Remove Contact
+                            </button>
+                        </form>
+                    @endif
+
+                    <button type="submit"
+                            class="px-6 py-2 rounded-xl bg-red-400 text-white font-medium hover:bg-red-600 transition">
+                        {{ $emergencyContact ? 'Update Contact' : 'Save Contact' }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Danger Zone: Delete Account -->
     <div class="bg-white/90 backdrop-blur rounded-2xl shadow-lg border border-red-200">
         <div class="px-6 py-4 border-b border-red-100 bg-gradient-to-r from-red-400 to-rose-500 rounded-t-2xl">

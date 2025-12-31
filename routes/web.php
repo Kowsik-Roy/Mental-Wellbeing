@@ -113,6 +113,10 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/verify-password', [VerificationController::class, 'showPasswordVerificationForm'])->name('password.verify.show');
         Route::post('/verify-password', [VerificationController::class, 'verifyPasswordChange'])->name('password.verify.perform');
+
+        // Emergency Contact
+        Route::put('/emergency-contact', [ProfileController::class, 'updateEmergencyContact'])->name('profile.emergency-contact.update');
+        Route::delete('/emergency-contact', [ProfileController::class, 'deleteEmergencyContact'])->name('profile.emergency-contact.delete');
     });
 
     // Password reset for authenticated users (sends code directly to their email)

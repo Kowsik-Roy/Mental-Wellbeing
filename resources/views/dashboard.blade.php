@@ -2,6 +2,33 @@
 
 @section('content')
 
+{{-- Emergency Contact Alert --}}
+@if(!$hasEmergencyContact)
+<div class="fixed top-24 left-4 z-50 max-w-sm" id="emergency-contact-alert">
+    <div class="bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl shadow-xl border-2 border-red-800 p-4">
+        <div class="flex items-start gap-3">
+            <div class="flex-shrink-0">
+                <div class="w-10 h-10 bg-red-800 rounded-full flex items-center justify-center text-xl animate-pulse">
+                    ⚠️
+                </div>
+            </div>
+            <div class="flex-1">
+                <h3 class="font-bold text-base mb-1">Emergency Contact Required</h3>
+                <p class="text-xs text-red-100 mb-3">
+                    Add a contact to be notified if you have 3 consecutive sad days.
+                </p>
+                <a href="{{ route('profile.edit') }}" 
+                   class="inline-flex items-center gap-1 px-3 py-1.5 bg-white text-red-600 rounded-lg font-semibold text-xs hover:bg-red-50 transition shadow">
+                    <span>Add Contact</span>
+                    <i class="fas fa-arrow-right text-xs"></i>
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+@endif
+
 <!-- DAILY QUOTE SECTION -->
 <div class="mb-20">
     <div class="relative mx-auto max-w-3xl">

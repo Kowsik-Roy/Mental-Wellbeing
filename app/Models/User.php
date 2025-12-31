@@ -83,4 +83,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(JournalBadge::class);
     }
+
+    /**
+     * Get the emergency contact for the user.
+     */
+    public function emergencyContact(): HasMany
+    {
+        return $this->hasMany(EmergencyContact::class);
+    }
 }

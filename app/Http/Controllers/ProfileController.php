@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\EmergencyContact;
 use App\Models\VerificationCode;
 use App\Mail\VerificationCodeMail;
 use Illuminate\Http\Request;
@@ -134,5 +135,45 @@ class ProfileController extends Controller
         return redirect()
             ->route('password.verify.show')
             ->with('status', 'We sent a verification code to your email. Enter it to confirm your new password.');
+    }
+
+    /**
+     * Update emergency contact.
+     */
+    public function updateEmergencyContact(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'relationship' => 'nullable|string|max:255',
+        ]);
+
+        $user = Auth::user();
+
+        // Update or create emergency contact
+        $emergencyContact = EmergencyContact::updateOrCreate(
+            ['user_id' => $user->id],
+            [
+                'name' => $request->name,
+                'email' => $request->email,
+                'relationship' => $request->relationship,
+            ]
+        );
+
+        return redirect()->route('profile.edit')
+            ->with('success', 'Emergency contact saved successfully!');
+    }
+
+    /**
+     * Delete emergency contact.
+     */
+    public function deleteEmergencyContact(Request $request)
+    {
+        $user = Auth::user();
+        
+        EmergencyContact::where('user_id', $user->id)->delete();
+
+        return redirect()->route('profile.edit')
+            ->with('success', 'Emergency contact removed successfully!');
     }
 }

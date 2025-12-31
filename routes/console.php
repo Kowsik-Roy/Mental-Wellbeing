@@ -115,3 +115,9 @@ Schedule::command('weekly:send-summaries')->weeklyOn(1, '9:00');
 // Schedule: check for habit reminders every minute
 Schedule::command('habits:send-reminders')->everyMinute();
 
+// Schedule: check for consecutive sad moods and send emergency alerts daily at 9 PM
+Schedule::call(function () {
+    $service = app(\App\Services\EmergencyAlertService::class);
+    $service->checkAndSendAlerts();
+})->dailyAt('21:00')->timezone('Asia/Dhaka');
+
