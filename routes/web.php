@@ -17,6 +17,7 @@ use App\Http\Controllers\PushNotificationController;
 use App\Http\Controllers\AboutController;
 
 use App\Http\Controllers\AiChatController;
+use App\Http\Controllers\MoodLogController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,7 +36,10 @@ Route::get('/', function () {
 });
 
 Route::get('/meditation', function () {
-    return view('meditation');
+    $user = auth()->user();
+    $userCity = $user ? ($user->city ?? 'Dhaka') : 'Dhaka';
+    $userCountry = $user ? ($user->country ?? 'Bangladesh') : 'Bangladesh';
+    return view('meditation', compact('userCity', 'userCountry'));
 })->name('meditation');
 
 Route::get('/about', [AboutController::class, 'index'])->name('about.index');
@@ -162,4 +166,13 @@ Route::middleware('auth')->group(function () {
     // AI Chat
     Route::get('/ai-chat', [AiChatController::class, 'index'])->name('ai.chat');
     Route::post('/ai-chat/message', [AiChatController::class, 'message'])->name('ai.chat.message');
+
+    // Mood & Day Tracker
+    Route::get('/mood', [MoodLogController::class, 'today'])->name('mood.today');
+    Route::post('/mood/morning', [MoodLogController::class, 'saveMorning'])->name('mood.morning.save');
+    Route::post('/mood/evening', [MoodLogController::class, 'saveEvening'])->name('mood.evening.save');
+    Route::post('/mood/morning/clear', [MoodLogController::class, 'clearMorning'])->name('mood.morning.clear');
+    Route::post('/mood/evening/clear', [MoodLogController::class, 'clearEvening'])->name('mood.evening.clear');
+    Route::get('/api/context/today', [MoodLogController::class, 'getContext'])->name('api.context.today');
+    Route::post('/api/location/update', [MoodLogController::class, 'updateLocation'])->name('api.location.update');
 });
