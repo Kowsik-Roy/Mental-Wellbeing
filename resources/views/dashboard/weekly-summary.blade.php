@@ -63,7 +63,8 @@
                 {{ $periodStart->format('M d, Y') }} - {{ $periodEnd->format('M d, Y') }}
             </p>
         </div>
-        <div class="flex gap-3">
+
+        <div class="flex flex-col items-end gap-1">
             <form method="POST" action="{{ route('dashboard.send-summary') }}">
                 @csrf
                 <button
@@ -73,8 +74,12 @@
                     <span>Send Email Summary</span>
                 </button>
             </form>
+
+            <!-- Small helper text -->
+            <p class="text-xs text-gray-500">Get a summary of the last seven days</p>
         </div>
     </div>
+
 
     @if (session('status'))
         <div class="mb-6 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 text-sm">
