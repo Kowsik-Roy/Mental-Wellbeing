@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "framework": null,
+  "functions": {
+    "api/index.php": { "runtime": "vercel-php@0.6.0" }
+  },
+  "routes": [
+    { "src": "/(.*)", "dest": "/api/index.php" }
+  ],
+  "env": {
+    "APP_ENV": "production",
+    "APP_DEBUG": "false",
+    "APP_URL": "https://your-url.vercel.app",
+    "APP_KEY": "base64:/XL50aKROv+4VySHNL+QRvtt7aWqkvI9U3Kq4jPj6CA=",
+    "LOG_CHANNEL": "stderr",
+    "CACHE_DRIVER": "array",
+    "SESSION_DRIVER": "cookie"
+  }
+}
