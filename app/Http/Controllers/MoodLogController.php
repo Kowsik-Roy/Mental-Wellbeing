@@ -515,15 +515,15 @@ class MoodLogController extends Controller
 
         // Priority order: AQI > Temperature > Rain > Good weather
         if ($air && $air['aqi'] >= 150) {
-            $todayTip = 'Air quality is poor today. Prefer indoor activities.';
+            $todayTip = '🌫️ Air quality is poor today. Prefer indoor activities.';
         } elseif ($weather && $weather['temp_c'] >= 32) {
-            $todayTip = "It's hot today — drink water and take breaks.";
+            $todayTip = "☀️ It's hot today — drink water and take breaks.";
         } elseif ($weather && $weather['is_rainy']) {
-            $todayTip = 'Rainy day — keep plans light or indoor.';
+            $todayTip = '🌧️ Rainy day — keep plans light or indoor.';
         } elseif ($air && $air['aqi'] < 100 && $weather && $weather['temp_c'] < 28) {
-            $todayTip = 'Nice weather today — a short walk may help.';
+            $todayTip = '🌤️ Nice weather today — a short walk may help.';
         } else {
-            $todayTip = 'Take care of yourself today.';
+            $todayTip = '💙 Take care of yourself today.';
         }
 
         return [
