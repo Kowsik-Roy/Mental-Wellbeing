@@ -140,10 +140,10 @@
                                     <a href="{{ route('habits.edit', $habit) }}" class="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm flex items-center">
                                         <i class="fas fa-edit mr-1"></i> Edit
                                     </a>
-                                    <form method="POST" action="{{ route('habits.destroy', $habit) }}" onsubmit="return confirm('Delete this habit?')" class="inline-block">
+                                    <form method="POST" action="{{ route('habits.destroy', $habit) }}" id="delete-habit-form-{{ $habit->id }}" class="inline-block">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm flex items-center">
+                                        <button type="button" onclick="showConfirmModal('Delete Habit', 'Are you sure you want to delete this habit? This action cannot be undone.', function() { document.getElementById('delete-habit-form-{{ $habit->id }}').submit(); })" class="px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm flex items-center">
                                             <i class="fas fa-trash mr-1"></i> Delete
                                         </button>
                                     </form>

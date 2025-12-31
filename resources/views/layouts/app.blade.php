@@ -363,6 +363,37 @@ main { position: relative; z-index: 10; }
     </div>
 </footer>
 
+<!-- Custom Confirmation Modal -->
+<div id="confirmModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 relative shadow-2xl">
+        <!-- Close Button -->
+        <button onclick="closeConfirmModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition">
+            <i class="fas fa-times text-xl"></i>
+        </button>
+
+        <!-- Icon -->
+        <div class="text-center mb-4">
+            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-exclamation-triangle text-red-600 text-2xl"></i>
+            </div>
+            <h3 id="confirmModalTitle" class="text-2xl font-bold text-gray-900 mb-2">Confirm Action</h3>
+            <p id="confirmModalMessage" class="text-gray-600 mb-6"></p>
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex gap-3">
+            <button onclick="closeConfirmModal()" 
+                    class="flex-1 px-4 py-3 bg-gray-200 text-gray-700 rounded-xl font-medium hover:bg-gray-300 transition">
+                Cancel
+            </button>
+            <button id="confirmModalButton" 
+                    class="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 transition">
+                Confirm
+            </button>
+        </div>
+    </div>
+</div>
+
 <!-- Contact Us Modal -->
 <div id="contactModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4">
     <div class="bg-white rounded-3xl max-w-2xl w-full p-8 relative max-h-[90vh] overflow-y-auto">
@@ -438,6 +469,34 @@ main { position: relative; z-index: 10; }
 </div>
 
 <script>
+// Custom Confirmation Modal Functions
+let confirmModalCallback = null;
+
+function showConfirmModal(title, message, onConfirm) {
+    document.getElementById('confirmModalTitle').textContent = title;
+    document.getElementById('confirmModalMessage').textContent = message;
+    confirmModalCallback = onConfirm;
+    document.getElementById('confirmModal').classList.remove('hidden');
+    document.getElementById('confirmModal').classList.add('flex');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeConfirmModal() {
+    document.getElementById('confirmModal').classList.add('hidden');
+    document.getElementById('confirmModal').classList.remove('flex');
+    document.body.style.overflow = 'auto';
+    confirmModalCallback = null;
+}
+
+// Handle confirm button click (will be set up in DOMContentLoaded)
+
+// Close modal when clicking outside
+document.getElementById('confirmModal')?.addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeConfirmModal();
+    }
+});
+
 function openContactModal() {
     document.getElementById('contactModal').classList.remove('hidden');
     document.getElementById('contactModal').classList.add('flex');
@@ -457,16 +516,31 @@ document.getElementById('contactModal')?.addEventListener('click', function(e) {
     }
 });
 
-// Close modal with Escape key
+// Close contact modal with Escape key (handled above for confirm modal)
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
-        closeContactModal();
+        if (!document.getElementById('confirmModal').classList.contains('hidden')) {
+            closeConfirmModal();
+        } else {
+            closeContactModal();
+        }
     }
 });
 </script>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+ // Handle confirm button click
+ const confirmButton = document.getElementById('confirmModalButton');
+ if (confirmButton) {
+     confirmButton.addEventListener('click', function() {
+         if (confirmModalCallback) {
+             confirmModalCallback();
+         }
+         closeConfirmModal();
+     });
+ }
+
  // User menu dropdown (only if user is authenticated)
  const btn = document.getElementById('userMenuButton');
  const menu = document.getElementById('userDropdown');
