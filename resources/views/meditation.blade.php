@@ -6,19 +6,27 @@
 <style>
     /* Cozy gradient background */
     .meditation-container {
-        background: linear-gradient(135deg, #fef3f2 0%, #fdf2f8 25%, #f3e8ff 50%, #e0e7ff 75%, #dbeafe 100%);
+        background: linear-gradient(135deg,
+            #fffaf7 0%,
+            #fde2cf 30%,
+            #eaa6c2ff 55%,
+            #e9d5ff 80%,
+            #c7d2fe 100%
+        );
         min-height: calc(100vh - 200px);
         padding: 2rem 0;
     }
 
+
     /* Cozy timer card */
     .timer-card {
-        background: linear-gradient(135deg, #ffffff 0%, #fef7ff 100%);
-        border: 2px solid rgba(251, 146, 60, 0.2);
-        box-shadow: 0 20px 60px -15px rgba(251, 146, 60, 0.3),
-                    0 10px 25px -5px rgba(139, 92, 246, 0.2);
-        transition: all 0.3s ease;
+        background: linear-gradient(135deg, #ffffff 0%, #fff5fb 100%);
+        border: 1px solid rgba(248, 200, 220, 0.5);
+        box-shadow:
+            0 12px 40px rgba(248, 200, 220, 0.35),
+            0 6px 20px rgba(199, 210, 254, 0.25);
     }
+
 
     .timer-card:hover {
         transform: translateY(-4px);
@@ -28,32 +36,31 @@
 
     /* Breathing circle with cozy colors */
     .breathing-circle {
-        background: linear-gradient(135deg, 
-            #fbbf24 0%, 
-            #f59e0b 25%, 
-            #fb7185 50%, 
-            #ec4899 75%, 
-            #a855f7 100%);
-        box-shadow: 
-            0 0 40px rgba(251, 146, 60, 0.4),
-            0 0 80px rgba(236, 72, 153, 0.3),
-            inset 0 0 30px rgba(255, 255, 255, 0.3);
+        background: linear-gradient(135deg,
+            #fde2cf 0%,
+            #f8c8dc 35%,
+            #e9d5ff 65%,
+            #c7d2fe 100%
+        );
+        box-shadow:
+            0 0 30px rgba(248, 200, 220, 0.4),
+            0 0 60px rgba(233, 213, 255, 0.3),
+            inset 0 0 25px rgba(255, 255, 255, 0.4);
     }
+
 
     /* Breathing glow animation */
     .breathing-glow {
         background: radial-gradient(
-            circle at 35% 30%,
-            rgba(251, 191, 36, 0.8),
-            rgba(251, 113, 133, 0.6),
-            rgba(236, 72, 153, 0.4),
-            rgba(168, 85, 247, 0.2),
+            circle at 40% 35%,
+            rgba(253, 226, 207, 0.8),
+            rgba(248, 200, 220, 0.6),
+            rgba(233, 213, 255, 0.4),
+            rgba(199, 210, 254, 0.25),
             rgba(255, 255, 255, 0)
         );
-        transform: scale(0.85);
-        opacity: 0.9;
-        transition: opacity 0.3s ease;
     }
+
 
     .breathing-on .breathing-glow {
         animation: breatheCozy 6s ease-in-out infinite;
@@ -118,12 +125,11 @@
 
     /* Cozy buttons */
     .btn-cozy {
-        background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-        color: white;
-        font-weight: 600;
-        box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4);
-        transition: all 0.3s ease;
+        background: linear-gradient(135deg, #f8c8dc 0%, #fde2cf 100%);
+        color: #7c3aed;
+        box-shadow: 0 4px 12px rgba(248, 200, 220, 0.4);
     }
+
 
     .btn-cozy:hover {
         transform: translateY(-2px);
@@ -132,11 +138,9 @@
     }
 
     .btn-pause {
-        background: linear-gradient(135deg, #fb7185 0%, #ec4899 100%);
-        color: white;
-        font-weight: 600;
-        box-shadow: 0 4px 15px rgba(251, 113, 133, 0.4);
+        background: linear-gradient(135deg, #fda4af 0%, #f8c8dc 100%);
     }
+
 
     .btn-pause:hover {
         transform: translateY(-2px);
@@ -145,11 +149,9 @@
     }
 
     .btn-reset {
-        background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);
-        color: white;
-        font-weight: 600;
-        box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);
+        background: linear-gradient(135deg, #e9d5ff 0%, #c7d2fe 100%);
     }
+
 
     .btn-reset:hover {
         transform: translateY(-2px);
@@ -172,12 +174,11 @@
     /* Timer display */
     .timer-display {
         font-family: 'Courier New', monospace;
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        text-shadow: 0 2px 10px rgba(251, 191, 36, 0.3);
+        color: #111827; /* soft black, better than pure #000 */
+        text-shadow: none;
     }
+
+
 </style>
 @endpush
 
@@ -284,10 +285,11 @@
                     <div class="breathing-glow absolute inset-0 rounded-full"></div>
                     
                     <div class="breathing-circle w-[240px] h-[240px] rounded-full flex flex-col items-center justify-center relative z-10">
-                        <div id="timer" class="timer-display text-6xl font-bold text-white mb-3">
+                        <div id="timer" class="timer-display text-6xl font-bold mb-3">
+
                             05:00
                         </div>
-                        <div id="breathText" class="text-lg font-semibold text-white/90">
+                        <div id="breathText" class="text-lg font-semibold text-black/90">
                             Ready 🌿
                         </div>
                     </div>

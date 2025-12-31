@@ -434,26 +434,30 @@
 
     // Delete confirmation
     function confirmDelete(url) {
-        if (confirm("Are you sure you want to delete today's journal entry? This action cannot be undone.")) {
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = url;
+        showConfirmModal(
+            "Delete Journal Entry",
+            "Are you sure you want to delete today's journal entry? This action cannot be undone.",
+            function() {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = url;
 
-            const csrfToken = document.createElement('input');
-            csrfToken.type = 'hidden';
-            csrfToken.name = '_token';
-            csrfToken.value = '{{ csrf_token() }}';
-            form.appendChild(csrfToken);
+                const csrfToken = document.createElement('input');
+                csrfToken.type = 'hidden';
+                csrfToken.name = '_token';
+                csrfToken.value = '{{ csrf_token() }}';
+                form.appendChild(csrfToken);
 
-            const methodField = document.createElement('input');
-            methodField.type = 'hidden';
-            methodField.name = '_method';
-            methodField.value = 'DELETE';
-            form.appendChild(methodField);
+                const methodField = document.createElement('input');
+                methodField.type = 'hidden';
+                methodField.name = '_method';
+                methodField.value = 'DELETE';
+                form.appendChild(methodField);
 
-            document.body.appendChild(form);
-            form.submit();
-        }
+                document.body.appendChild(form);
+                form.submit();
+            }
+        );
     }
 </script>
 @endpush

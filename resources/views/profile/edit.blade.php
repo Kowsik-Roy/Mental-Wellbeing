@@ -157,10 +157,10 @@
                 <!-- Actions -->
                 <div class="flex justify-end gap-3 pt-6 border-t border-gray-200">
                     @if($emergencyContact)
-                        <form method="POST" action="{{ route('profile.emergency-contact.delete') }}" onsubmit="return confirm('Are you sure you want to remove your emergency contact?');" class="inline">
+                        <form method="POST" action="{{ route('profile.emergency-contact.delete') }}" id="delete-emergency-contact-form" class="inline">
                             @csrf
                             @method('DELETE')
-                            <button type="submit"
+                            <button type="button" onclick="showConfirmModal('Remove Emergency Contact', 'Are you sure you want to remove your emergency contact?', function() { document.getElementById('delete-emergency-contact-form').submit(); })"
                                     class="px-6 py-2 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
                                 Remove Contact
                             </button>
@@ -190,11 +190,11 @@
             <p class="text-sm text-gray-700">
                 This action <span class="font-semibold text-red-600">cannot be undone</span>. All your habits, journal entries, and data will be permanently deleted.
             </p>
-            <form method="POST" action="{{ route('profile.destroy') }}" onsubmit="return confirm('Are you sure you want to delete your account? This cannot be undone.');">
+            <form method="POST" action="{{ route('profile.destroy') }}" id="delete-account-form">
                 @csrf
                 @method('DELETE')
                 <input type="hidden" name="confirm_delete" value="DELETE">
-                <button type="submit"
+                <button type="button" onclick="showConfirmModal('Delete Account', 'Are you sure you want to delete your account? This action cannot be undone. All your habits, journal entries, and data will be permanently deleted.', function() { document.getElementById('delete-account-form').submit(); })"
                         class="w-full md:w-auto px-6 py-2 rounded-xl bg-red-600 text-white font-medium hover:bg-red-700 transition flex items-center justify-center gap-2">
                      Delete Account
                 </button>

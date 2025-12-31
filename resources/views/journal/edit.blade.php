@@ -213,8 +213,8 @@
                     @method('DELETE')
 
                     <button 
-                        type="submit" 
-                        onclick="return confirm('Are you sure you want to delete this journal entry? This action cannot be undone.')"
+                        type="button" 
+                        onclick="showConfirmModal('Delete Journal Entry', 'Are you sure you want to delete this journal entry? This action cannot be undone.', function() { document.querySelector('form[action=\'{{ route('journal.destroy', $journal->id) }}\']').submit(); })"
                         class="btn-danger w-full text-white py-3 px-6 rounded-xl font-semibold text-lg transition duration-200 shadow-md hover:shadow-lg"
                     >
                         <span>🗑️</span>

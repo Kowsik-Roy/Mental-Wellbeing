@@ -74,8 +74,8 @@ footer {
         <a href="{{ url('/') }}" class="flex items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer">
             <img src="{{ asset('favicon.svg') }}" alt="WellBeing Logo" class="w-10 h-10 object-contain" width="40" height="40" loading="eager">
             <div class="leading-tight">
-                <div class="font-semibold text-lg">Mental Wellness Companion</div>
-                <p class="text-sm text-indigo-200/70">Habits • Journal • Mood</p>
+                <div class="font-semibold text-lg">Mental Wellbeing</div>
+                <p class="text-sm text-indigo-200/70">Mental Wellness Companion</p>
             </div>
         </a>
 

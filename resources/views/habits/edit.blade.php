@@ -125,10 +125,10 @@
             </form>
 
             <!-- DELETE FORM (SEPARATE) -->
-            <form method="POST" action="{{ route('habits.destroy', $habit) }}" class="mt-4" onsubmit="return confirm('Are you sure you want to delete this habit?');">
+            <form method="POST" action="{{ route('habits.destroy', $habit) }}" id="delete-habit-form" class="mt-4">
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="w-full px-4 py-2 border-2 border-red-400 text-red-600 rounded-lg hover:bg-red-50">
+                <button type="button" onclick="showConfirmModal('Delete Habit', 'Are you sure you want to delete this habit? This action cannot be undone.', function() { document.getElementById('delete-habit-form').submit(); })" class="w-full px-4 py-2 border-2 border-red-400 text-red-600 rounded-lg hover:bg-red-50">
                     <i class="fas fa-trash mr-2"></i> Delete Habit
                 </button>
             </form>
