@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Models\Journal;
 use App\Models\Habit;
-use App\Models\HabitLog;
 use App\Mail\WeeklySummaryMail;
 
 class DashboardController extends Controller
@@ -16,10 +15,7 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        $user = auth()->user();
-        $hasEmergencyContact = $user->emergencyContact()->exists();
-        
-        return view('dashboard', compact('hasEmergencyContact'));
+        return view('dashboard');
     }
 
     /**
@@ -29,20 +25,14 @@ class DashboardController extends Controller
     {
         $user = $request->user();
 
-        // Use previous full week: Monday to Sunday (matching habit's week definition)
-        // Week starts on Monday and ends on Sunday
-        // Use Asia/Dhaka timezone explicitly
+        // Use last 7 days (rolling 7 days from today, including today)
         $now = \Carbon\Carbon::now('Asia/Dhaka');
-        $lastMonday = $now->copy()->subWeek()->startOfWeek(\Carbon\Carbon::MONDAY);
-        $lastSunday = $lastMonday->copy()->endOfWeek(\Carbon\Carbon::SUNDAY);
-        
-        $from = $lastMonday->startOfDay();
-        $to = $lastSunday->endOfDay();
+        $from = $now->copy()->subDays(6)->startOfDay(); // Last 7 days including today
+        $to = $now->copy()->endOfDay();
         $periodLabel = $from->format('M d, Y') . ' - ' . $to->format('M d, Y');
 
-        // Mood stats for the period
+        // Mood stats for the last 7 days
         // Query by date range, converting UTC timestamps to Asia/Dhaka dates
-        // Use CONVERT_TZ to convert created_at from UTC to Asia/Dhaka, then filter by date
         $fromDate = $from->format('Y-m-d');
         $toDate = $to->format('Y-m-d');
         
@@ -54,54 +44,19 @@ class DashboardController extends Controller
             ->groupBy('mood')
             ->get();
 
-        // Habit stats for the Monday-Sunday week period
+        // Habit stats for the last 7 days
         $habitStats = [];
         $habits = Habit::where('user_id', $user->id)
             ->where('is_active', true)
             ->get();
 
         foreach ($habits as $habit) {
-            // Calculate completion percentage for the Monday-Sunday week period
-            $completedDays = 0;
-            $expectedDays = 0;
-            
-            // Iterate through each day in the Monday-Sunday period
-            $currentDate = $from->copy();
-            while ($currentDate <= $to) {
-                // Check if this date is active for the habit's frequency
-                $isActive = false;
-                if ($habit->frequency === 'daily') {
-                    $isActive = true;
-                } elseif ($habit->frequency === 'weekdays') {
-                    $isActive = $currentDate->isWeekday();
-                } elseif ($habit->frequency === 'weekend') {
-                    $isActive = $currentDate->isWeekend();
-                }
-                
-                if ($isActive) {
-                    $expectedDays++;
-                    // Check if habit was completed on this day
-                    $hasCompleted = HabitLog::where('habit_id', $habit->id)
-                        ->where('user_id', $user->id)
-                        ->whereDate('logged_date', $currentDate->format('Y-m-d'))
-                        ->where('completed', true)
-                        ->exists();
-                    
-                    if ($hasCompleted) {
-                        $completedDays++;
-                    }
-                }
-                
-                $currentDate->addDay();
-            }
-            
-            $completionPercentage = $expectedDays > 0 
-                ? round(($completedDays / $expectedDays) * 100, 1) 
-                : 0;
+            // Calculate completion percentage for the last 7 days
+            $completionPercentage = $habit->getCompletionPercentageForRange($from, $to);
             
             $habitStats[] = [
                 'title' => $habit->title,
-                'weekly_completion' => $completionPercentage,
+                'weekly_completion' => round($completionPercentage, 1),
                 'current_streak' => $habit->current_streak ?? 0,
                 'best_streak' => $habit->best_streak ?? 0,
             ];
@@ -110,7 +65,7 @@ class DashboardController extends Controller
         if ($moodStats->count() === 0 && count($habitStats) === 0) {
             return redirect()
                 ->route('dashboard.weekly-summary')
-                ->with('error', 'No data available for the previous week to generate a summary.');
+                ->with('error', 'No data available for the last 7 days to generate a summary.');
         }
 
         Mail::to($user->email)->send(

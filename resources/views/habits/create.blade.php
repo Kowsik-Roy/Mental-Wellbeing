@@ -113,6 +113,14 @@
                         <span class="font-semibold">Weekdays</span> (Mon-Fri), or 
                         <span class="font-semibold">Weekend</span> (Sat-Sun).
                     </p>
+
+                    <p class="text-xs text-gray-500 mb-4 flex items-start gap-2">
+                        <i class="fas fa-info-circle text-gray-400 mt-0.5"></i>
+                        <span>
+                            If you don’t set a reminder time, you won’t receive notifications and your calendar won’t be synced.
+                        </span>
+                    </p>
+
                     <input
                         type="time"
                         name="reminder_time"
