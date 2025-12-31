@@ -178,8 +178,8 @@ main { position: relative; z-index: 10; }
 <a href="{{ auth()->check() ? route('dashboard') : url('/') }}" class="flex items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer">
   <img src="{{ asset('favicon.svg') }}" alt="Mental Wellness Companion Logo" class="w-10 h-10">
   <div class="leading-tight">
-    <div class="font-semibold text-lg">Mental Wellness Companion</div>
-    <div class="text-xs text-indigo-200">Your peaceful space</div>
+    <div class="font-semibold text-lg">Mental Wellbeing</div>
+    <div class="text-xs text-indigo-200">Mental Wellness Companion</div>
   </div>
 </a>
 

@@ -45,8 +45,8 @@
         <div class="flex items-center justify-center gap-3 mb-4">
             <img src="{{ asset('favicon.svg') }}" alt="Mental Wellness Companion Logo" class="w-10 h-10">
             <div class="leading-tight">
-                <div class="font-semibold text-lg text-slate-800">Mental Wellness Companion</div>
-                <div class="text-xs text-slate-600">Your peaceful space</div>
+                <div class="font-semibold text-lg text-slate-800">Mental Wellbeing</div>
+                <div class="text-xs text-slate-600">Mental Wellness Companion</div>
             </div>
         </div>
 
