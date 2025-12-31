@@ -3,17 +3,28 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
+use App\Services\LlamaChatService;
+use Illuminate\Support\Facades\Log;
 
 class AiChatController extends Controller
 {
+    protected $llamaChatService;
+
+    public function __construct(LlamaChatService $llamaChatService)
+    {
+        $this->llamaChatService = $llamaChatService;
+    }
+
     public function index()
     {
         $messages = session('ai_chat_messages', [
-            ['role' => 'assistant', 'content' => "Hi 💛 I’m here to listen. How are you feeling right now?"],
+            ['role' => 'assistant', 'content' => "Hi 💛 I'm here to listen. How are you feeling right now?"],
         ]);
 
-        return view('ai.chat', compact('messages'));
+        // Check if service is available
+        $serviceAvailable = $this->llamaChatService->isHealthy();
+
+        return view('ai.chat', compact('messages', 'serviceAvailable'));
     }
 
     public function message(Request $request)
@@ -24,7 +35,7 @@ class AiChatController extends Controller
 
         // Load existing conversation from session (keep context)
         $messages = session('ai_chat_messages', [
-            ['role' => 'assistant', 'content' => "Hi 💛 I’m here to listen. How are you feeling right now?"],
+            ['role' => 'assistant', 'content' => "Hi 💛 I'm here to listen. How are you feeling right now?"],
         ]);
 
         // Add user's new message
@@ -49,94 +60,46 @@ class AiChatController extends Controller
 "- If user mentions self-harm/suicide or immediate danger: respond with empathy and urge contacting local emergency services or a trusted person immediately.\n".
 "- Do not provide instructions for self-harm.\n";
 
-
-        // Use Google Gemini API
-        $geminiApiKey = env('GEMINI_API_KEY', 'AIzaSyBY4dIq90Ylu8UD2jRVeiVGrDjWxrh79Lw');
-        $model = env('GEMINI_MODEL', 'gemini-2.5-flash');
-        
-        if (empty($geminiApiKey)) {
-            \Log::error('Gemini API key not set');
+        // Check if service is available
+        if (!$this->llamaChatService->isHealthy()) {
+            Log::error('[AiChatController] Hugging Face API token not configured - AI chat unavailable');
             $messages[] = [
                 'role' => 'assistant',
-                'content' => "I'm here with you, but I'm having trouble responding right now 💛",
+                'content' => "I'm here with you, but I'm having trouble responding right now 💛 Please configure the Hugging Face API token.",
             ];
             session(['ai_chat_messages' => $messages]);
-            return back();
+            return back()->with('error', 'AI service is not available. Please configure HF_TOKEN in your .env file.');
         }
 
-        // Convert messages to Gemini format
-        // Gemini uses contents array with alternating user/assistant messages
-        $geminiContents = [];
-        
-        // Add system instruction as system instruction (if supported) or first user message
-        // For now, we'll prepend it to the conversation
-        $conversationHistory = [];
-        
-        // Add system prompt as the first instruction
-        $fullPrompt = $systemPromptText . "\n\nPlease respond as the assistant in this conversation:\n\n";
-        
-        // Convert messages to text format for Gemini
-        foreach ($messages as $msg) {
-            if ($msg['role'] === 'user') {
-                $fullPrompt .= "User: " . $msg['content'] . "\n";
-            } elseif ($msg['role'] === 'assistant') {
-                $fullPrompt .= "Assistant: " . $msg['content'] . "\n";
-            }
-        }
-        
-        $fullPrompt .= "Assistant:";
-        
-        // Use Gemini generateContent API
-        $response = Http::timeout(30)
-            ->post("https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$geminiApiKey}", [
-                'contents' => [
-                    [
-                        'parts' => [
-                            [
-                                'text' => $fullPrompt
-                            ]
-                        ]
-                    ]
-                ],
-                'generationConfig' => [
-                    'temperature' => 0.7,
-                    'topK' => 40,
-                    'topP' => 0.95,
-                    'maxOutputTokens' => 1024,
-                ],
-            ]);
+        // Format messages for Llama-3.2-3B-Instruct
+        // Llama expects: [{"role": "system", "content": "..."}, {"role": "user", "content": "..."}, {"role": "assistant", "content": "..."}]
+        $llamaMessages = [
+            ['role' => 'system', 'content' => $systemPromptText]
+        ];
 
-        if (!$response->successful()) {
-            // Log the error for debugging
-            \Log::error('Gemini API error', [
-                'status' => $response->status(),
-                'body' => $response->body(),
-            ]);
-
-            $messages[] = [
-                'role' => 'assistant',
-                'content' => "I'm here with you, but I'm having trouble responding right now 💛",
-            ];
-
-            session(['ai_chat_messages' => $messages]);
-            return back();
+        // Add conversation history (skip the first assistant greeting if it's the only message)
+        $startIndex = 0;
+        if (count($messages) === 1 && $messages[0]['role'] === 'assistant') {
+            // Only the initial greeting, skip it
+            $startIndex = 1;
         }
 
-        // Extract response from Gemini API
-        $responseData = $response->json();
-        
-        // Handle Gemini API response structure
-        if (isset($responseData['candidates'][0]['content']['parts'][0]['text'])) {
-            $reply = $responseData['candidates'][0]['content']['parts'][0]['text'];
-        } elseif (isset($responseData['candidates'][0]['content']['parts'][0])) {
-            // Fallback if structure is slightly different
-            $reply = $responseData['candidates'][0]['content']['parts'][0]['text'] ?? null;
-        } else {
-            $reply = null;
+        // Add conversation messages
+        for ($i = $startIndex; $i < count($messages); $i++) {
+            $llamaMessages[] = $messages[$i];
         }
+
+        // Generate response using Llama-3.2-3B-Instruct
+        $reply = $this->llamaChatService->generateChatResponse(
+            $llamaMessages,
+            [
+                'max_tokens' => 256,
+                'temperature' => 0.7,
+                'top_p' => 0.95,
+            ]
+        );
 
         if (!$reply || trim($reply) === '') {
-            \Log::warning('Gemini API returned empty response', ['response' => $responseData]);
             $reply = "I'm really glad you shared that 💛 Want to tell me a little more about what's been weighing on you?";
         }
 

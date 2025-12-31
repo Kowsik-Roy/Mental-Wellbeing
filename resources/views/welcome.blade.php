@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -12,7 +12,7 @@
 <link rel="alternate icon" type="image/png" href="{{ asset('favicon.png') }}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://cdn.tailwindcss.com"></script>
-<style>
+            <style>
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background: linear-gradient(135deg, #0f172a, #1e293b, #0f172a);
@@ -54,8 +54,8 @@ footer {
     margin-top: auto;
     width: 100%;
 }
-</style>
-</head>
+            </style>
+    </head>
 <body class="relative min-h-screen">
 
 <!-- STARFIELD -->
@@ -81,7 +81,7 @@ footer {
 
         <!-- Right: Navigation Buttons -->
         <nav class="flex items-center gap-3 text-sm flex-shrink-0">
-            @auth
+                    @auth
                 <a href="{{ url('/dashboard') }}"
                 class="px-5 py-2.5 rounded-full 
                         bg-gradient-to-r from-indigo-500 to-pink-600 
@@ -89,18 +89,18 @@ footer {
                         hover:shadow-pink-300/50 hover:scale-110 
                         transition-all duration-300">
                     ✨ Dashboard
-                </a>
-            @else
+                        </a>
+                    @else
                 <a href="{{ route('login') }}"
                 class="px-5 py-2.5 rounded-full 
                         border border-white/50 text-white 
                         hover:bg-white/70 hover:text-slate-900 
                         hover:scale-105 
                         transition-all duration-300">
-                    Log in
-                </a>
+                            Log in
+                        </a>
 
-                @if (Route::has('register'))
+                        @if (Route::has('register'))
                     <a href="{{ route('register') }}"
                     class="group px-5 py-2.5 rounded-full 
                             bg-gradient-to-r from-indigo-500 to-pink-40 
@@ -108,13 +108,13 @@ footer {
                             hover:shadow-pink-300/50 hover:scale-110 
                             transition-all duration-300">
                         ✨ Get Started
-                    </a>
-                @endif
-            @endauth
-        </nav>
+                            </a>
+                        @endif
+                    @endauth
+                </nav>
 
     </div>
-</header>
+        </header>
 
 <main class="max-w-6xl mx-auto px-6 py-12 relative z-10 space-y-12">
 
@@ -154,7 +154,7 @@ footer {
                 @endauth
             </div>
         </div>
-    </div>
+                </div>
 
     <!-- FEATURE CARDS -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-6">
@@ -201,10 +201,10 @@ footer {
             </p>
         </div>
 
-    </div>
+                </div>
 
 
-</main>
+            </main>
 
 <!-- FOOTER -->
 <footer class="mt-auto bg-indigo-900/95 backdrop-blur border-t border-indigo-700 text-white relative z-20 w-full">
@@ -342,5 +342,5 @@ document.addEventListener('keydown', function(e) {
 });
 </script>
 
-</body>
+    </body>
 </html>
