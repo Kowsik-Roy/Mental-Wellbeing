@@ -319,18 +319,6 @@ use App\Models\Journal;
             <span id="weather-chip-text" class="text-gray-800"></span>
         </div>
         
-        {{-- Combined Emotional Context Card --}}
-        <div id="emotional-context-container" class="hidden w-full max-w-3xl">
-            <div id="emotional-context-card" class="rounded-2xl bg-gradient-to-r from-rose-50 via-pink-50 to-purple-50 border-2 border-rose-200 p-5 shadow-sm">
-                <div class="flex items-start gap-3">
-                    <span class="text-2xl">💭</span>
-                    <div class="flex-1">
-                        <p id="emotional-context-text" class="text-sm text-gray-700 leading-relaxed"></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
         {{-- Today's Tip (cozy and comforting) --}}
         <div id="today-tip-container" class="hidden max-w-2xl w-full">
             <div class="rounded-2xl bg-gradient-to-r from-purple-50 via-pink-50 to-orange-50 border-2 border-purple-200 p-5 shadow-sm">
@@ -747,18 +735,6 @@ use App\Models\Journal;
                 
                 weatherChipText.textContent = chipText;
                 weatherChipContainer.classList.remove('hidden');
-                
-                // Show combined emotional context
-                const emotionalContextContainer = document.getElementById('emotional-context-container');
-                const emotionalContextCard = document.getElementById('emotional-context-card');
-                const emotionalContextText = document.getElementById('emotional-context-text');
-                
-                if (emotionalContextContainer && emotionalContextCard && emotionalContextText) {
-                    if (data.emotional_context) {
-                        emotionalContextText.textContent = data.emotional_context;
-                        emotionalContextContainer.classList.remove('hidden');
-                    }
-                }
             }
 
             // Show Today's Tip
