@@ -41,6 +41,29 @@ class AiChatController extends Controller
         // Add user's new message
         $messages[] = ['role' => 'user', 'content' => trim($request->message)];
 
+        // Get user's emergency contact information
+        $user = auth()->user();
+        $emergencyContact = $user->emergencyContact()->first();
+        
+        // Build safety instructions with emergency contact info
+        $safetyInstructions = "Safety:\n";
+        $safetyInstructions .= "- If user mentions self-harm/suicide or immediate danger: respond with deep empathy and urgency.\n";
+        $safetyInstructions .= "- IMMEDIATELY provide Bangladesh emergency number: 999 (call this number right away for immediate help).\n";
+        
+        if ($emergencyContact) {
+            $safetyInstructions .= "- Also strongly encourage them to contact their emergency contact: {$emergencyContact->name}";
+            if ($emergencyContact->relationship) {
+                $safetyInstructions .= " ({$emergencyContact->relationship})";
+            }
+            $safetyInstructions .= " at {$emergencyContact->email}.\n";
+            $safetyInstructions .= "- Tell them: 'Please reach out to {$emergencyContact->name} - they care about you and want to help. You don't have to go through this alone.'\n";
+        } else {
+            $safetyInstructions .= "- Encourage them to contact a trusted friend, family member, or mental health professional immediately.\n";
+        }
+        
+        $safetyInstructions .= "- Do not provide instructions for self-harm.\n";
+        $safetyInstructions .= "- Be warm, caring, and non-judgmental while emphasizing the urgency of getting help.\n";
+
         // Safety-first system prompt (no demotivating remarks, no negative feedback)
         $systemPromptText =
 "You're a cozy, soothing mental wellbeing companion.\n".
@@ -56,9 +79,7 @@ class AiChatController extends Controller
 "- Then: ask ONE soft follow-up question.\n".
 "Tips allowed:\n".
 "- breathing (e.g., 4-4-6), grounding (5-4-3-2-1), tiny actions, journaling prompts.\n".
-"Safety:\n".
-"- If user mentions self-harm/suicide or immediate danger: respond with empathy and urge contacting local emergency services or a trusted person immediately.\n".
-"- Do not provide instructions for self-harm.\n";
+$safetyInstructions;
 
         // Check if service is available
         if (!$this->llamaChatService->isHealthy()) {
