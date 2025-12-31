@@ -211,34 +211,6 @@
         </div>
     </div>
 
-    {{-- Mood Tracker --}}
-    <div class="relative rounded-3xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-amber-50 to-amber-100 border border-amber-200 group hover:bg-gradient-to-br hover:from-amber-100 hover:to-amber-50 hover:border-amber-300 hover:-translate-y-1">
-        <!-- Sun accent -->
-        <div class="absolute top-3 right-3 w-10 h-10 rounded-full bg-amber-300/30 group-hover:bg-amber-400/40 transition-colors duration-300"></div>
-        
-        <div class="relative z-10">
-            <div class="inline-flex items-center justify-center p-3 mb-5 rounded-2xl bg-gradient-to-br from-amber-500 to-amber-600 shadow-md group-hover:shadow-amber-300 group-hover:shadow-lg transition-all duration-300 group-hover:-translate-y-1">
-                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
-                </svg>
-            </div>
-            
-            <h3 class="font-bold text-gray-800 mb-2 text-xl text-amber-700 group-hover:text-amber-800 transition-colors duration-300">
-                Mood Tracker
-            </h3>
-            <p class="text-gray-600 mb-6 leading-relaxed group-hover:text-gray-700 transition-colors duration-300">
-                Track your daily emotional journey
-            </p>
-            
-            <a href="{{ route('mood.today') }}" class="inline-flex items-center gap-2 px-4 py-2.5 bg-white rounded-full text-amber-700 text-sm font-semibold hover:bg-amber-50 transition-all duration-300 border border-amber-200 shadow-sm hover:shadow group-hover:border-amber-300 group-hover:bg-amber-100">
-                <span>Open tracker</span>
-                <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
-                </svg>
-            </a>
-        </div>
-    </div>
-
     {{-- AI Support Chat --}}
     <div class="relative rounded-3xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-violet-50 to-violet-100 border border-violet-200 group hover:bg-gradient-to-br hover:from-violet-100 hover:to-violet-50 hover:border-violet-300 hover:-translate-y-1">
         <!-- Sparkle accents -->
