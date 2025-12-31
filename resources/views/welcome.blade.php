@@ -39,7 +39,7 @@ main { position: relative; z-index: 10; flex: 1; padding-bottom: 2rem; }
     border-radius:50%; 
     background:white; 
     opacity:0.8; 
-    animation: twinkle 2s infinite; 
+    animation: twinkle 5s infinite; 
     will-change: opacity;
     pointer-events: none;
     z-index: 1;
@@ -71,25 +71,48 @@ footer {
 <header class="relative z-20 w-full px-6 py-6">
     <div class="max-w-6xl mx-auto flex items-center justify-between gap-6">
         <!-- Left: Logo and Name -->
-        <div class="flex items-center gap-3">
+        <a href="{{ url('/') }}" class="flex items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer">
             <img src="{{ asset('favicon.svg') }}" alt="WellBeing Logo" class="w-10 h-10 object-contain" width="40" height="40" loading="eager">
             <div class="leading-tight">
                 <div class="font-semibold text-lg">Mental Wellness Companion</div>
                 <p class="text-sm text-indigo-200/70">Habits • Journal • Mood</p>
             </div>
-        </div>
+        </a>
 
         <!-- Right: Navigation Buttons -->
         <nav class="flex items-center gap-3 text-sm flex-shrink-0">
             @auth
-                <a href="{{ url('/dashboard') }}" class="px-4 py-2 rounded-full bg-white text-slate-900 font-semibold shadow hover:shadow-lg transition">Dashboard</a>
+                <a href="{{ url('/dashboard') }}"
+                class="px-5 py-2.5 rounded-full 
+                        bg-gradient-to-r from-indigo-500 to-pink-600 
+                        text-white font-semibold shadow-md 
+                        hover:shadow-pink-300/50 hover:scale-110 
+                        transition-all duration-300">
+                    ✨ Dashboard
+                </a>
             @else
-                <a href="{{ route('login') }}" class="px-4 py-2 rounded-full border border-white/30 text-white hover:bg-white hover:text-slate-900 transition">Log in</a>
+                <a href="{{ route('login') }}"
+                class="px-5 py-2.5 rounded-full 
+                        border border-white/50 text-white 
+                        hover:bg-white/70 hover:text-slate-900 
+                        hover:scale-105 
+                        transition-all duration-300">
+                    Log in
+                </a>
+
                 @if (Route::has('register'))
-                    <a href="{{ route('register') }}" class="px-4 py-2 rounded-full bg-indigo-500 hover:bg-indigo-400 text-white font-semibold transition">Get Started</a>
+                    <a href="{{ route('register') }}"
+                    class="group px-5 py-2.5 rounded-full 
+                            bg-gradient-to-r from-indigo-500 to-pink-40 
+                            text-white font-semibold shadow-md 
+                            hover:shadow-pink-300/50 hover:scale-110 
+                            transition-all duration-300">
+                        ✨ Get Started
+                    </a>
                 @endif
             @endauth
         </nav>
+
     </div>
 </header>
 
@@ -106,10 +129,28 @@ footer {
             </p>
             <div class="flex flex-wrap gap-4">
                 @auth
-                    <a href="{{ url('/dashboard') }}" class="px-5 py-3 rounded-lg bg-white text-slate-900 font-semibold shadow hover:shadow-lg transition">Open Dashboard</a>
+                    <a href="{{ url('/dashboard') }}" class="px-5 py-3 rounded-full bg-gradient-to-r from-indigo-500 to-pink-600 text-white font-semibold shadow-md hover:shadow-pink-300/50 hover:scale-110 transition-all duration-300">✨ Open Dashboard</a>
                 @else
-                    <a href="{{ route('register') }}" class="px-5 py-3 rounded-lg bg-indigo-500 text-white font-semibold shadow hover:shadow-lg transition">Create your account</a>
-                    <a href="{{ route('login') }}" class="px-5 py-3 rounded-lg border border-white/30 text-white hover:bg-white hover:text-slate-900 transition">Log in</a>
+                    <a href="{{ route('register') }}"
+                    class="px-6 py-3 rounded-2xl 
+                            bg-gradient-to-r from-indigo-500 to-pink-40 
+                            text-white font-semibold 
+                            shadow-lg shadow-pink-300/50 
+                            hover:shadow-xl hover:-translate-y-0.5 
+                            transition-all duration-300">
+                        ✨ Create your account
+                    </a>
+
+                    <a href="{{ route('login') }}"
+                    class="px-6 py-3 rounded-2xl 
+                            bg-white/10 backdrop-blur-md 
+                            border border-white/30 
+                            text-white font-medium 
+                            hover:bg-white/50 hover:-translate-y-0.5 
+                            transition-all duration-300">
+                        Log in
+                    </a>
+
                 @endauth
             </div>
         </div>
@@ -117,19 +158,51 @@ footer {
 
     <!-- FEATURE CARDS -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-6">
-        <div class="p-6 rounded-3xl backdrop-blur-md bg-white/10 border border-white/20 hover:bg-indigo-900/20 hover:scale-105 transition transform duration-300 shadow-xl card-hover">
-            <p class="text-sm font-semibold mb-2 text-indigo-200">Habit Tracking</p>
-            <p class="text-indigo-200/70 text-sm">Daily/weekly goals with streaks and completion rates.</p>
+        
+        <!-- Card 1 -->
+        <div class="group p-6 rounded-[2rem] bg-gradient-to-br from-indigo-500/20 to-pink-500/10 
+                    border border-white/20 backdrop-blur-xl shadow-lg 
+                    hover:shadow-indigo-500/40 hover:-translate-y-1 hover:scale-[1.03] 
+                    transition-all duration-300">
+            <div class="text-3xl mb-3">🌱</div>
+            <p class="text-sm font-semibold mb-1 text-indigo-100">
+                Habit Tracking
+            </p>
+            <p class="text-indigo-200/80 text-sm leading-relaxed">
+                Daily & weekly goals with cute streaks and wins.
+            </p>
         </div>
-        <div class="p-6 rounded-3xl backdrop-blur-md bg-white/10 border border-white/20 hover:bg-indigo-900/20 hover:scale-105 transition transform duration-300 shadow-xl card-hover">
-            <p class="text-sm font-semibold mb-2 text-indigo-200">Journal & Mood</p>
-            <p class="text-indigo-200/70 text-sm">Log entries, capture moods, and reflect on prompts.</p>
+
+        <!-- Card 2 -->
+        <div class="group p-6 rounded-[2rem] bg-gradient-to-br from-pink-500/20 to-purple-500/10 
+                    border border-white/20 backdrop-blur-xl shadow-lg 
+                    hover:shadow-pink-500/40 hover:-translate-y-1 hover:scale-[1.03] 
+                    transition-all duration-300">
+            <div class="text-3xl mb-3">📖</div>
+            <p class="text-sm font-semibold mb-1 text-pink-100">
+                Journal & Mood
+            </p>
+            <p class="text-pink-200/80 text-sm leading-relaxed">
+                Capture feelings, thoughts, and daily reflections.
+            </p>
         </div>
-        <div class="p-6 rounded-3xl backdrop-blur-md bg-white/10 border border-white/20 hover:bg-indigo-900/20 hover:scale-105 transition transform duration-300 shadow-xl card-hover">
-            <p class="text-sm font-semibold mb-2 text-indigo-200">Progress Insights</p>
-            <p class="text-indigo-200/70 text-sm">See consistency scores and long term trends.</p>
+
+        <!-- Card 3 -->
+        <div class="group p-6 rounded-[2rem] bg-gradient-to-br from-purple-500/20 to-indigo-500/10 
+                    border border-white/20 backdrop-blur-xl shadow-lg 
+                    hover:shadow-purple-500/40 hover:-translate-y-1 hover:scale-[1.03] 
+                    transition-all duration-300">
+            <div class="text-3xl mb-3">📊</div>
+            <p class="text-sm font-semibold mb-1 text-purple-100">
+                Progress Insights
+            </p>
+            <p class="text-purple-200/80 text-sm leading-relaxed">
+                Track consistency and see your glow-up over time.
+            </p>
         </div>
+
     </div>
+
 
 </main>
 

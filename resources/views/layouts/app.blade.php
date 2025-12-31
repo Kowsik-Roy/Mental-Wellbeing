@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <title>@yield('title', 'Mental Wellness Companion')</title>
 <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
 <link rel="alternate icon" type="image/png" href="{{ asset('favicon.png') }}">
@@ -12,7 +13,7 @@
 <style>
 body {
  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
- background: linear-gradient(135deg, #D9C7FF, #F0EEFF);
+ background: linear-gradient(135deg, #f8d0eeff, #edf1f3ff);
  overflow-x: hidden;
  color: #1f2937;
 }
@@ -70,36 +71,90 @@ main { position: relative; z-index: 10; }
  <polygon points="78,50 92,55 78,60" fill="#86EFAC"/>
  </svg>
 
- <!-- Butterflies -->
- <svg class="absolute left-16 top-[55%] w-32 animate-[floatUpDown_5s_ease-in-out_infinite]" viewBox="0 0 120 120">
+ <!-- Butterflies in vacant spots -->
+ <!-- Butterfly 1 - Middle left area -->
+ <svg class="absolute left-20 top-[39%] w-32 animate-[floatUpDown_5s_ease-in-out_infinite]" viewBox="0 0 120 120">
  <circle cx="40" cy="60" r="30" fill="#C4B5FD"/>
  <circle cx="80" cy="60" r="30" fill="#C4B5FD"/>
  <rect x="56" y="40" width="8" height="40" rx="4" fill="#6B7280"/>
  </svg>
 
- <svg class="absolute right-20 bottom-56 w-36 animate-[floatUpDown_6s_ease-in-out_infinite]" viewBox="0 0 120 120">
+ <!-- Butterfly 2 - Middle right area -->
+ <svg class="absolute right-24 top-[44%] w-36 animate-[floatUpDown_6s_ease-in-out_infinite]" style="animation-delay: 1s;" viewBox="0 0 120 120">
  <circle cx="40" cy="60" r="32" fill="#F9A8D4"/>
  <circle cx="80" cy="60" r="32" fill="#F9A8D4"/>
+ <rect x="56" y="40" width="8" height="40" rx="4" fill="#6B7280"/>
+ </svg>
+
+ <!-- Butterfly 3 - Upper middle area -->
+ <svg class="absolute left-1/2 top-[24%] w-28 animate-[floatUpDown_7s_ease-in-out_infinite]" style="transform: translateX(-50%); animation-delay: 2s;" viewBox="0 0 120 120">
+ <circle cx="40" cy="60" r="28" fill="#FBCFE8"/>
+ <circle cx="80" cy="60" r="28" fill="#DDD6FE"/>
  <rect x="56" y="40" width="8" height="40" rx="4" fill="#6B7280"/>
  </svg>
 
  <!-- Grass (stable) -->
  <div class="absolute bottom-0 left-0 right-0 h-44 bg-emerald-300 rounded-t-[60px]"></div>
 
- <!-- Flowers -->
- @for ($i = 0; $i < 8; $i++)
- <div style="position:absolute; bottom:44px; left:{{ rand(5,90) }}%; width:8px; height:20px; background:#F472B6; border-radius:4px;"></div>
+ <!-- Flowers on grass -->
+ @for ($i = 0; $i < 12; $i++)
+ <div class="absolute bottom-44" style="left: {{ rand(5, 95) }}%; width: {{ rand(6, 10) }}px; height: {{ rand(15, 25) }}px; background: #F472B6; border-radius: 4px; z-index: 1;"></div>
  @endfor
 
- <!-- Trees -->
- @for ($i = 0; $i < 3; $i++)
- <div style="position:absolute; bottom:44px; left:{{ rand(5,90) }}%; width:16px; height:60px; background:#065F46; border-radius:4px;"></div>
+ <!-- Trees on grass -->
+ @for ($i = 0; $i < 5; $i++)
+ <div class="absolute bottom-44" style="left: {{ rand(8, 92) }}%; width: {{ rand(14, 20) }}px; height: {{ rand(50, 70) }}px; background: #065F46; border-radius: 4px; z-index: 1;"></div>
  @endfor
 
- <!-- Playful Animals -->
- <svg class="absolute bottom-24 left-28 w-36 animate-[floatUpDown_5s_ease-in-out_infinite]" viewBox="0 0 120 200">
- <circle cx="60" cy="30" r="22" fill="#FBCFE8"/>
+ <!-- Humans on top of grass - positioned on far left and right to avoid cards -->
+ <!-- First Human (far left) -->
+ <svg class="absolute bottom-44 left-8 w-40 h-48 animate-[floatUpDown_5s_ease-in-out_infinite]" viewBox="0 0 120 200">
+ <!-- Head (with face) -->
+ <circle cx="60" cy="30" r="26" fill="#FED7AA" stroke="#FBCFE8" stroke-width="2.5"/>
+ <!-- Eyes -->
+ <circle cx="52" cy="28" r="3.5" fill="#1E293B"/>
+ <circle cx="68" cy="28" r="3.5" fill="#1E293B"/>
+ <!-- Smile -->
+ <path d="M 50 36 Q 60 42 70 36" stroke="#1E293B" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+ <!-- Body -->
  <rect x="44" y="50" width="32" height="90" rx="14" fill="#C4B5FD"/>
+ <!-- Left arm -->
+ <rect x="36" y="60" width="14" height="45" rx="7" fill="#C4B5FD" transform="rotate(-25 43 82.5)"/>
+ <!-- Right arm -->
+ <rect x="70" y="60" width="14" height="45" rx="7" fill="#C4B5FD" transform="rotate(25 77 82.5)"/>
+ <!-- Left hand -->
+ <circle cx="30" cy="98" r="7" fill="#FED7AA"/>
+ <!-- Right hand -->
+ <circle cx="90" cy="98" r="7" fill="#FED7AA"/>
+ <!-- Left leg -->
+ <rect x="48" y="140" width="12" height="55" rx="6" fill="#C4B5FD"/>
+ <!-- Right leg -->
+ <rect x="60" y="140" width="12" height="55" rx="6" fill="#C4B5FD"/>
+ </svg>
+
+ <!-- Second Human (far right) -->
+ <svg class="absolute bottom-44 right-2 w-40 h-48 animate-[floatUpDown_5s_ease-in-out_infinite]" style="animation-delay: 0.5s;" viewBox="0 0 120 200">
+ <!-- Head (with face) -->
+ <circle cx="60" cy="30" r="26" fill="#FBCFE8" stroke="#F9A8D4" stroke-width="2.5"/>
+ <!-- Eyes -->
+ <circle cx="52" cy="28" r="3.5" fill="#1E293B"/>
+ <circle cx="68" cy="28" r="3.5" fill="#1E293B"/>
+ <!-- Smile -->
+ <path d="M 50 36 Q 60 42 70 36" stroke="#1E293B" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+ <!-- Body -->
+ <rect x="44" y="50" width="32" height="90" rx="14" fill="#DDD6FE"/>
+ <!-- Left arm -->
+ <rect x="36" y="60" width="14" height="45" rx="7" fill="#DDD6FE" transform="rotate(-25 43 82.5)"/>
+ <!-- Right arm -->
+ <rect x="70" y="60" width="14" height="45" rx="7" fill="#DDD6FE" transform="rotate(25 77 82.5)"/>
+ <!-- Left hand -->
+ <circle cx="30" cy="98" r="7" fill="#FBCFE8"/>
+ <!-- Right hand -->
+ <circle cx="90" cy="98" r="7" fill="#FBCFE8"/>
+ <!-- Left leg -->
+ <rect x="48" y="140" width="12" height="55" rx="6" fill="#DDD6FE"/>
+ <!-- Right leg -->
+ <rect x="60" y="140" width="12" height="55" rx="6" fill="#DDD6FE"/>
  </svg>
 
  <svg class="absolute bottom-24 right-40 w-36 animate-[floatUpDown_7s_ease-in-out_infinite]" viewBox="0 0 120 120">
@@ -120,20 +175,17 @@ main { position: relative; z-index: 10; }
  <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
 
 <!-- Logo -->
-<div class="flex items-center gap-3"><img src="{{ asset('favicon.svg') }}" alt="Mental Wellness Companion Logo" class="w-10 h-10">
+<a href="{{ auth()->check() ? route('dashboard') : url('/') }}" class="flex items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer">
+  <img src="{{ asset('favicon.svg') }}" alt="Mental Wellness Companion Logo" class="w-10 h-10">
   <div class="leading-tight">
     <div class="font-semibold text-lg">Mental Wellness Companion</div>
     <div class="text-xs text-indigo-200">Your peaceful space</div>
   </div>
-</div>
+</a>
 
  <!-- Navigation links with soft hover -->
  @auth
  <div class="flex flex-wrap gap-2 text-sm">
- <a href="{{ route('dashboard') }}"
- class="px-4 py-2 rounded-full font-medium bg-gradient-to-r from-purple-400 to-indigo-500 shadow-lg text-white hover:scale-105 hover:from-purple-300 hover:to-indigo-400 transition transform">
- <i class="fas fa-home mr-1"></i> Home
- </a>
  <a href="{{ route('journal.today') }}"
  class="px-4 py-2 rounded-full font-medium bg-gradient-to-r from-pink-400 to-rose-500 shadow-lg text-white hover:scale-105 hover:from-pink-300 hover:to-rose-400 transition transform">
  <i class="fas fa-book mr-1"></i> Journal
@@ -153,10 +205,12 @@ main { position: relative; z-index: 10; }
  </div>
  @else
  <div class="flex flex-wrap gap-2 text-sm">
+ @if (!request()->routeIs('about.index'))
  <a href="{{ route('about.index') }}"
  class="px-4 py-2 rounded-full font-medium bg-gradient-to-r from-purple-400 to-indigo-500 shadow-lg text-white hover:scale-105 hover:from-purple-300 hover:to-indigo-400 transition transform">
  <i class="fas fa-info-circle mr-1"></i> About
  </a>
+ @endif
  <a href="{{ route('login') }}"
  class="px-4 py-2 rounded-full font-medium bg-gradient-to-r from-pink-400 to-rose-500 shadow-lg text-white hover:scale-105 hover:from-pink-300 hover:to-rose-400 transition transform">
  <i class="fas fa-sign-in-alt mr-1"></i> Log In
@@ -213,9 +267,10 @@ main { position: relative; z-index: 10; }
  class="flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-100 hover:bg-purple-200 hover:shadow-md transition-all">
  Change Password
  </a>
- <form method="POST" action="{{ route('logout') }}">
+ <form method="POST" action="{{ route('logout') }}" id="logoutForm">
  @csrf
- <button class="flex items-center gap-2 w-full text-left px-4 py-2 rounded-lg bg-purple-100 hover:bg-purple-200 hover:shadow-md transition-all">
+ @method('POST')
+ <button type="submit" class="flex items-center gap-2 w-full text-left px-4 py-2 rounded-lg bg-purple-100 hover:bg-purple-200 hover:shadow-md transition-all">
  Logout
  </button>
  </form>
@@ -420,7 +475,39 @@ document.addEventListener('DOMContentLoaded', () => {
  e.stopPropagation();
  menu.classList.toggle('show');
  });
- document.addEventListener('click', () => menu.classList.remove('show'));
+ document.addEventListener('click', (e) => {
+  // Don't close if clicking inside the dropdown menu
+  if (!menu.contains(e.target) && e.target !== btn) {
+   menu.classList.remove('show');
+  }
+ });
+ }
+ 
+ // Ensure logout form submits properly with fresh CSRF token
+ const logoutForm = document.getElementById('logoutForm');
+ if (logoutForm) {
+  logoutForm.addEventListener('submit', function(e) {
+   e.preventDefault();
+   
+   // Get fresh CSRF token from meta tag
+   const token = document.querySelector('meta[name="csrf-token"]');
+   if (token) {
+    // Update or add CSRF token
+    let csrfInput = this.querySelector('input[name="_token"]');
+    if (csrfInput) {
+     csrfInput.value = token.getAttribute('content');
+    } else {
+     csrfInput = document.createElement('input');
+     csrfInput.type = 'hidden';
+     csrfInput.name = '_token';
+     csrfInput.value = token.getAttribute('content');
+     this.appendChild(csrfInput);
+    }
+   }
+   
+   // Submit the form
+   this.submit();
+  });
  }
 
  // Initialize push notifications (only if user is authenticated)

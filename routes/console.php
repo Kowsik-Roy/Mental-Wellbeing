@@ -46,14 +46,14 @@ Artisan::command('weekly:send-summaries', function () {
                 ->groupBy('mood')
                 ->get();
 
-            // Habit stats for the Friday-Thursday period
+            // Habit stats for the Monday-Sunday week period
             $habitStats = [];
             $habits = Habit::where('user_id', $user->id)
                 ->where('is_active', true)
                 ->get();
 
             foreach ($habits as $habit) {
-                // Calculate completion percentage for the Friday-Thursday period
+                // Calculate completion percentage for the Monday-Sunday week period
                 $completedDays = 0;
                 $expectedDays = 0;
                 

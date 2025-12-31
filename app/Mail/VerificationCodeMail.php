@@ -24,9 +24,12 @@ class VerificationCodeMail extends Mailable
 
     public function build(): self
     {
-        $subject = $this->type === 'registration'
-            ? 'Verify your email for WellBeing'
-            : 'Verify your password change for WellBeing';
+        $subject = match($this->type) {
+            'registration' => 'Verify your email for WellBeing',
+            'password_reset' => 'Reset your password for WellBeing',
+            'password_change' => 'Verify your password change for WellBeing',
+            default => 'Verification code for WellBeing',
+        };
 
         return $this->subject($subject)
             ->view('emails.verification-code');
