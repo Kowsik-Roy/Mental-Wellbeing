@@ -172,7 +172,7 @@
 
 @section('content')
 <div class="chat-container">
-    <div class="max-w-4xl mx-auto px-4">
+    <div class="w-full mx-auto px-6">
         
         {{-- Header --}}
         <div class="flex items-center justify-between mb-8">
@@ -207,7 +207,7 @@
                 @foreach($messages as $index => $m)
                     @if($m['role'] === 'user')
                         <div class="flex justify-end items-start gap-3">
-                            <div class="user-message max-w-[75%] px-5 py-4 text-sm leading-relaxed">
+                            <div class="user-message max-w-[85%] px-5 py-4 text-sm leading-relaxed">
                                 {{ $m['content'] }}
                             </div>
                             <div class="w-8 h-8 rounded-full bg-gradient-to-br from-orange-300 to-amber-400 flex items-center justify-center text-white font-semibold text-sm shadow-md">
@@ -219,7 +219,7 @@
                             <div class="w-10 h-10 rounded-full bg-gradient-to-br from-pink-300 to-purple-400 flex items-center justify-center text-2xl shadow-md">
                                 💛
                             </div>
-                            <div class="ai-message max-w-[75%] px-5 py-4 text-sm leading-relaxed">
+                            <div class="ai-message max-w-[85%] px-5 py-4 text-sm leading-relaxed">
                                 {{ $m['content'] }}
                             </div>
                         </div>

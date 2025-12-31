@@ -313,10 +313,22 @@ use App\Models\Journal;
     </div>
 
     {{-- Weather Chip (under header) --}}
-    <div id="weather-chip-container" class="hidden flex flex-col items-center gap-3 mb-6">
+    <div id="weather-chip-container" class="hidden flex flex-col items-center gap-4 mb-6">
         <div id="weather-chip" class="weather-chip">
             <span id="weather-emoji">🌦</span>
             <span id="weather-chip-text" class="text-gray-800"></span>
+        </div>
+        
+        {{-- Combined Emotional Context Card --}}
+        <div id="emotional-context-container" class="hidden w-full max-w-3xl">
+            <div id="emotional-context-card" class="rounded-2xl bg-gradient-to-r from-rose-50 via-pink-50 to-purple-50 border-2 border-rose-200 p-5 shadow-sm">
+                <div class="flex items-start gap-3">
+                    <span class="text-2xl">💭</span>
+                    <div class="flex-1">
+                        <p id="emotional-context-text" class="text-sm text-gray-700 leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
         </div>
         
         {{-- Today's Tip (cozy and comforting) --}}
@@ -476,6 +488,27 @@ use App\Models\Journal;
                     @endif
                 </div>
             </form>
+            
+            {{-- Impact Confirmation (after morning check-in) --}}
+            @if($log->morning_mood)
+            <div class="mt-6 p-5 rounded-2xl bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200">
+                <p class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                    <span class="text-lg">💭</span>
+                    <span>Did weather affect your mood today?</span>
+                </p>
+                <div class="flex gap-3">
+                    <button type="button" class="impact-toggle px-4 py-2 rounded-full text-sm font-medium bg-white border-2 border-blue-300 text-blue-700 hover:bg-blue-50 transition" data-impact="weather" data-value="yes">
+                        Yes 💙
+                    </button>
+                    <button type="button" class="impact-toggle px-4 py-2 rounded-full text-sm font-medium bg-white border-2 border-blue-300 text-blue-700 hover:bg-blue-50 transition" data-impact="weather" data-value="not-sure">
+                        Not sure 🤔
+                    </button>
+                    <button type="button" class="impact-toggle px-4 py-2 rounded-full text-sm font-medium bg-white border-2 border-blue-300 text-blue-700 hover:bg-blue-50 transition" data-impact="weather" data-value="no">
+                        No ✨
+                    </button>
+                </div>
+            </div>
+            @endif
         </div>
 
         {{-- Evening Check-out --}}
@@ -590,6 +623,24 @@ use App\Models\Journal;
                     @endif
                 </div>
             </form>
+            
+            {{-- Impact Confirmation (after evening check-in) --}}
+            @if($log->evening_mood)
+            <div class="mt-6 p-5 rounded-2xl bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-200">
+                <p class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                    <span class="text-lg">💭</span>
+                    <span>Did air quality affect your energy?</span>
+                </p>
+                <div class="flex gap-3">
+                    <button type="button" class="impact-toggle px-4 py-2 rounded-full text-sm font-medium bg-white border-2 border-purple-300 text-purple-700 hover:bg-purple-50 transition" data-impact="air" data-value="yes">
+                        Yes 💜
+                    </button>
+                    <button type="button" class="impact-toggle px-4 py-2 rounded-full text-sm font-medium bg-white border-2 border-purple-300 text-purple-700 hover:bg-purple-50 transition" data-impact="air" data-value="no">
+                        No ✨
+                    </button>
+                </div>
+            </div>
+            @endif
         </div>
     </div>
 
@@ -689,13 +740,25 @@ use App\Models\Journal;
                 // Build chip text: "Dhaka: Cloudy, 17°C • AQI 162 (Unhealthy)"
                 let chipText = `${city}: ${condition}, ${temp}°C`;
                 
-                // Add AQI if available
+                // Add AQI if available (but show emotional context separately)
                 if (data.air && data.air.aqi !== undefined && data.air.aqi !== null) {
                     chipText += ` • AQI ${data.air.aqi} (${data.air.level})`;
                 }
                 
                 weatherChipText.textContent = chipText;
                 weatherChipContainer.classList.remove('hidden');
+                
+                // Show combined emotional context
+                const emotionalContextContainer = document.getElementById('emotional-context-container');
+                const emotionalContextCard = document.getElementById('emotional-context-card');
+                const emotionalContextText = document.getElementById('emotional-context-text');
+                
+                if (emotionalContextContainer && emotionalContextCard && emotionalContextText) {
+                    if (data.emotional_context) {
+                        emotionalContextText.textContent = data.emotional_context;
+                        emotionalContextContainer.classList.remove('hidden');
+                    }
+                }
             }
 
             // Show Today's Tip
@@ -801,6 +864,34 @@ use App\Models\Journal;
         .catch(error => {
             console.error('Error updating location:', error);
             alert('Failed to update location. Please try again.');
+        });
+    });
+
+    // Impact toggle buttons (cute and comforting)
+    document.querySelectorAll('.impact-toggle').forEach(button => {
+        button.addEventListener('click', function() {
+            // Remove active state from siblings
+            const siblings = this.parentElement.querySelectorAll('.impact-toggle');
+            siblings.forEach(btn => {
+                btn.classList.remove('bg-gradient-to-r', 'from-purple-500', 'to-pink-500', 'text-white', 'border-purple-500');
+                btn.classList.add('bg-white', 'border-2');
+            });
+            
+            // Add active state to clicked button
+            this.classList.remove('bg-white', 'border-2');
+            this.classList.add('bg-gradient-to-r', 'from-purple-500', 'to-pink-500', 'text-white', 'border-purple-500');
+            
+            // Store the selection (you can save this to backend later if needed)
+            const impact = this.dataset.impact;
+            const value = this.dataset.value;
+            console.log(`${impact} impact: ${value}`);
+            
+            // Show a gentle confirmation
+            const originalText = this.textContent;
+            this.textContent = '✓ Saved';
+            setTimeout(() => {
+                this.textContent = originalText;
+            }, 1500);
         });
     });
 

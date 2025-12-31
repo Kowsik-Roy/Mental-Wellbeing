@@ -143,6 +143,11 @@ class MoodLogController extends Controller
         $air = $this->fetchAirQuality($latitude, $longitude, $city, $country);
         $tips = $this->generateTips($weather, $air, $currentMood);
         
+        // Get emotional context for air quality and weather, combine into one message
+        $airEmotionalContext = $this->getAirQualityEmotionalContext($air);
+        $weatherEmotionalContext = $this->getWeatherEmotionalContext($weather);
+        $combinedEmotionalContext = $this->combineEmotionalContext($airEmotionalContext, $weatherEmotionalContext);
+        
         // Determine if we should show health mode warning
         $healthMode = $this->shouldShowHealthMode($currentMood, $air);
 
@@ -155,6 +160,7 @@ class MoodLogController extends Controller
             'tips' => $tips,
             'health_mode' => $healthMode,
             'current_mood' => $currentMood,
+            'emotional_context' => $combinedEmotionalContext,
         ], 200);
     }
 
@@ -507,7 +513,7 @@ class MoodLogController extends Controller
     }
 
     /**
-     * Generate tips based on weather and air quality (simple rules, no mood analysis)
+     * Generate emotionally-aware tips based on weather and air quality
      */
     private function generateTips(?array $weather, ?array $air, ?string $currentMood = null): array
     {
@@ -515,20 +521,99 @@ class MoodLogController extends Controller
 
         // Priority order: AQI > Temperature > Rain > Good weather
         if ($air && $air['aqi'] >= 150) {
-            $todayTip = '🌫️ Air quality is poor today. Prefer indoor activities.';
+            $todayTip = '💚 Poor air quality can affect mood and focus. A calm indoor activity might help today.';
+        } elseif ($air && $air['aqi'] >= 100) {
+            $todayTip = '🌿 The air is a bit heavy today. It\'s okay to slow down — indoor rest can support your mood.';
         } elseif ($weather && $weather['temp_c'] >= 32) {
-            $todayTip = "☀️ It's hot today — drink water and take breaks.";
+            $todayTip = "☀️ It's hot today — your body might feel more tired. Drink water and take gentle breaks.";
         } elseif ($weather && $weather['is_rainy']) {
-            $todayTip = '🌧️ Rainy day — keep plans light or indoor.';
+            $todayTip = '🌧️ Rainy days can feel cozy or heavy. Keep plans light and be kind to yourself.';
         } elseif ($air && $air['aqi'] < 100 && $weather && $weather['temp_c'] < 28) {
-            $todayTip = '🌤️ Nice weather today — a short walk may help.';
+            $todayTip = '🌤️ Nice weather today — a short walk might lift your spirits.';
         } else {
-            $todayTip = '💙 Take care of yourself today.';
+            $todayTip = '💙 Take care of yourself today, however you\'re feeling.';
         }
 
         return [
             'today_tip' => $todayTip,
         ];
+    }
+
+    /**
+     * Get emotional context for air quality
+     */
+    private function getAirQualityEmotionalContext(?array $air): ?string
+    {
+        if (!$air || !isset($air['aqi'])) {
+            return null;
+        }
+
+        $aqi = $air['aqi'];
+        
+        if ($aqi >= 200) {
+            return "The air quality today may make you feel tired, foggy, or low-energy. Many people feel less motivated on days like this.";
+        } elseif ($aqi >= 150) {
+            return "It's a heavy, polluted day — you might feel less energetic or a bit foggy. That's completely normal.";
+        } elseif ($aqi >= 100) {
+            return "The air is a bit heavy today. Some people feel slightly less energetic when air quality is moderate.";
+        } elseif ($aqi >= 50) {
+            return "The air quality is okay today, but some sensitive people might feel a slight difference.";
+        }
+        
+        return null; // Good air quality doesn't need emotional context
+    }
+
+    /**
+     * Get emotional context for weather
+     */
+    private function getWeatherEmotionalContext(?array $weather): ?string
+    {
+        if (!$weather) {
+            return null;
+        }
+
+        $temp = $weather['temp_c'] ?? null;
+        $isRainy = $weather['is_rainy'] ?? false;
+        $condition = strtolower($weather['condition'] ?? '');
+
+        if ($isRainy || strpos($condition, 'rain') !== false) {
+            return "It's a gloomy, rainy day — some people feel cozier indoors, while others might feel a bit low-energy.";
+        } elseif ($temp !== null && $temp >= 32) {
+            return "It's very hot today — heat can make you feel more tired or irritable. That's your body protecting itself.";
+        } elseif ($temp !== null && $temp <= 15) {
+            return "It's quite cold today — some people feel more sluggish or want to stay cozy when it's chilly.";
+        } elseif (strpos($condition, 'cloud') !== false || strpos($condition, 'overcast') !== false) {
+            return "It's a cloudy day — gray skies can sometimes make people feel a bit quieter or more reflective.";
+        }
+        
+        return null;
+    }
+
+    /**
+     * Combine air quality and weather emotional contexts into one message
+     */
+    private function combineEmotionalContext(?string $airContext, ?string $weatherContext): ?string
+    {
+        $parts = [];
+        
+        if ($airContext) {
+            $parts[] = $airContext;
+        }
+        
+        if ($weatherContext) {
+            $parts[] = $weatherContext;
+        }
+        
+        if (empty($parts)) {
+            return null;
+        }
+        
+        // Combine with a gentle connector
+        if (count($parts) === 2) {
+            return $parts[0] . ' ' . $parts[1];
+        }
+        
+        return $parts[0];
     }
 
     /**
