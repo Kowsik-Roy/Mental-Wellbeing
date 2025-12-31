@@ -94,7 +94,7 @@ main { position: relative; z-index: 10; }
  </svg>
 
  <!-- Grass (stable) -->
- <div class="absolute bottom-0 left-0 right-0 h-44 bg-emerald-300 rounded-t-[60px]"></div>
+ <div class="absolute bottom-0 left-0 right-0 h-44 bg-emerald-300 rounded-t-[40px]"></div>
 
  <!-- Flowers on grass -->
  @for ($i = 0; $i < 15; $i++)
@@ -157,11 +157,7 @@ main { position: relative; z-index: 10; }
  <rect x="60" y="140" width="12" height="55" rx="6" fill="#DDD6FE"/>
  </svg>
 
- <svg class="absolute bottom-24 right-40 w-36 animate-[floatUpDown_7s_ease-in-out_infinite]" viewBox="0 0 120 120">
- <circle cx="60" cy="70" r="34" fill="#FED7AA"/>
- <polygon points="40,40 30,20 50,35" fill="#FED7AA"/>
- <polygon points="80,40 90,20 70,35" fill="#FED7AA"/>
- </svg>
+
 
  <!-- Stars -->
  @for ($i = 0; $i < 50; $i++)
@@ -171,197 +167,268 @@ main { position: relative; z-index: 10; }
 </div>
 
 <!-- NAVBAR -->
-<nav class="sticky top-0 z-50 bg-indigo-900/95 backdrop-blur border-b border-indigo-700 text-white shadow-lg">
- <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+<header class="sticky top-0 z-50">
 
-<!-- Logo -->
-<a href="{{ auth()->check() ? route('dashboard') : url('/') }}" class="flex items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer">
-  <img src="{{ asset('favicon.svg') }}" alt="Mental Wellness Companion Logo" class="w-10 h-10">
-  <div class="leading-tight">
-    <div class="font-semibold text-lg">Mental Wellbeing</div>
-    <div class="text-xs text-indigo-200">Mental Wellness Companion</div>
-  </div>
-</a>
+    <!-- TOP BAR -->
+    <div class="bg-gradient-to-r from-indigo-200 via-purple-200 to-pink-200 text-white">
 
- <!-- Navigation links with soft hover -->
- @auth
- <div class="flex flex-wrap gap-2 text-sm">
- <a href="{{ route('journal.today') }}"
- class="px-4 py-2 rounded-full font-medium bg-gradient-to-r from-pink-400 to-rose-500 shadow-lg text-white hover:scale-105 hover:from-pink-300 hover:to-rose-400 transition transform">
- <i class="fas fa-book mr-1"></i> Journal
- </a>
- <a href="{{ route('habits.index') }}"
- class="px-4 py-2 rounded-full font-medium bg-gradient-to-r from-green-400 to-emerald-500 shadow-lg text-white hover:scale-105 hover:from-green-300 hover:to-emerald-400 transition transform">
- <i class="fas fa-tasks mr-1"></i> Habits
- </a>
- <a href="{{ route('wellness.index') }}"
- class="px-4 py-2 rounded-full font-medium bg-gradient-to-r from-amber-400 to-orange-500 shadow-lg text-white hover:scale-105 hover:from-amber-300 hover:to-orange-400 transition transform">
- <i class="fas fa-heart mr-1"></i> Wellness
- </a>
- <a href="{{ route('dashboard.weekly-summary') }}"
- class="px-4 py-2 rounded-full font-medium bg-gradient-to-r from-cyan-400 to-blue-500 shadow-lg text-white hover:scale-105 hover:from-cyan-300 hover:to-blue-400 transition transform">
- <i class="fas fa-chart-line mr-1"></i> <span class="hidden md:inline">Weekly</span> Summary
- </a>
- </div>
- @else
- <div class="flex flex-wrap gap-2 text-sm">
- @if (!request()->routeIs('about.index'))
- <a href="{{ route('about.index') }}"
- class="px-4 py-2 rounded-full font-medium bg-gradient-to-r from-purple-400 to-indigo-500 shadow-lg text-white hover:scale-105 hover:from-purple-300 hover:to-indigo-400 transition transform">
- <i class="fas fa-info-circle mr-1"></i> About
- </a>
- @endif
- <a href="{{ route('login') }}"
- class="px-4 py-2 rounded-full font-medium bg-gradient-to-r from-pink-400 to-rose-500 shadow-lg text-white hover:scale-105 hover:from-pink-300 hover:to-rose-400 transition transform">
- <i class="fas fa-sign-in-alt mr-1"></i> Log In
- </a>
- @if (Route::has('register'))
- <a href="{{ route('register') }}"
- class="px-4 py-2 rounded-full font-medium bg-gradient-to-r from-green-400 to-emerald-500 shadow-lg text-white hover:scale-105 hover:from-green-300 hover:to-emerald-400 transition transform">
- <i class="fas fa-user-plus mr-1"></i> Sign Up
- </a>
- @endif
- </div>
- @endauth
+        <div class="max-w-7xl mx-auto px-6 h-18 flex items-center justify-between">
 
- <!-- Cute User Profile (only for authenticated users) -->
- @auth
- <div class="relative">
- <button id="userMenuButton" class="flex items-center gap-2 group">
- <!-- Floating avatar with gradient and sparkle -->
- <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-pink-400 via-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold shadow-lg relative animate-bounce-slow">
- {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
- <!-- Tiny floating sparkle -->
- <span class="absolute top-0 left-0 w-2 h-2 bg-yellow-300 rounded-full animate-pulse-slow"></span>
- <span class="absolute bottom-0 right-1 w-2 h-2 bg-white rounded-full animate-pulse-slow"></span>
- </div>
- <span class="text-sm group-hover:text-yellow-200 transition-colors font-medium">
- {{ Auth::user()->name }}
- </span>
- </button>
+            <!-- Logo -->
+            <a href="{{ auth()->check() ? route('dashboard') : url('/') }}"
+               class="flex items-center gap-3 hover:opacity-90 transition">
+                <img src="{{ asset('favicon.svg') }}" class="w-10 h-10">
+                <div>
+                    <div class="font-semibold text-lg text-indigo-900">
+                        Mental Wellbeing
+                    </div>
+                    <div class="text-xs text-indigo-600">
+                        Mental Wellness Companion
+                    </div>
+                </div>
+            </a>
 
- <!-- Dropdown menu -->
- <div id="userDropdown" 
- class="dropdown-menu absolute right-0 mt-3 w-64 bg-gradient-to-br from-purple-50 via-indigo-50 to-pink-50 text-gray-700 rounded-3xl shadow-2xl border border-indigo-200 overflow-hidden transition-all scale-95 opacity-0 transform origin-top-right">
+            <!-- Right side -->
+            @guest
+            <div class="flex items-center gap-5 text-sm">
+                <a href="{{ route('about.index') }}"
+                   class="text-indigo-500 hover:text-indigo-700 transition">
+                    About
+                </a>
+                <a href="{{ route('login') }}"
+                   class="text-pink-500 hover:text-pink-600 transition font-medium">
+                    Log in
+                </a>
+                @if (Route::has('register'))
+                <a href="{{ route('register') }}"
+                   class="px-4 py-2 rounded-full bg-gradient-to-r from-pink-400 to-rose-400
+                          text-white shadow-md hover:shadow-lg hover:scale-105 transition">
+                    Sign up
+                </a>
+                @endif
+            </div>
+            @endguest
 
- <!-- Header -->
- <div class="p-4 border-b border-indigo-200 relative rounded-t-3xl">
- <div class="font-bold text-indigo-900">{{ Auth::user()->name }}</div>
- <div class="font-semibold text-gray-500 truncate">{{ Auth::user()->email }}</div>
- <div class="text-xs text-gray-500 truncate">
- Member since {{ Auth::user()->created_at->format('F j, Y') }}</div>
+            @auth
+            <div class="flex items-center gap-3">     
+                <!-- User Menu -->
+                <button id="userMenuButton"
+                        class="flex items-center gap-3 text-indigo-900 hover:text-pink-500 transition relative group">
+                    
+                    <!-- Pastel floating avatar with sparkle -->
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-pink-300 via-purple-200 to-indigo-300
+                                text-white flex items-center justify-center font-bold shadow-lg
+                                animate-bounce-slow relative">
+                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                        
+                        <!-- Tiny sparkles -->
+                        <span class="absolute top-0 left-1 w-2 h-2 bg-yellow-300 rounded-full animate-pulse-slow"></span>
+                        <span class="absolute bottom-1 right-1.5 w-2 h-2 bg-white rounded-full animate-pulse-slow"></span>
+                    </div>
 
- <!-- Tiny floating sparkles -->
- <span class="absolute top-1 left-2 w-2 h-2 bg-yellow-300 rounded-full animate-pulse-slow"></span>
- <span class="absolute top-3 right-3 w-1.5 h-1.5 bg-white rounded-full animate-pulse-slow"></span>
- <span class="absolute bottom-2 left-1.5 w-1.5 h-1.5 bg-pink-300 rounded-full animate-pulse-slow"></span>
- </div>
+                    <!-- User name -->
+                    <span class="text-sm font-medium group-hover:text-pink-500 transition-colors">
+                        {{ Auth::user()->name }}
+                    </span>
 
- <!-- Actions -->
- <div class="p-2 text-sm space-y-2">
- <a href="{{ route('profile.edit') }}" 
- class="flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-100 hover:bg-purple-200 hover:shadow-md transition-all">
- Edit Profile
- </a>
- <a href="{{ route('profile.password.edit') }}" 
- class="flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-100 hover:bg-purple-200 hover:shadow-md transition-all">
- Change Password
- </a>
- <form method="POST" action="{{ route('logout') }}" id="logoutForm">
- @csrf
- @method('POST')
- <button type="submit" class="flex items-center gap-2 w-full text-left px-4 py-2 rounded-lg bg-purple-100 hover:bg-purple-200 hover:shadow-md transition-all">
- Logout
- </button>
- </form>
- </div>
- </div>
- @endauth
+                    <!-- Chevron icon -->
+                    <i class="fas fa-chevron-down text-xs text-indigo-400 group-hover:text-pink-500 transition-colors"></i>
+                </button>
 
- <!-- Dropdown Animations -->
- <style>
- /* Dropdown scale & fade animation */
- .dropdown-menu.show {
- opacity: 1;
- transform: scale(1);
- transition: transform 0.25s ease-out, opacity 0.25s ease-out;
- }
+                <!-- Animations -->
+                <style>
+                @keyframes bounce-slow {
+                0%, 100% { transform: translateY(0); }
+                50% { transform: translateY(-3px); }
+                }
+                .animate-bounce-slow {
+                animation: bounce-slow 2.5s infinite ease-in-out;
+                }
 
- /* Slow pulsing sparkles */
- @keyframes pulse-slow {
- 0%, 100% { opacity: 0.5; transform: scale(1); }
- 50% { opacity: 1; transform: scale(1.3); }
- }
- .animate-pulse-slow {
- animation: pulse-slow 2s infinite ease-in-out;
- }
- </style>
+                @keyframes pulse-slow {
+                0%, 100% { opacity: 0.5; transform: scale(1); }
+                50% { opacity: 1; transform: scale(1.3); }
+                }
+                .animate-pulse-slow {
+                animation: pulse-slow 2s infinite ease-in-out;
+                }
+                </style>
 
 
- </div>
+                <!-- Dropdown -->
+                <div id="userDropdown"
+                     class="dropdown-menu absolute right-0 mt-3 w-56
+                            bg-rose rounded-2xl shadow-xl border border-indigo-100">
 
- <!-- Add animations -->
- <style>
- /* Slow bounce for avatar */
- @keyframes bounce-slow {
- 0%, 100% { transform: translateY(0); }
- 50% { transform: translateY(-3px); }
- }
- .animate-bounce-slow {
- animation: bounce-slow 2.5s infinite ease-in-out;
- }
+                    <div class="px-4 py-3 border-b border-indigo-100 text-sm">
+                        <div class="font-semibold text-indigo-700">
+                            {{ Auth::user()->name }}
+                        </div>
+                        <div class="text-xs text-gray-500 truncate">
+                            {{ Auth::user()->email }}
+                        </div>
+                    </div>
 
- /* Slow pulsing for sparkles */
- @keyframes pulse-slow {
- 0%, 100% { opacity: 0.5; transform: scale(1); }
- 50% { opacity: 1; transform: scale(1.3); }
- }
- .animate-pulse-slow {
- animation: pulse-slow 2s infinite ease-in-out;
- }
- </style>
+                    <a href="{{ route('profile.edit') }}"
+                       class="block px-4 py-2 text-sm text-gray-900 hover:bg-indigo-50 rounded-lg mx-2">
+                        Edit profile
+                    </a>
+
+                    <a href="{{ route('profile.password.edit') }}"
+                       class="block px-4 py-2 text-sm text-gray-900 hover:bg-indigo-50 rounded-lg mx-2">
+                        Change password
+                    </a>
+
+                    <form method="POST" action="{{ route('logout') }}" class="mx-2">
+                        @csrf
+                        <button type="submit"
+                                class="w-full text-left text-gray-900 px-4 py-2 text-sm
+                                       hover:bg-pink-50 rounded-lg">
+                            Logout
+                        </button>
+                    </form>
+                </div>
+                </div>
+            </div>
+            @endauth
+        </div>
+    </div>
+
+    <!-- BOTTOM NAV -->
+    <nav class="bg-gradient-to-r from-pink-200 via-purple-200 to-indigo-200 text-black">
+        <div class="max-w-7xl mx-auto px-6">
+            <ul class="flex items-center gap-10 h-12 text-sm font-medium">
+
+                <li>
+                    <a href="{{ url('/') }}"
+                       class="hover:text-yellow-200 transition">
+                        <i class="fas fa-home text-lg"></i>
+                    </a>
+                </li>
+
+                @auth
+                <li>
+                    <a href="{{ route('journal.today') }}"
+                       class="relative group">
+                        Journal
+                        <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-black
+                                     group-hover:w-full transition-all"></span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ route('habits.index') }}" class="relative group">
+                        Habits
+                        <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-black
+                                     group-hover:w-full transition-all"></span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ route('wellness.index') }}" class="relative group">
+                        Wellness
+                        <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-black
+                                     group-hover:w-full transition-all"></span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ route('dashboard.weekly-summary') }}" class="relative group">
+                        Weekly Summary
+                        <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-black
+                                     group-hover:w-full transition-all"></span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ route('meditation') }}" class="relative group">
+                        Meditation
+                        <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-black
+                                     group-hover:w-full transition-all"></span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ route('ai.chat') }}" class="relative group">
+                        AI Chat
+                        <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-black
+                                     group-hover:w-full transition-all"></span>
+                    </a>
+                </li>
+                @endauth
+
+            </ul>
+        </div>
+    </nav>
+
+</header>
 
 
- </div>
-</nav>
 
 <main class="max-w-5xl mx-auto px-6 py-16">
   @yield('content')
 </main>
 
 <!-- FOOTER -->
-<footer class="mt-12 bg-indigo-900/95 backdrop-blur border-t border-indigo-700 text-white relative z-10 pb-24 md:pb-6">
-    <div class="max-w-7xl mx-auto px-6 py-6">
-        <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
-            <!-- Left: Copyright -->
-            <div class="text-indigo-200 text-center md:text-left">
-                <p>&copy; {{ date('Y') }} Mental Wellbeing. All rights reserved.</p>
-            </div>
+<footer class="relative z-10 mt-10">
 
-            <!-- Center: Links with hover effects -->
-            <div class="flex flex-wrap items-center justify-center gap-6 text-indigo-200">
-                <a href="{{ route('about.index') }}" 
-                   class="group flex items-center gap-2 hover:text-white transition-colors duration-200 cursor-pointer">
-                    <i class="fas fa-info-circle text-purple-400 group-hover:text-purple-300 transition-colors"></i>
-                    <span class="font-medium group-hover:underline">About Us</span>
-                </a>
-                <button onclick="openContactModal()" 
-                        class="group flex items-center gap-2 hover:text-white transition-colors duration-200 cursor-pointer">
-                    <i class="fas fa-envelope text-green-400 group-hover:text-green-300 transition-colors"></i>
-                    <span class="font-medium group-hover:underline">Contact Us</span>
-                </button>
-            </div>
+    <!-- Soft grass overlay -->
+    <div class="max-w-12xl mx-auto px-12">
+        <div
+            class="bg-gradient-to-r from-emerald-300 via-green-200 to-emerald-300
+                   rounded-t-[40px] shadow-lg border border-emerald-300
+                   px-10 py-10">
 
-            <!-- Right: Location -->
-            <div class="text-indigo-200 text-center md:text-right">
-                <p class="text-xs flex items-center justify-center md:justify-end gap-1.5">
-                    <i class="fas fa-map-marker-alt text-green-400"></i>
-                    <span>Dhaka, Bangladesh</span>
-                </p>
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
+
+                <!-- Left -->
+                <div class="text-emerald-900 text-center md:text-left">
+                    <p class="font-medium">
+                        © {{ date('Y') }} Mental Wellbeing. All rights reserved.
+                    </p>
+                    <p class="text-xs text-emerald-700">
+                        Growing healthier minds 🌱
+                    </p>
+                </div>
+
+                <!-- Center links -->
+                <div class="flex flex-wrap items-center justify-center gap-6">
+
+                    <a href="{{ route('about.index') }}"
+                       class="group flex items-center gap-2 text-emerald-800
+                              hover:text-emerald-900 transition">
+                        <i class="fas fa-info-circle text-pink-400
+                                  group-hover:text-pink-500"></i>
+                        <span class="font-medium group-hover:underline">
+                            About Us
+                        </span>
+                    </a>
+
+                    <button onclick="openContactModal()"
+                            class="group flex items-center gap-2 text-emerald-800
+                                   hover:text-emerald-900 transition">
+                        <i class="fas fa-envelope text-indigo-400
+                                  group-hover:text-indigo-500"></i>
+                        <span class="font-medium group-hover:underline">
+                            Contact Us
+                        </span>
+                    </button>
+
+                </div>
+
+                <!-- Right -->
+                <div class="text-emerald-800 text-center md:text-right">
+                    <p class="text-xs flex items-center justify-center md:justify-end gap-1.5">
+                        <i class="fas fa-map-marker-alt text-rose-400"></i>
+                        Dhaka, Bangladesh
+                    </p>
+                </div>
+
             </div>
         </div>
     </div>
 </footer>
+
 
 <!-- Custom Confirmation Modal -->
 <div id="confirmModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4">

@@ -90,7 +90,7 @@
         <!-- Chat Window -->
         <div id="chatWindow" class="{{ session('chat_window_open', false) ? '' : 'hidden' }} w-80 h-[500px] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-gray-200 fixed top-24 right-6 z-50">
             <!-- Chat Header -->
-            <div class="bg-gradient-to-r from-pink-500 to-purple-600 px-4 py-3 flex items-center justify-between">
+            <div class="bg-gradient-to-r from-blue-300 to-pink-300 px-4 py-2 flex items-center justify-between">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-xl">
                         💛
@@ -122,7 +122,7 @@
                     @else
                         <div class="flex items-start gap-2">
                             <div class="w-8 h-8 rounded-full bg-gradient-to-br from-pink-300 to-purple-400 flex items-center justify-center text-sm flex-shrink-0">
-                                💛
+                                AI
                             </div>
                             <div class="bg-white rounded-2xl rounded-tl-sm px-4 py-2.5 shadow-sm max-w-[75%]">
                                 <p class="text-sm text-gray-800">{{ $msg['content'] }}</p>
@@ -136,7 +136,7 @@
             <div id="typingIndicator" class="hidden px-4 pb-2">
                 <div class="flex items-center gap-2">
                     <div class="w-8 h-8 rounded-full bg-gradient-to-br from-pink-300 to-purple-400 flex items-center justify-center text-sm flex-shrink-0">
-                        💛
+                        AI
                     </div>
                     <div class="bg-white rounded-2xl rounded-tl-sm px-4 py-2.5 shadow-sm">
                         <div class="flex gap-1">
