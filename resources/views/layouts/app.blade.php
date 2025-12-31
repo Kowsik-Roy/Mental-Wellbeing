@@ -97,18 +97,18 @@ main { position: relative; z-index: 10; }
  <div class="absolute bottom-0 left-0 right-0 h-44 bg-emerald-300 rounded-t-[60px]"></div>
 
  <!-- Flowers on grass -->
- @for ($i = 0; $i < 12; $i++)
+ @for ($i = 0; $i < 15; $i++)
  <div class="absolute bottom-44" style="left: {{ rand(5, 95) }}%; width: {{ rand(6, 10) }}px; height: {{ rand(15, 25) }}px; background: #F472B6; border-radius: 4px; z-index: 1;"></div>
  @endfor
 
  <!-- Trees on grass -->
  @for ($i = 0; $i < 5; $i++)
- <div class="absolute bottom-44" style="left: {{ rand(8, 92) }}%; width: {{ rand(14, 20) }}px; height: {{ rand(50, 70) }}px; background: #065F46; border-radius: 4px; z-index: 1;"></div>
+ <div class="absolute bottom-44" style="left: {{ rand(8, 92) }}%; width: {{ rand(14, 20) }}px; height: {{ rand(50, 70) }}px; background:rgb(82, 196, 164); border-radius: 4px; z-index: 1;"></div>
  @endfor
 
  <!-- Humans on top of grass - positioned on far left and right to avoid cards -->
  <!-- First Human (far left) -->
- <svg class="absolute bottom-44 left-8 w-40 h-48 animate-[floatUpDown_5s_ease-in-out_infinite]" viewBox="0 0 120 200">
+ <svg class="absolute bottom-44 left-8 w-40 h-40 animate-[floatUpDown_5s_ease-in-out_infinite]" viewBox="0 0 120 200">
  <!-- Head (with face) -->
  <circle cx="60" cy="30" r="26" fill="#FED7AA" stroke="#FBCFE8" stroke-width="2.5"/>
  <!-- Eyes -->
@@ -133,7 +133,7 @@ main { position: relative; z-index: 10; }
  </svg>
 
  <!-- Second Human (far right) -->
- <svg class="absolute bottom-44 right-2 w-40 h-48 animate-[floatUpDown_5s_ease-in-out_infinite]" style="animation-delay: 0.5s;" viewBox="0 0 120 200">
+ <svg class="absolute bottom-44 right-1 w-40 h-44 animate-[floatUpDown_5s_ease-in-out_infinite]" style="animation-delay: 0.5s;" viewBox="0 0 120 200">
  <!-- Head (with face) -->
  <circle cx="60" cy="30" r="26" fill="#FBCFE8" stroke="#F9A8D4" stroke-width="2.5"/>
  <!-- Eyes -->
