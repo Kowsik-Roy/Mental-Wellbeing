@@ -212,7 +212,7 @@ footer {
         <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
             <!-- Left: Copyright -->
             <div class="text-indigo-200 text-center md:text-left">
-                <p>&copy; {{ date('Y') }} Mental Wellness Companion. All rights reserved.</p>
+                <p>&copy; {{ date('Y') }} Mental Wellbeing. All rights reserved.</p>
             </div>
 
             <!-- Center: Links with hover effects -->
@@ -277,7 +277,7 @@ footer {
                 </h3>
                 <p class="text-gray-700 mb-2">We're based in:</p>
                 <p class="text-gray-800 font-medium">
-                    Mental Wellness Companion<br>
+                    Mental Wellbeing<br>
                     Dhaka, Bangladesh<br>
                 </p>
             </div>

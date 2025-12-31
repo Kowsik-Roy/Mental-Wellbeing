@@ -5,7 +5,7 @@
 <div class="max-w-4xl mx-auto">
     <!-- Header -->
     <div class="text-center mb-12">
-        <h1 class="text-4xl md:text-5xl font-bold text-indigo-900 mb-4">About Mental Wellness Companion</h1>
+        <h1 class="text-4xl md:text-5xl font-bold text-indigo-900 mb-4">About Mental Wellbeing</h1>
         <p class="text-xl text-gray-700">Your journey to better mental health starts here</p>
     </div>
 
@@ -32,7 +32,7 @@
             <i class="fas fa-heart text-pink-600 mr-3"></i>Our Mission
         </h2>
         <p class="text-gray-700 text-lg leading-relaxed mb-4">
-            Mental Wellness Companion was created to bridge the gap between recognizing the importance of mental health 
+            Mental Wellbeing was created to bridge the gap between recognizing the importance of mental health 
             and actually taking consistent, meaningful action. We understand that maintaining mental wellness requires more 
             than just awareness—it requires tools, structure, and gentle encouragement.
         </p>
@@ -132,7 +132,7 @@
             clinical, overwhelming, or disconnected from daily life.
         </p>
         <p class="text-gray-700 text-lg leading-relaxed mb-4">
-            We built Mental Wellness Companion because we believe that:
+            We built Mental Wellbeing because we believe that:
         </p>
         <div class="grid md:grid-cols-2 gap-4 mb-4">
             <div class="bg-gray-50 rounded-xl p-5 border-l-4 border-green-500">
@@ -165,7 +165,7 @@
             </div>
         </div>
         <p class="text-gray-700 text-lg leading-relaxed">
-            Mental Wellness Companion is our contribution to making mental health support more approachable, 
+            Mental Wellbeing is our contribution to making mental health support more approachable, 
             practical, and integrated into everyday life. We're here to walk alongside you on your journey, 
             providing the tools and encouragement you need to thrive.
         </p>

@@ -61,7 +61,7 @@
                 @endif
 
                 <p style="margin-top: 24px;">Keep going – small steps add up over time. 💚</p>
-                <p style="margin-top: 8px; font-size: 12px; color: #6b7280;">You are receiving this email because you have an account on Mental Wellness Companion.</p>
+                <p style="margin-top: 8px; font-size: 12px; color: #6b7280;">You are receiving this email because you have an account on Mental Wellbeing.</p>
             </td>
         </tr>
     </table>
