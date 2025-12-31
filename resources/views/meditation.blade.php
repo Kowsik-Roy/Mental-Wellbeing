@@ -195,6 +195,69 @@
             </p>
         </div>
 
+        {{-- Location Settings Button --}}
+        <div class="flex justify-center mb-4">
+            <button id="location-settings-btn" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 backdrop-blur-sm border border-purple-200 text-sm font-medium text-gray-700 hover:bg-white hover:shadow-md transition-all">
+                <span>📍</span>
+                <span id="location-display">{{ $userCity }}, {{ $userCountry }}</span>
+                <span>✏️</span>
+            </button>
+        </div>
+
+        {{-- Location Settings Modal --}}
+        <div id="location-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-bold text-gray-800">📍 Change Location</h3>
+                    <button id="close-location-modal" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+                </div>
+                <form id="location-form" class="space-y-4">
+                    @csrf
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">City</label>
+                        <input type="text" id="location-city" name="city" value="{{ $userCity }}" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" 
+                               placeholder="e.g., Dhaka" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Country</label>
+                        <input type="text" id="location-country" name="country" value="{{ $userCountry }}" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" 
+                               placeholder="e.g., Bangladesh" required>
+                    </div>
+                    <div class="flex gap-3 pt-2">
+                        <button type="submit" class="flex-1 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg font-medium hover:shadow-lg transition transform hover:scale-105">
+                            Save Location
+                        </button>
+                        <button type="button" id="cancel-location" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {{-- Weather Chip (under header) --}}
+        <div id="weather-chip-container" class="hidden flex flex-col items-center gap-4 mb-6">
+            <div id="weather-chip" class="weather-chip">
+                <span id="weather-emoji">🌦</span>
+                <span id="weather-chip-text" class="text-gray-800"></span>
+            </div>
+            
+            {{-- Today's Tip (cozy and comforting) --}}
+            <div id="today-tip-container" class="hidden today-tip-container">
+                <div class="today-tip-card">
+                    <div class="flex items-start gap-3">
+                        <span class="text-3xl">💝</span>
+                        <div class="flex-1">
+                            <p class="text-base font-semibold text-purple-800 mb-2">Today's Tip</p>
+                            <p id="today-tip-text" class="text-base text-gray-700 leading-relaxed"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
             
             {{-- Timer Card --}}
@@ -319,6 +382,170 @@
 </div>
 
 <script>
+    // Load weather and AQI context
+    function loadContext() {
+        const apiUrl = '{{ route("api.context.today") }}';
+        
+        fetch(apiUrl, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json',
+            },
+            credentials: 'same-origin'
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            const weatherChipContainer = document.getElementById('weather-chip-container');
+            const weatherChipText = document.getElementById('weather-chip-text');
+            const weatherEmoji = document.getElementById('weather-emoji');
+            const todayTipContainer = document.getElementById('today-tip-container');
+            const todayTipText = document.getElementById('today-tip-text');
+
+            // Show weather chip with AQI
+            if (data && data.weather && data.weather.temp_c !== undefined) {
+                const city = data.city || 'Dhaka';
+                const temp = data.weather.temp_c;
+                const condition = data.weather.condition || '';
+                
+                // Set weather emoji based on condition (with CSS float animation)
+                if (data.weather.is_rainy || condition.toLowerCase().includes('rain')) {
+                    weatherEmoji.textContent = '🌧️';
+                } else if (temp >= 32 || condition.toLowerCase().includes('clear') || condition.toLowerCase().includes('sunny')) {
+                    weatherEmoji.textContent = '☀️';
+                } else if (condition.toLowerCase().includes('cloud') || condition.toLowerCase().includes('fog')) {
+                    weatherEmoji.textContent = '☁️';
+                } else if (condition.toLowerCase().includes('haze') || condition.toLowerCase().includes('mist')) {
+                    weatherEmoji.textContent = '🌫️';
+                } else if (temp <= 20) {
+                    weatherEmoji.textContent = '❄️';
+                } else {
+                    weatherEmoji.textContent = '🌦';
+                }
+
+                // Build chip text: "Dhaka: Cloudy, 17°C • AQI 162 (Unhealthy)"
+                let chipText = `${city}: ${condition}, ${temp}°C`;
+                
+                // Add AQI if available
+                if (data.air && data.air.aqi !== undefined && data.air.aqi !== null) {
+                    chipText += ` • AQI ${data.air.aqi} (${data.air.level})`;
+                }
+                
+                weatherChipText.textContent = chipText;
+                weatherChipContainer.classList.remove('hidden');
+            }
+
+            // Show Today's Tip
+            if (data && data.tips && data.tips.today_tip && todayTipContainer && todayTipText) {
+                todayTipText.textContent = data.tips.today_tip;
+                todayTipContainer.classList.remove('hidden');
+            }
+        })
+        .catch(error => {
+            console.error('Error loading context:', error);
+        });
+    }
+
+    // Load context on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        loadContext();
+        
+        // Location settings modal
+        const locationSettingsBtn = document.getElementById('location-settings-btn');
+        const locationModal = document.getElementById('location-modal');
+        const closeLocationModal = document.getElementById('close-location-modal');
+        const cancelLocation = document.getElementById('cancel-location');
+        const locationForm = document.getElementById('location-form');
+
+        if (locationSettingsBtn) {
+            locationSettingsBtn.addEventListener('click', function() {
+                locationModal.classList.remove('hidden');
+            });
+        }
+
+        if (closeLocationModal) {
+            closeLocationModal.addEventListener('click', function() {
+                locationModal.classList.add('hidden');
+            });
+        }
+
+        if (cancelLocation) {
+            cancelLocation.addEventListener('click', function() {
+                locationModal.classList.add('hidden');
+            });
+        }
+
+        // Close modal on outside click
+        if (locationModal) {
+            locationModal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.add('hidden');
+                }
+            });
+        }
+
+        // Handle location form submission
+        if (locationForm) {
+            locationForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const city = document.getElementById('location-city').value.trim();
+                const country = document.getElementById('location-country').value.trim();
+                
+                if (!city || !country) {
+                    alert('Please enter both city and country');
+                    return;
+                }
+                
+                // Get CSRF token
+                const csrfToken = document.querySelector('input[name="_token"]')?.value || 
+                                 document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                
+                fetch('{{ route("api.location.update") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json',
+                    },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({ city, country })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const locationDisplay = document.getElementById('location-display');
+                        if (locationDisplay) {
+                            locationDisplay.textContent = `${data.city}, ${data.country}`;
+                        }
+                        locationModal.classList.add('hidden');
+                        
+                        // Reload weather data with new location
+                        setTimeout(() => loadContext(), 500);
+                        
+                        // Show success message
+                        const successMsg = document.createElement('div');
+                        successMsg.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+                        successMsg.textContent = '✓ Location updated! Refreshing weather...';
+                        document.body.appendChild(successMsg);
+                        setTimeout(() => successMsg.remove(), 3000);
+                    } else {
+                        alert(data.message || 'Failed to update location');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating location:', error);
+                    alert('Failed to update location. Please try again.');
+                });
+            });
+        }
+    });
+
     // Timer state management with localStorage
     const STORAGE_KEY = 'meditation_timer_state';
     
