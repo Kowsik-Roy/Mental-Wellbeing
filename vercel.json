@@ -1,11 +1,10 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "api/lambda.php",
-      "use": "@vercel/php"
+  "functions": {
+    "api/lambda.php": {
+      "runtime": "vercel-php@0.7.4"
     }
-  ],
+  },
   "routes": [
     {
       "src": "/favicon\\.(ico|svg|png)",
