@@ -5,23 +5,7 @@
       "runtime": "vercel-php@0.7.4"
     }
   },
-  "routes": [
-    {
-      "src": "/favicon\\.(ico|svg|png)",
-      "dest": "/public/favicon.$1"
-    },
-    {
-      "src": "/robots\\.txt",
-      "dest": "/public/robots.txt"
-    },
-    {
-      "src": "/audio/(.*)",
-      "dest": "/public/audio/$1"
-    },
-    {
-      "src": "/build/(.*)",
-      "dest": "/public/build/$1"
-    },
+  "rewrites": [
     {
       "src": "/(.*)",
       "dest": "/api/lambda.php"
