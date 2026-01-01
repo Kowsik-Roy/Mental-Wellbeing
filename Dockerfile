@@ -67,6 +67,11 @@ RUN php artisan config:clear \
     && php artisan route:clear \
     && php artisan view:clear
 
+# Set environment variables for Docker
+ENV CACHE_STORE=file
+ENV SESSION_DRIVER=file
+ENV QUEUE_CONNECTION=sync
+
 # Copy Nginx configuration
 COPY docker/nginx.conf /etc/nginx/http.d/default.conf
 
