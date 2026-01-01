@@ -28,6 +28,8 @@ RUN apk add --no-cache \
     oniguruma-dev \
     zip \
     libzip-dev \
+    nginx \
+    supervisor \
     && docker-php-ext-install \
     pdo \
     pdo_mysql \
@@ -65,8 +67,48 @@ RUN php artisan config:clear \
     && php artisan route:clear \
     && php artisan view:clear
 
+# Configure Nginx
+RUN echo 'server { \
+    listen 80; \
+    server_name _; \
+    root /var/www/html/public; \
+    index index.php index.html; \
+    \
+    location / { \
+        try_files $uri $uri/ /index.php?$query_string; \
+    } \
+    \
+    location ~ \.php$ { \
+        fastcgi_pass 127.0.0.1:9000; \
+        fastcgi_index index.php; \
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name; \
+        include fastcgi_params; \
+    } \
+    \
+    location ~ /\.(?!well-known).* { \
+        deny all; \
+    } \
+}' > /etc/nginx/http.d/default.conf
+
+# Configure Supervisor to run both Nginx and PHP-FPM
+RUN echo '[supervisord] \
+nodaemon=true \
+\
+[program:php-fpm] \
+command=php-fpm -F \
+stdout_logfile=/dev/stdout \
+stdout_logfile_maxbytes=0 \
+stderr_logfile=/dev/stderr \
+stderr_logfile_maxbytes=0 \
+\
+[program:nginx] \
+command=nginx -g "daemon off;" \
+stdout_logfile=/dev/stdout \
+stdout_logfile_maxbytes=0 \
+stderr_logfile=/dev/stderr \
+stderr_logfile_maxbytes=0' > /etc/supervisor/conf.d/supervisord.conf
+
 # Expose port
-EXPOSE 9000
+EXPOSE 80
 
-CMD ["php-fpm"]
-
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
