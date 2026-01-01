@@ -73,11 +73,8 @@ RUN mkdir -p storage/framework/cache/data \
     && chmod -R 755 /var/www/html \
     && chmod -R 775 storage bootstrap/cache
 
-# Clear Laravel caches (after permissions are set)
-RUN php artisan config:clear || true \
-    && php artisan route:clear || true \
-    && php artisan view:clear || true \
-    && php artisan cache:clear || true
+# Note: Cache clearing is done at runtime by docker/start.sh
+# This avoids build-time errors when database/APP_KEY aren't available
 
 # Copy Nginx configuration
 COPY docker/nginx.conf /etc/nginx/http.d/default.conf
