@@ -191,10 +191,6 @@ main { position: relative; z-index: 10; }
             <!-- Right side -->
             @guest
             <div class="flex items-center gap-5 text-sm">
-                <a href="{{ route('about.index') }}"
-                   class="text-indigo-500 hover:text-indigo-700 transition">
-                    About
-                </a>
                 <a href="{{ route('login') }}"
                    class="text-pink-500 hover:text-pink-600 transition font-medium">
                     Log in
@@ -210,84 +206,41 @@ main { position: relative; z-index: 10; }
             @endguest
 
             @auth
-            <div class="flex items-center gap-3">     
+            <div class="relative">
                 <!-- User Menu -->
                 <button id="userMenuButton"
-                        class="flex items-center gap-3 text-indigo-900 hover:text-pink-500 transition relative group">
-                    
-                    <!-- Pastel floating avatar with sparkle -->
-                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-pink-300 via-purple-200 to-indigo-300
-                                text-white flex items-center justify-center font-bold shadow-lg
-                                animate-bounce-slow relative">
+                        class="flex items-center gap-2 text-indigo-600 hover:text-pink-500 transition">
+                    <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-pink-400 to-indigo-400
+                                text-white flex items-center justify-center font-semibold shadow-sm">
                         {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                        
-                        <!-- Tiny sparkles -->
-                        <span class="absolute top-0 left-1 w-2 h-2 bg-yellow-300 rounded-full animate-pulse-slow"></span>
-                        <span class="absolute bottom-1 right-1.5 w-2 h-2 bg-white rounded-full animate-pulse-slow"></span>
                     </div>
-
-                    <!-- User name -->
-                    <span class="text-sm font-medium group-hover:text-pink-500 transition-colors">
+                    <span class="text-sm font-medium">
                         {{ Auth::user()->name }}
                     </span>
-
-                    <!-- Chevron icon -->
-                    <i class="fas fa-chevron-down text-xs text-indigo-400 group-hover:text-pink-500 transition-colors"></i>
+                    <i class="fas fa-chevron-down text-xs"></i>
                 </button>
-
-                <!-- Animations -->
-                <style>
-                @keyframes bounce-slow {
-                0%, 100% { transform: translateY(0); }
-                50% { transform: translateY(-3px); }
-                }
-                .animate-bounce-slow {
-                animation: bounce-slow 2.5s infinite ease-in-out;
-                }
-
-                @keyframes pulse-slow {
-                0%, 100% { opacity: 0.5; transform: scale(1); }
-                50% { opacity: 1; transform: scale(1.3); }
-                }
-                .animate-pulse-slow {
-                animation: pulse-slow 2s infinite ease-in-out;
-                }
-                </style>
-
 
                 <!-- Dropdown -->
                 <div id="userDropdown"
-                     class="dropdown-menu absolute right-0 mt-3 w-56
-                            bg-rose rounded-2xl shadow-xl border border-indigo-100">
-
-                    <div class="px-4 py-3 border-b border-indigo-100 text-sm">
-                        <div class="font-semibold text-indigo-700">
-                            {{ Auth::user()->name }}
-                        </div>
-                        <div class="text-xs text-gray-500 truncate">
-                            {{ Auth::user()->email }}
-                        </div>
-                    </div>
+                     class="dropdown-menu absolute right-0 mt-2 w-48 bg-pink-50 rounded-lg shadow-lg border border-pink-200 py-1">
 
                     <a href="{{ route('profile.edit') }}"
-                       class="block px-4 py-2 text-sm text-gray-900 hover:bg-indigo-50 rounded-lg mx-2">
-                        Edit profile
+                       class="block px-4 py-2 text-sm text-black hover:bg-pink-100">
+                        Edit Profile
                     </a>
 
                     <a href="{{ route('profile.password.edit') }}"
-                       class="block px-4 py-2 text-sm text-gray-900 hover:bg-indigo-50 rounded-lg mx-2">
-                        Change password
+                       class="block px-4 py-2 text-sm text-black hover:bg-pink-100">
+                        Change Password
                     </a>
 
-                    <form method="POST" action="{{ route('logout') }}" class="mx-2">
+                    <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit"
-                                class="w-full text-left text-gray-900 px-4 py-2 text-sm
-                                       hover:bg-pink-50 rounded-lg">
+                                class="w-full text-left px-4 py-2 text-sm text-black hover:bg-pink-100">
                             Logout
                         </button>
                     </form>
-                </div>
                 </div>
             </div>
             @endauth
@@ -300,7 +253,7 @@ main { position: relative; z-index: 10; }
             <ul class="flex items-center gap-10 h-12 text-sm font-medium">
 
                 <li>
-                    <a href="{{ url('/') }}"
+                    <a href="{{ auth()->check() ? route('dashboard') : url('/') }}"
                        class="hover:text-yellow-200 transition">
                         <i class="fas fa-home text-lg"></i>
                     </a>

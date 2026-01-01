@@ -189,7 +189,7 @@
         {{-- Header --}}
         <div class="text-center mb-10">
             <h1 class="text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-orange-400 via-pink-500 to-purple-600 bg-clip-text text-transparent">
-                🧘 Meditation Timer
+                🧘Meditation Timer
             </h1>
             <p class="text-lg text-gray-700 max-w-2xl mx-auto">
                 Create a peaceful moment for yourself. Breathe slowly. Let your thoughts pass like clouds.
@@ -199,9 +199,8 @@
         {{-- Location Settings Button --}}
         <div class="flex justify-center mb-4">
             <button id="location-settings-btn" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 backdrop-blur-sm border border-purple-200 text-sm font-medium text-gray-700 hover:bg-white hover:shadow-md transition-all">
-                <span>📍</span>
                 <span id="location-display">{{ $userCity }}, {{ $userCountry }}</span>
-                <span>✏️</span>
+                <span class="text-xs">(Click to edit)</span>
             </button>
         </div>
 
@@ -209,7 +208,7 @@
         <div id="location-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
             <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-xl font-bold text-gray-800">📍 Change Location</h3>
+                    <h3 class="text-xl font-bold text-gray-800">Change Location</h3>
                     <button id="close-location-modal" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
                 </div>
                 <form id="location-form" class="space-y-4">
@@ -241,7 +240,7 @@
         {{-- Weather Chip (under header) --}}
         <div id="weather-chip-container" class="hidden flex flex-col items-center gap-4 mb-6">
             <div id="weather-chip" class="weather-chip">
-                <span id="weather-emoji">🌦</span>
+                <span id="weather-emoji"></span>
                 <span id="weather-chip-text" class="text-gray-800"></span>
             </div>
             
@@ -249,7 +248,6 @@
             <div id="today-tip-container" class="hidden today-tip-container">
                 <div class="today-tip-card">
                     <div class="flex items-start gap-3">
-                        <span class="text-3xl">💝</span>
                         <div class="flex-1">
                             <p class="text-base font-semibold text-purple-800 mb-2">Today's Tip</p>
                             <p id="today-tip-text" class="text-base text-gray-700 leading-relaxed"></p>
@@ -324,39 +322,37 @@
                 </div>
 
                 <p class="text-sm text-gray-600 mt-6 italic">
-                    💡 Tip: Inhale as the glow expands, exhale as it shrinks.
+                    Tip: Inhale as the glow expands, exhale as it shrinks.
                 </p>
             </div>
 
             {{-- Instructions & Info Card --}}
             <div class="bg-white rounded-3xl p-8 shadow-lg border-2 border-pink-100">
-                <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-                    <span class="text-3xl">✨</span>
+                <h3 class="text-2xl font-bold text-gray-800 mb-6">
                     How to Meditate
                 </h3>
                 
                 <ul class="text-base text-gray-700 space-y-4 mb-8">
                     <li class="flex items-start gap-3">
-                        <span class="text-2xl">🌱</span>
-                        <span>Choose your duration and press <strong class="text-orange-600">Start</strong>.</span>
+                        <span class="text-orange-600 font-bold">1.</span>
+                        <span>Choose your duration using the input field and press <strong class="text-orange-600">Start</strong> to begin your meditation session.</span>
                     </li>
                     <li class="flex items-start gap-3">
-                        <span class="text-2xl">🌊</span>
-                        <span>Follow the breathing cue: <strong class="text-pink-600">Inhale</strong> → <strong class="text-purple-600">Exhale</strong>.</span>
+                        <span class="text-pink-600 font-bold">2.</span>
+                        <span>Follow the breathing guidance displayed in the circle: <strong class="text-pink-600">Inhale</strong> when the glow expands, and <strong class="text-purple-600">Exhale</strong> when it contracts.</span>
                     </li>
                     <li class="flex items-start gap-3">
-                        <span class="text-2xl">⏸️</span>
-                        <span>You can <strong class="text-purple-600">Pause</strong> or <strong class="text-pink-600">Reset</strong> anytime.</span>
+                        <span class="text-purple-600 font-bold">3.</span>
+                        <span>You can <strong class="text-purple-600">Pause</strong> to take a break or <strong class="text-pink-600">Reset</strong> to start over at any time during your session.</span>
                     </li>
                     <li class="flex items-start gap-3">
-                        <span class="text-2xl">💫</span>
-                        <span>Your progress is saved automatically!</span>
+                        <span class="text-indigo-600 font-bold">4.</span>
+                        <span>Your meditation progress is automatically saved, so you can resume your session later if needed.</span>
                     </li>
                 </ul>
 
                 <div class="rounded-2xl bg-gradient-to-br from-pink-50 to-purple-50 border-2 border-pink-200 p-6 mb-6">
-                    <p class="text-base text-pink-900 font-semibold mb-2 flex items-center gap-2">
-                        <span class="text-2xl">💝</span>
+                    <p class="text-base text-pink-900 font-semibold mb-2">
                         Gentle Reminder
                     </p>
                     <p class="text-sm text-gray-700 leading-relaxed">
@@ -365,18 +361,10 @@
                 </div>
 
                 <div class="rounded-2xl bg-gradient-to-br from-orange-50 to-amber-50 border-2 border-orange-200 p-6">
-                    <p class="text-sm font-semibold text-orange-900 mb-2">🎯 Current Session</p>
+                    <p class="text-sm font-semibold text-orange-900 mb-2">Current Session</p>
                     <p class="text-xs text-gray-700" id="sessionInfo">
                         Ready to begin your meditation journey
                     </p>
-                </div>
-
-                <div class="mt-6">
-                    <a href="{{ route('dashboard') }}"
-                       class="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-800 font-medium transition">
-                        <span>←</span>
-                        <span>Back to dashboard</span>
-                    </a>
                 </div>
             </div>
         </div>
@@ -415,20 +403,22 @@
                 const temp = data.weather.temp_c;
                 const condition = data.weather.condition || '';
                 
-                // Set weather emoji based on condition (with CSS float animation)
+                // Set weather text based on condition
+                let weatherText = '';
                 if (data.weather.is_rainy || condition.toLowerCase().includes('rain')) {
-                    weatherEmoji.textContent = '🌧️';
+                    weatherText = 'Rainy';
                 } else if (temp >= 32 || condition.toLowerCase().includes('clear') || condition.toLowerCase().includes('sunny')) {
-                    weatherEmoji.textContent = '☀️';
+                    weatherText = 'Sunny';
                 } else if (condition.toLowerCase().includes('cloud') || condition.toLowerCase().includes('fog')) {
-                    weatherEmoji.textContent = '☁️';
+                    weatherText = 'Cloudy';
                 } else if (condition.toLowerCase().includes('haze') || condition.toLowerCase().includes('mist')) {
-                    weatherEmoji.textContent = '🌫️';
+                    weatherText = 'Hazy';
                 } else if (temp <= 20) {
-                    weatherEmoji.textContent = '❄️';
+                    weatherText = 'Cold';
                 } else {
-                    weatherEmoji.textContent = '🌦';
+                    weatherText = 'Mild';
                 }
+                weatherEmoji.textContent = weatherText + ': ';
 
                 // Build chip text: "Dhaka: Cloudy, 17°C • AQI 162 (Unhealthy)"
                 let chipText = `${city}: ${condition}, ${temp}°C`;
@@ -612,7 +602,7 @@
                             totalSeconds = 0;
                             updateDisplay();
                             completeBreathing();
-                            sessionInfo.textContent = "Previous session completed ✨";
+                            sessionInfo.textContent = "Previous session completed";
                             clearState();
                         }
                     } else if (paused && totalSeconds > 0) {
@@ -690,7 +680,7 @@
     function pauseBreathing() {
         breathingWrap.classList.remove("breathing-on");
         breathingWrap.classList.add("breathing-paused");
-        breathText.textContent = "Paused ⏸";
+        breathText.textContent = "Paused";
         clearInterval(breathInterval);
         breathInterval = null;
     }
@@ -698,7 +688,7 @@
     function completeBreathing() {
         breathingWrap.classList.remove("breathing-on");
         breathingWrap.classList.add("breathing-paused");
-        breathText.textContent = "Complete ✨";
+        breathText.textContent = "Complete";
         clearInterval(breathInterval);
         breathInterval = null;
     }
@@ -736,9 +726,9 @@
             if (totalSeconds === 0) {
                 clearInterval(interval);
                 interval = null;
-                quoteEl.textContent = '"Meditation complete 🌿"';
+                quoteEl.textContent = '"Meditation complete"';
                 completeBreathing();
-                sessionInfo.textContent = "Session completed! Great job! ✨";
+                sessionInfo.textContent = "Session completed! Great job!";
                 clearState();
             }
         }, 1000);
@@ -779,7 +769,7 @@
         quoteEl.textContent = '"Breathe in peace, breathe out tension."';
         breathingWrap.classList.remove("breathing-on");
         breathingWrap.classList.add("breathing-paused");
-        breathText.textContent = "Ready 🌿";
+        breathText.textContent = "Ready";
         sessionInfo.textContent = "Ready to begin your meditation journey";
 
         clearInterval(breathInterval);
