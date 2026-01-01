@@ -1,19 +1,15 @@
 {
-  "version": 2,
-  "framework": null,
+  "schema": "https://mental-wellbeing.vercel.app",
+  "outputDirectory": "public",
   "functions": {
-    "api/index.php": { "runtime": "vercel-php@0.6.0" }
+    "api/index.php": {
+      "runtime": "vercel-php@0.7.4"
+    }
   },
-  "routes": [
-    { "src": "/(.*)", "dest": "/api/index.php" }
-  ],
-  "env": {
-    "APP_ENV": "production",
-    "APP_DEBUG": "false",
-    "APP_URL": "https://your-url.vercel.app",
-    "APP_KEY": "base64:/XL50aKROv+4VySHNL+QRvtt7aWqkvI9U3Kq4jPj6CA=",
-    "LOG_CHANNEL": "stderr",
-    "CACHE_DRIVER": "array",
-    "SESSION_DRIVER": "cookie"
-  }
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/api/lambda.php"
+    }
+  ]
 }
