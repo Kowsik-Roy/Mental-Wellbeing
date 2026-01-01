@@ -67,48 +67,11 @@ RUN php artisan config:clear \
     && php artisan route:clear \
     && php artisan view:clear
 
-# Configure Nginx
-RUN mkdir -p /etc/nginx/http.d && \
-    echo 'server {' > /etc/nginx/http.d/default.conf && \
-    echo '    listen 80;' >> /etc/nginx/http.d/default.conf && \
-    echo '    server_name _;' >> /etc/nginx/http.d/default.conf && \
-    echo '    root /var/www/html/public;' >> /etc/nginx/http.d/default.conf && \
-    echo '    index index.php index.html;' >> /etc/nginx/http.d/default.conf && \
-    echo '' >> /etc/nginx/http.d/default.conf && \
-    echo '    location / {' >> /etc/nginx/http.d/default.conf && \
-    echo '        try_files $uri $uri/ /index.php?$query_string;' >> /etc/nginx/http.d/default.conf && \
-    echo '    }' >> /etc/nginx/http.d/default.conf && \
-    echo '' >> /etc/nginx/http.d/default.conf && \
-    echo '    location ~ \.php$ {' >> /etc/nginx/http.d/default.conf && \
-    echo '        fastcgi_pass 127.0.0.1:9000;' >> /etc/nginx/http.d/default.conf && \
-    echo '        fastcgi_index index.php;' >> /etc/nginx/http.d/default.conf && \
-    echo '        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;' >> /etc/nginx/http.d/default.conf && \
-    echo '        include fastcgi_params;' >> /etc/nginx/http.d/default.conf && \
-    echo '    }' >> /etc/nginx/http.d/default.conf && \
-    echo '' >> /etc/nginx/http.d/default.conf && \
-    echo '    location ~ /\.(?!well-known).* {' >> /etc/nginx/http.d/default.conf && \
-    echo '        deny all;' >> /etc/nginx/http.d/default.conf && \
-    echo '    }' >> /etc/nginx/http.d/default.conf && \
-    echo '}' >> /etc/nginx/http.d/default.conf
+# Copy Nginx configuration
+COPY docker/nginx.conf /etc/nginx/http.d/default.conf
 
-# Configure Supervisor to run both Nginx and PHP-FPM
-RUN mkdir -p /etc/supervisor/conf.d && \
-    echo '[supervisord]' > /etc/supervisor/conf.d/supervisord.conf && \
-    echo 'nodaemon=true' >> /etc/supervisor/conf.d/supervisord.conf && \
-    echo '' >> /etc/supervisor/conf.d/supervisord.conf && \
-    echo '[program:php-fpm]' >> /etc/supervisor/conf.d/supervisord.conf && \
-    echo 'command=php-fpm -F' >> /etc/supervisor/conf.d/supervisord.conf && \
-    echo 'stdout_logfile=/dev/stdout' >> /etc/supervisor/conf.d/supervisord.conf && \
-    echo 'stdout_logfile_maxbytes=0' >> /etc/supervisor/conf.d/supervisord.conf && \
-    echo 'stderr_logfile=/dev/stderr' >> /etc/supervisor/conf.d/supervisord.conf && \
-    echo 'stderr_logfile_maxbytes=0' >> /etc/supervisor/conf.d/supervisord.conf && \
-    echo '' >> /etc/supervisor/conf.d/supervisord.conf && \
-    echo '[program:nginx]' >> /etc/supervisor/conf.d/supervisord.conf && \
-    echo 'command=nginx -g "daemon off;"' >> /etc/supervisor/conf.d/supervisord.conf && \
-    echo 'stdout_logfile=/dev/stdout' >> /etc/supervisor/conf.d/supervisord.conf && \
-    echo 'stdout_logfile_maxbytes=0' >> /etc/supervisor/conf.d/supervisord.conf && \
-    echo 'stderr_logfile=/dev/stderr' >> /etc/supervisor/conf.d/supervisord.conf && \
-    echo 'stderr_logfile_maxbytes=0' >> /etc/supervisor/conf.d/supervisord.conf
+# Copy Supervisor configuration
+COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Expose port
 EXPOSE 80
