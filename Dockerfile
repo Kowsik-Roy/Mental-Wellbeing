@@ -75,6 +75,9 @@ RUN mkdir -p storage/framework/cache/data \
 
 # Note: Cache clearing is done at runtime by docker/start.sh
 # This avoids build-time errors when database/APP_KEY aren't available
+# Cache-busting: Force rebuild of this layer
+ARG BUILD_DATE=unknown
+LABEL build_date=${BUILD_DATE}
 
 # Copy Nginx configuration
 COPY docker/nginx.conf /etc/nginx/http.d/default.conf
