@@ -1,6 +1,5 @@
 {
   "version": 2,
-  "outputDirectory": "public",
   "functions": {
     "api/lambda.php": {
       "runtime": "vercel-php@0.7.4"
