@@ -54,25 +54,30 @@ COPY . .
 # Copy built frontend assets from Stage 1
 COPY --from=frontend /app/public/build ./public/build
 
-# Set proper permissions
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html \
-    && chmod -R 775 storage bootstrap/cache
-
-# Run post-install scripts
-RUN composer dump-autoload --optimize
-
 # Set default environment variables (must be set before clearing caches)
 ENV CACHE_STORE=file
 ENV SESSION_DRIVER=file
 ENV QUEUE_CONNECTION=sync
 ENV DB_CONNECTION=mysql
 
-# Clear Laravel caches (after env vars are set)
-RUN php artisan config:clear \
-    && php artisan route:clear \
-    && php artisan view:clear \
-    && php artisan cache:clear
+# Run post-install scripts
+RUN composer dump-autoload --optimize
+
+# Ensure storage directories exist and set proper permissions
+RUN mkdir -p storage/framework/cache/data \
+    && mkdir -p storage/framework/sessions \
+    && mkdir -p storage/framework/views \
+    && mkdir -p storage/logs \
+    && mkdir -p bootstrap/cache \
+    && chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html \
+    && chmod -R 775 storage bootstrap/cache
+
+# Clear Laravel caches (after permissions are set)
+RUN php artisan config:clear || true \
+    && php artisan route:clear || true \
+    && php artisan view:clear || true \
+    && php artisan cache:clear || true
 
 # Copy Nginx configuration
 COPY docker/nginx.conf /etc/nginx/http.d/default.conf
