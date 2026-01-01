@@ -157,17 +157,13 @@
     <div class="w-full mx-auto px-6">
         
         {{-- Header --}}
-        <div class="flex items-center justify-between mb-8">
-            <div>
-                <h1 class="text-4xl md:text-5xl font-bold mb-2 bg-gradient-to-r from-pink-400 via-purple-500 to-pink-600 bg-clip-text text-transparent">
+        <div class="flex items-center justify-center mb-8">
+            <div class="text-center">
+                <h1 class="text-4xl md:text-5xl font-bold mb-2 bg-gradient-to-r from-pink-400 via-purple-500 to-pink-400 bg-clip-text text-transparent">
                     AI Support Chat
                 </h1>
                 <p class="text-gray-600 text-lg">A safe space to share what's on your mind</p>
             </div>
-            <a href="{{ route('dashboard') }}" 
-               class="inline-flex items-center gap-2 px-4 py-2 rounded-full font-medium bg-gradient-to-r from-pink-500 to-purple-600 shadow-lg text-white hover:scale-105 transition transform">
-                <span>Dashboard</span>
-            </a>
         </div>
 
         {{-- Chat container --}}
