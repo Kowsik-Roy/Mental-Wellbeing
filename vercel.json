@@ -1,5 +1,5 @@
 {
-  "schema": "https://mental-wellbeing.vercel.app",
+  "schema": "https://openapi.vercel.sh/vercel.json",
   "outputDirectory": "public",
   "functions": {
     "api/index.php": {
