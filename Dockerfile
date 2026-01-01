@@ -91,22 +91,23 @@ RUN echo 'server { \
 }' > /etc/nginx/http.d/default.conf
 
 # Configure Supervisor to run both Nginx and PHP-FPM
-RUN echo '[supervisord] \
-nodaemon=true \
-\
-[program:php-fpm] \
-command=php-fpm -F \
-stdout_logfile=/dev/stdout \
-stdout_logfile_maxbytes=0 \
-stderr_logfile=/dev/stderr \
-stderr_logfile_maxbytes=0 \
-\
-[program:nginx] \
-command=nginx -g "daemon off;" \
-stdout_logfile=/dev/stdout \
-stdout_logfile_maxbytes=0 \
-stderr_logfile=/dev/stderr \
-stderr_logfile_maxbytes=0' > /etc/supervisor/conf.d/supervisord.conf
+RUN mkdir -p /etc/supervisor/conf.d && \
+    echo '[supervisord]' > /etc/supervisor/conf.d/supervisord.conf && \
+    echo 'nodaemon=true' >> /etc/supervisor/conf.d/supervisord.conf && \
+    echo '' >> /etc/supervisor/conf.d/supervisord.conf && \
+    echo '[program:php-fpm]' >> /etc/supervisor/conf.d/supervisord.conf && \
+    echo 'command=php-fpm -F' >> /etc/supervisor/conf.d/supervisord.conf && \
+    echo 'stdout_logfile=/dev/stdout' >> /etc/supervisor/conf.d/supervisord.conf && \
+    echo 'stdout_logfile_maxbytes=0' >> /etc/supervisor/conf.d/supervisord.conf && \
+    echo 'stderr_logfile=/dev/stderr' >> /etc/supervisor/conf.d/supervisord.conf && \
+    echo 'stderr_logfile_maxbytes=0' >> /etc/supervisor/conf.d/supervisord.conf && \
+    echo '' >> /etc/supervisor/conf.d/supervisord.conf && \
+    echo '[program:nginx]' >> /etc/supervisor/conf.d/supervisord.conf && \
+    echo 'command=nginx -g "daemon off;"' >> /etc/supervisor/conf.d/supervisord.conf && \
+    echo 'stdout_logfile=/dev/stdout' >> /etc/supervisor/conf.d/supervisord.conf && \
+    echo 'stdout_logfile_maxbytes=0' >> /etc/supervisor/conf.d/supervisord.conf && \
+    echo 'stderr_logfile=/dev/stderr' >> /etc/supervisor/conf.d/supervisord.conf && \
+    echo 'stderr_logfile_maxbytes=0' >> /etc/supervisor/conf.d/supervisord.conf
 
 # Expose port
 EXPOSE 80
