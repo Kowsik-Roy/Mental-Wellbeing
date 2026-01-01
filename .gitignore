@@ -5,3 +5,7 @@
 .phpunit.result.cache
 .env
 .env.*
+
+# Database backups (contain sensitive data)
+*.sql
+Mental_wellbeing_backup.sql
