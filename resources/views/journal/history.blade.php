@@ -74,7 +74,6 @@
     <div class="flex items-center justify-between mb-8">
         <!-- Page Title -->
         <h1 class="text-3xl font-bold text-gray-800">
-            <span class="text-indigo-600">📅</span>
             Journal History
         </h1>
         
@@ -83,7 +82,7 @@
             href="{{ route('journal.today') }}" 
             class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-full font-semibold text-lg shadow-md transition duration-200"
         >
-            <span>📝 Today's Journal</span>
+            <span> Today's Journal</span>
         </a>
     </div>
 

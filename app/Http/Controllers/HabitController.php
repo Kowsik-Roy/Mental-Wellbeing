@@ -92,6 +92,47 @@ class HabitController extends Controller
             'is_active' => 'boolean',
         ]);
 
+        // Check if reminder_time changed
+        $oldReminderTime = $habit->reminder_time;
+        $newReminderTime = $validated['reminder_time'] ?? null;
+        
+        // Normalize times for comparison (handle both string and Carbon instances)
+        $oldTimeStr = $oldReminderTime instanceof \Carbon\Carbon 
+            ? $oldReminderTime->format('H:i') 
+            : ($oldReminderTime ? date('H:i', strtotime($oldReminderTime)) : null);
+        $newTimeStr = $newReminderTime ? date('H:i', strtotime($newReminderTime)) : null;
+        
+        $reminderTimeChanged = $oldTimeStr !== $newTimeStr;
+
+        // If reminder time changed and habit was previously synced, remove old event
+        if ($reminderTimeChanged && $habit->google_event_id) {
+            $user = Auth::user();
+            
+            if ($user->calendar_sync_enabled) {
+                try {
+                    $service = GoogleCalendarController::googleClient($user);
+                    $service->events->delete('primary', $habit->google_event_id);
+                    
+                    Log::info('Google Calendar event deleted due to reminder time change', [
+                        'habit_id' => $habit->id,
+                        'event_id' => $habit->google_event_id,
+                        'old_reminder_time' => $oldTimeStr,
+                        'new_reminder_time' => $newTimeStr,
+                    ]);
+                } catch (\Exception $e) {
+                    // Log error but continue with habit update
+                    Log::warning('Failed to delete Google Calendar event when updating reminder time', [
+                        'habit_id' => $habit->id,
+                        'event_id' => $habit->google_event_id,
+                        'error' => $e->getMessage(),
+                    ]);
+                }
+            }
+            
+            // Clear google_event_id so UI shows "Sync to Calendar" button again
+            $validated['google_event_id'] = null;
+        }
+
         $habit->update($validated);
 
         return redirect()->route('habits.index')

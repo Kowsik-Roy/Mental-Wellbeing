@@ -5,9 +5,9 @@
 <div class="mb-6 px-4 md:px-8 pt-4">
     <div class="max-w-6xl mx-auto">
         <a href="{{ route('habits.index') }}" 
-           class="inline-flex items-center px-5 py-2.5 glass-card shadow-lg text-gray-700 rounded-xl hover:shadow-xl hover:scale-105 transition-all duration-200 font-medium group">
-            <i class="fas fa-arrow-left mr-2 group-hover:-translate-x-1 transition-transform duration-200"></i>
-            <span>Back</span>
+           class="inline-flex items-center gap-2 px-4 py-2 rounded-full font-medium bg-gradient-to-r from-purple-400 to-indigo-500 shadow-lg text-white hover:scale-105 hover:from-purple-300 hover:to-indigo-400 transition transform">
+            <i class="fas fa-arrow-left"></i>
+            <span>Back to Habits</span>
         </a>
     </div>
 </div>
@@ -28,10 +28,7 @@
                             <i class="fas fa-calendar-alt mr-1"></i>
                             {{ ucfirst($habit->frequency) }}
                         </span>
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                            <i class="fas fa-bullseye mr-1"></i>
-                            {{ ucfirst(str_replace('_', ' ', $habit->goal_type)) }}
-                        </span>
+
                     </div>
                 </div>
                 <div class="mt-4 md:mt-0">

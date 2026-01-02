@@ -160,7 +160,8 @@
                         <form method="POST" action="{{ route('profile.emergency-contact.delete') }}" id="delete-emergency-contact-form" class="inline">
                             @csrf
                             @method('DELETE')
-                            <button type="button" onclick="showConfirmModal('Remove Emergency Contact', 'Are you sure you want to remove your emergency contact?', function() { document.getElementById('delete-emergency-contact-form').submit(); })"
+                            <button type="button" 
+                                    id="remove-emergency-contact-btn"
                                     class="px-6 py-2 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
                                 Remove Contact
                             </button>
@@ -203,5 +204,89 @@
     </div>
 
 </div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const removeBtn = document.getElementById('remove-emergency-contact-btn');
+    
+    if (!removeBtn) {
+        return;
+    }
+    
+    removeBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        showConfirmModal(
+            'Remove Emergency Contact', 
+            'Are you sure you want to remove your emergency contact?', 
+            submitEmergencyContactDeletion
+        );
+    });
+    
+    /**
+     * Submit emergency contact deletion form
+     * Creates a temporary form outside nested structure to avoid HTML nesting issues
+     */
+    function submitEmergencyContactDeletion() {
+        const form = document.getElementById('delete-emergency-contact-form');
+        const action = '{{ route('profile.emergency-contact.delete') }}';
+        let token = null;
+        
+        // Try to get token from the delete form
+        if (form) {
+            token = form.querySelector('input[name="_token"]');
+        }
+        
+        // If form not found or token missing, search for token elsewhere on the page
+        if (!token) {
+            const allForms = document.querySelectorAll('form');
+            for (let i = 0; i < allForms.length; i++) {
+                const foundToken = allForms[i].querySelector('input[name="_token"]');
+                if (foundToken) {
+                    token = foundToken;
+                    break;
+                }
+            }
+        }
+        
+        // Last resort: search entire page for token
+        if (!token) {
+            token = document.querySelector('input[name="_token"]');
+        }
+        
+        if (!token) {
+            alert('Error: Could not find security token. Please refresh the page and try again.');
+            return;
+        }
+        
+        // Create temporary form outside nested structure
+        const tempForm = document.createElement('form');
+        tempForm.method = 'POST';
+        tempForm.action = action;
+        tempForm.style.display = 'none';
+        
+        // Add CSRF token
+        const tokenInput = document.createElement('input');
+        tokenInput.type = 'hidden';
+        tokenInput.name = '_token';
+        tokenInput.value = token.value;
+        tempForm.appendChild(tokenInput);
+        
+        // Add method override for DELETE
+        const methodInput = document.createElement('input');
+        methodInput.type = 'hidden';
+        methodInput.name = '_method';
+        methodInput.value = 'DELETE';
+        tempForm.appendChild(methodInput);
+        
+        // Append to body and submit
+        document.body.appendChild(tempForm);
+        tempForm.submit();
+    }
+});
+</script>
+@endpush
 
 @endsection
