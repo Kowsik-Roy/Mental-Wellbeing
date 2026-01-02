@@ -68,17 +68,8 @@
 <div class="max-w-4xl mx-auto">
     <!-- Header -->
     <div class="flex items-center justify-between mb-8">
-        <!-- Home Button -->
-        <a 
-            href="{{ route('dashboard') }}" 
-            class="flex items-center gap-2 text-gray-700 hover:text-gray-900 font-medium text-lg transition duration-200"
-        >
-            <span class="text-xl">🏠</span>
-            <span>Dashboard</span>
-        </a>
-
         <!-- Page Title -->
-        <div class="text-center">
+        <div class="text-center flex-1">
             <h1 class="text-3xl font-bold text-gray-800">
                 <span class="text-green-600">📝</span>
                 Edit Journal Entry

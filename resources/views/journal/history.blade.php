@@ -70,17 +70,8 @@
 
 @section('content')
 <div class="max-w-7xl mx-auto">
-    <!-- Header with Home and Today buttons (match journal page style) -->
+    <!-- Header with Today button -->
     <div class="flex items-center justify-between mb-8">
-        <!-- Home Button -->
-        <a 
-            href="{{ route('dashboard') }}" 
-            class="flex items-center gap-2 text-gray-700 hover:text-gray-900 font-medium text-lg transition duration-200"
-        >
-            <span class="text-xl">🏠</span>
-            <span>Dashboard</span>
-        </a>
-
         <!-- Page Title -->
         <h1 class="text-3xl font-bold text-gray-800">
             <span class="text-indigo-600">📅</span>
