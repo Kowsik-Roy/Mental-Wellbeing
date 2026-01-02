@@ -16,12 +16,7 @@
         @endif
 
         <!-- Action Buttons -->
-        <div class="mb-6 flex items-center justify-between">
-            <a href="{{ route('dashboard') }}" 
-               class="inline-flex items-center gap-2 px-4 py-2 rounded-full font-medium bg-gradient-to-r from-purple-400 to-indigo-500 shadow-lg text-white hover:scale-105 hover:from-purple-300 hover:to-indigo-400 transition transform text-sm">
-                <i class="fas fa-home"></i>
-                <span>Dashboard</span>
-            </a>
+        <div class="mb-6 flex items-center justify-end">
             <a href="{{ route('habits.create') }}" 
                class="inline-flex items-center gap-2 px-4 py-2 rounded-full font-medium bg-gradient-to-r from-green-400 to-emerald-500 shadow-lg text-white hover:scale-105 hover:from-green-300 hover:to-emerald-400 transition transform text-sm">
                 <i class="fas fa-plus"></i>

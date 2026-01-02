@@ -46,15 +46,6 @@
 
 @section('content')
 <div class="max-w-7xl mx-auto">
-    <!-- Dashboard Button -->
-    <div class="mb-4 flex justify-start">
-        <a href="{{ route('dashboard') }}" 
-           class="inline-flex items-center gap-2 px-4 py-2 rounded-full font-medium bg-gradient-to-r from-purple-400 to-indigo-500 shadow-lg text-white hover:scale-105 hover:from-purple-300 hover:to-indigo-400 transition transform text-sm">
-            <i class="fas fa-home"></i>
-            <span>Dashboard</span>
-        </a>
-    </div>
-
     <!-- Header -->
     <div class="flex items-center justify-between mb-8">
         <div>
