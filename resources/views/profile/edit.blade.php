@@ -157,19 +157,21 @@
                 <!-- Actions -->
                 <div class="flex justify-end gap-3 pt-6 border-t border-gray-200">
                     @if($emergencyContact)
-                        <form method="POST" action="{{ route('profile.emergency-contact.delete') }}" id="delete-emergency-contact-form" class="inline">
+                        <div class="inline">
                             @csrf
-                            @method('DELETE')
+                            <input type="hidden" name="_token" value="{{ csrf_token() }}" id="delete-form-token">
                             <button type="button" 
                                     id="remove-emergency-contact-btn"
-                                    class="px-6 py-2 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
+                                    class="px-6 py-2 rounded-xl bg-red-500 text-white font-medium hover:bg-red-600 transition">
                                 Remove Contact
                             </button>
-                        </form>
+                        </div>
                     @endif
 
                     <button type="submit"
-                            class="px-6 py-2 rounded-xl bg-red-400 text-white font-medium hover:bg-red-600 transition">
+                            id="update-emergency-contact-btn"
+                            class="px-6 py-2 rounded-xl bg-gray-300 text-gray-500 font-medium cursor-not-allowed transition"
+                            disabled>
                         {{ $emergencyContact ? 'Update Contact' : 'Save Contact' }}
                     </button>
                 </div>
@@ -208,50 +210,88 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Remove contact button functionality
     const removeBtn = document.getElementById('remove-emergency-contact-btn');
     
-    if (!removeBtn) {
-        return;
+    if (removeBtn) {
+        removeBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            showConfirmModal(
+                'Remove Emergency Contact', 
+                'Are you sure you want to remove your emergency contact?', 
+                submitEmergencyContactDeletion
+            );
+        });
     }
     
-    removeBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
+    // Update button enable/disable logic
+    const updateBtn = document.getElementById('update-emergency-contact-btn');
+    const nameInput = document.getElementById('emergency_name');
+    const emailInput = document.getElementById('emergency_email');
+    const relationshipInput = document.getElementById('emergency_relationship');
+    
+    if (updateBtn && nameInput && emailInput) {
+        // Store original values
+        const originalValues = {
+            name: nameInput.value.trim(),
+            email: emailInput.value.trim(),
+            relationship: relationshipInput ? relationshipInput.value.trim() : ''
+        };
         
-        showConfirmModal(
-            'Remove Emergency Contact', 
-            'Are you sure you want to remove your emergency contact?', 
-            submitEmergencyContactDeletion
-        );
-    });
+        /**
+         * Check if any field has changed and enable/disable update button accordingly
+         */
+        function checkForChanges() {
+            const currentValues = {
+                name: nameInput.value.trim(),
+                email: emailInput.value.trim(),
+                relationship: relationshipInput ? relationshipInput.value.trim() : ''
+            };
+            
+            const hasChanges = 
+                currentValues.name !== originalValues.name ||
+                currentValues.email !== originalValues.email ||
+                currentValues.relationship !== originalValues.relationship;
+            
+            if (hasChanges) {
+                // Enable button - make it green and clickable
+                updateBtn.disabled = false;
+                updateBtn.classList.remove('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
+                updateBtn.classList.add('bg-green-500', 'text-white', 'hover:bg-green-600', 'cursor-pointer');
+            } else {
+                // Disable button - make it gray and unclickable
+                updateBtn.disabled = true;
+                updateBtn.classList.remove('bg-green-500', 'text-white', 'hover:bg-green-600', 'cursor-pointer');
+                updateBtn.classList.add('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
+            }
+        }
+        
+        // Listen for changes on all input fields
+        nameInput.addEventListener('input', checkForChanges);
+        nameInput.addEventListener('change', checkForChanges);
+        emailInput.addEventListener('input', checkForChanges);
+        emailInput.addEventListener('change', checkForChanges);
+        
+        if (relationshipInput) {
+            relationshipInput.addEventListener('input', checkForChanges);
+            relationshipInput.addEventListener('change', checkForChanges);
+        }
+        
+        // Initial check (in case page loads with changes already made)
+        checkForChanges();
+    }
     
     /**
      * Submit emergency contact deletion form
      * Creates a temporary form outside nested structure to avoid HTML nesting issues
      */
     function submitEmergencyContactDeletion() {
-        const form = document.getElementById('delete-emergency-contact-form');
         const action = '{{ route('profile.emergency-contact.delete') }}';
-        let token = null;
+        let token = document.getElementById('delete-form-token');
         
-        // Try to get token from the delete form
-        if (form) {
-            token = form.querySelector('input[name="_token"]');
-        }
-        
-        // If form not found or token missing, search for token elsewhere on the page
-        if (!token) {
-            const allForms = document.querySelectorAll('form');
-            for (let i = 0; i < allForms.length; i++) {
-                const foundToken = allForms[i].querySelector('input[name="_token"]');
-                if (foundToken) {
-                    token = foundToken;
-                    break;
-                }
-            }
-        }
-        
-        // Last resort: search entire page for token
+        // If token not found by ID, search for it elsewhere
         if (!token) {
             token = document.querySelector('input[name="_token"]');
         }
