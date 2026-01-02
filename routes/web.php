@@ -18,6 +18,7 @@ use App\Http\Controllers\AboutController;
 
 use App\Http\Controllers\AiChatController;
 use App\Http\Controllers\MoodLogController;
+use App\Http\Controllers\MeditationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,12 +36,7 @@ Route::get('/', function () {
         ->header('ETag', md5(time()));
 });
 
-Route::get('/meditation', function () {
-    $user = auth()->user();
-    $userCity = $user ? ($user->city ?? 'Dhaka') : 'Dhaka';
-    $userCountry = $user ? ($user->country ?? 'Bangladesh') : 'Bangladesh';
-    return view('meditation', compact('userCity', 'userCountry'));
-})->name('meditation');
+Route::get('/meditation', [MeditationController::class, 'index'])->name('meditation');
 
 Route::get('/about', [AboutController::class, 'index'])->name('about.index');
 
