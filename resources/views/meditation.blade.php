@@ -199,7 +199,7 @@
         {{-- Location Settings Button --}}
         <div class="flex justify-center mb-4">
             <button id="location-settings-btn" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 backdrop-blur-sm border border-purple-200 text-sm font-medium text-gray-700 hover:bg-white hover:shadow-md transition-all">
-                <span id="location-display">{{ $userCity }}, {{ $userCountry }}</span>
+                <span id="location-display">{{ $userCity }}, Bangladesh</span>
                 <span class="text-xs">(Click to edit)</span>
             </button>
         </div>
@@ -214,16 +214,17 @@
                 <form id="location-form" class="space-y-4">
                     @csrf
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">City</label>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">City / District</label>
                         <input type="text" id="location-city" name="city" value="{{ $userCity }}" 
                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" 
-                               placeholder="e.g., Dhaka" required>
+                               placeholder="e.g., Dhaka, Chittagong, Sylhet" required>
                     </div>
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Country</label>
-                        <input type="text" id="location-country" name="country" value="{{ $userCountry }}" 
-                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" 
-                               placeholder="e.g., Bangladesh" required>
+                        <div class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-600">
+                            Bangladesh (Fixed)
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">Country is fixed to Bangladesh. You can only change the city/district.</p>
                     </div>
                     <div class="flex gap-3 pt-2">
                         <button type="submit" class="flex-1 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg font-medium hover:shadow-lg transition transform hover:scale-105">
@@ -487,10 +488,10 @@
                 e.preventDefault();
                 
                 const city = document.getElementById('location-city').value.trim();
-                const country = document.getElementById('location-country').value.trim();
+                const country = 'Bangladesh'; // Fixed to Bangladesh
                 
-                if (!city || !country) {
-                    alert('Please enter both city and country');
+                if (!city) {
+                    alert('Please enter a city or district name');
                     return;
                 }
                 
@@ -513,7 +514,7 @@
                     if (data.success) {
                         const locationDisplay = document.getElementById('location-display');
                         if (locationDisplay) {
-                            locationDisplay.textContent = `${data.city}, ${data.country}`;
+                            locationDisplay.textContent = `${data.city}, Bangladesh`;
                         }
                         locationModal.classList.add('hidden');
                         
